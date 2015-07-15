@@ -1,0 +1,25 @@
+{
+  "name": "paweldziok/graphql-php-parser",
+  "description": "GraphQL PHP Lexer",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Paweł Dziok",
+      "email": "pdziok@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "PawelDziok\\": "src/PawelDziok/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "PawelDziok\\": "test/PawelDziok/"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~4.7"
+  }
+}
