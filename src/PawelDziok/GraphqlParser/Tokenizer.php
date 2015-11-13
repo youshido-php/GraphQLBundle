@@ -15,60 +15,45 @@ class Tokenizer
 
     public function __construct($source)
     {
-        $this->source = $source;
+        $this->source    = $source;
         $this->lookAhead = $this->next();
-    }
-
-    public function getColumn()
-    {
-        return $this->pos - $this->lineStart;
-    }
-
-    public function getKeyword($name)
-    {
-        switch ($name) {
-            case 'null':
-                return Token::TYPE_NULL;
-            case 'true':
-                return Token::TYPE_TRUE;
-            case 'false':
-                return Token::TYPE_FALSE;
-            case 'as':
-                return Token::TYPE_AS;
-        }
-
-        return Token::TYPE_IDENTIFIER;
-    }
-
-    public function end()
-    {
-        return $this->lookAhead->getType() === Token::TYPE_END;
-    }
-
-    public function peek()
-    {
-        return $this->lookAhead;
-    }
-
-    public function lex()
-    {
-        $prev = $this->lookAhead;
-        $this->lookAhead = $this->next();
-        return $prev;
     }
 
     public function next()
     {
         $this->skipWhitespace();
 
-        $line = $this->line;
+        $line      = $this->line;
         $lineStart = $this->lineStart;
-        $token = $this->scan();
+        $token     = $this->scan();
 
-        $token->line = $line;
+        $token->line   = $line;
         $token->column = $this->pos - $lineStart;
 
         return $token;
+    }
+
+    public function skipWhitespace()
+    {
+        while ($this->pos < strlen($this->source)) {
+            $ch = $this->source[$this->pos];
+            if ($ch === ' ' || $ch === "\t") {
+                $this->pos++;
+            } elseif ($ch === "\r") {
+                $this->pos++;
+                if ($this->source[$this->pos] === "\n") {
+                    $this->pos++;
+                }
+                $this->line++;
+                $this->lineStart = $this->pos;
+            } elseif ($ch === "\n") {
+                $this->pos++;
+                $this->line++;
+                $this->lineStart = $this->pos;
+            } else {
+                break;
+            }
+        }
     }
 
     public function scan()
@@ -81,30 +66,39 @@ class Tokenizer
         switch ($ch) {
             case '(':
                 ++$this->pos;
+
                 return new Token(Token::TYPE_LPAREN);
             case ')':
                 ++$this->pos;
+
                 return new Token(Token::TYPE_RPAREN);
             case '{':
                 ++$this->pos;
+
                 return new Token(Token::TYPE_LBRACE);
             case '}':
                 ++$this->pos;
+
                 return new Token(Token::TYPE_RBRACE);
             case '<':
                 ++$this->pos;
+
                 return new Token(Token::TYPE_LT);
             case '>':
                 ++$this->pos;
+
                 return new Token(Token::TYPE_GT);
             case '&':
                 ++$this->pos;
+
                 return new Token(Token::TYPE_AMP);
             case ',':
                 ++$this->pos;
+
                 return new Token(Token::TYPE_COMMA);
             case ':':
                 ++$this->pos;
+
                 return new Token(Token::TYPE_COLON);
         }
 
@@ -123,11 +117,6 @@ class Tokenizer
         throw $this->createIllegal();
     }
 
-//public function scanPunctuator() {
-//    $glyph = $this->source[$this->pos++];
-//    return new Token(Token::TYPE_G){ type: glyph }
-//}
-
     public function scanWord()
     {
         $start = $this->pos;
@@ -145,7 +134,24 @@ class Tokenizer
         }
 
         $value = substr($this->source, $start, $this->pos - $start);
+
         return new Token($this->getKeyword($value), $value);
+    }
+
+    public function getKeyword($name)
+    {
+        switch ($name) {
+            case 'null':
+                return Token::TYPE_NULL;
+            case 'true':
+                return Token::TYPE_TRUE;
+            case 'false':
+                return Token::TYPE_FALSE;
+            case 'as':
+                return Token::TYPE_AS;
+        }
+
+        return Token::TYPE_IDENTIFIER;
     }
 
     public function scanNumber()
@@ -176,30 +182,8 @@ class Tokenizer
         }
 
         $value = (float)substr($this->source, $start, $this->pos);
+
         return new Token(Token::TYPE_NUMBER, $value);
-    }
-
-    public function scanString()
-    {
-        $this->pos++;
-
-        $value = '';
-        while ($this->pos < strlen($this->source)) {
-            $ch = $this->source[$this->pos];
-            if ($ch === '"') {
-                $this->pos++;
-                return new Token(Token::TYPE_STRING, $value);
-            }
-
-            if ($ch === "\r" || $ch === "\n") {
-                break;
-            }
-
-            $value .= $ch;
-            $this->pos++;
-        }
-
-        throw $this->createIllegal();
     }
 
     public function skipInteger()
@@ -220,27 +204,11 @@ class Tokenizer
         }
     }
 
-    public function skipWhitespace()
+    public function createIllegal()
     {
-        while ($this->pos < strlen($this->source)) {
-            $ch = $this->source[$this->pos];
-            if ($ch === ' ' || $ch === "\t") {
-                $this->pos++;
-            } elseif ($ch === "\r") {
-                $this->pos++;
-                if ($this->source[$this->pos] === "\n") {
-                    $this->pos++;
-                }
-                $this->line++;
-                $this->lineStart = $this->pos;
-            } elseif ($ch === "\n") {
-                $this->pos++;
-                $this->line++;
-                $this->lineStart = $this->pos;
-            } else {
-                break;
-            }
-        }
+        return $this->pos < strlen($this->source)
+            ? $this->createError("Unexpected {$this->source[$this->pos]}")
+            : $this->createError('Unexpected end of input');
     }
 
     public function createError($message)
@@ -248,11 +216,51 @@ class Tokenizer
         return new SyntaxErrorException($message . " ({$this->line}:{$this->getColumn()})");
     }
 
-    public function createIllegal()
+    public function getColumn()
     {
-        return $this->pos < strlen($this->source)
-            ? $this->createError("Unexpected {$this->source[$this->pos]}")
-            : $this->createError('Unexpected end of input');
+        return $this->pos - $this->lineStart;
+    }
+
+    public function scanString()
+    {
+        $this->pos++;
+
+        $value = '';
+        while ($this->pos < strlen($this->source)) {
+            $ch = $this->source[$this->pos];
+            if ($ch === '"') {
+                $this->pos++;
+
+                return new Token(Token::TYPE_STRING, $value);
+            }
+
+            if ($ch === "\r" || $ch === "\n") {
+                break;
+            }
+
+            $value .= $ch;
+            $this->pos++;
+        }
+
+        throw $this->createIllegal();
+    }
+
+    public function end()
+    {
+        return $this->lookAhead->getType() === Token::TYPE_END;
+    }
+
+    public function peek()
+    {
+        return $this->lookAhead;
+    }
+
+    public function lex()
+    {
+        $prev            = $this->lookAhead;
+        $this->lookAhead = $this->next();
+
+        return $prev;
     }
 
     public function createUnexpected(Token $token)

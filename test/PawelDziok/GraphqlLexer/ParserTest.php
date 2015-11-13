@@ -11,13 +11,15 @@ use PawelDziok\GraphqlParser\Ast\Literal;
 use PawelDziok\GraphqlParser\Ast\Query;
 use PawelDziok\GraphqlParser\Ast\Variable;
 
-class ParserTest extends \PHPUnit_Framework_TestCase {
+class ParserTest extends \PHPUnit_Framework_TestCase
+{
 
     /**
      * @dataProvider getSampleData
      */
-    public function testLexingSampleQueries($rawQuery, $parsedQuery){
-     $parser = new Parser($rawQuery);
+    public function testLexingSampleQueries($rawQuery, $parsedQuery)
+    {
+        $parser = new Parser($rawQuery);
 
         $this->assertEquals($parsedQuery, $parser->parseQuery());
     }
