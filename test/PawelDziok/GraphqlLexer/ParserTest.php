@@ -51,8 +51,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                }
               ',
                 [
-                    new Query(new Field('user', null, [], [new Field('nickname')])),
-                    new Query(new Field('posts', null, [], [new Field('id')])),
+                    new Query('user', null, [], [new Field('nickname')]),
+                    new Query('posts', null, [], [new Field('id')]),
                 ]
             ]
         ];
@@ -82,61 +82,59 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 }
               }',
                 [new Query(
-                    new Field(
-                        'user',
-                        null,
-                        [
-                            new Argument('id', new Variable('id'))
-                        ],
-                        [
-                            new Field('id'),
-                            new Field('nickname'),
-                            new Field(
-                                'avatar',
-                                null,
-                                [
-                                    new Argument('width', new Literal('80')),
-                                    new Argument('height', new Literal('80'))
-                                ],
-                                [
-                                    new Field(
-                                        'url',
-                                        null,
-                                        [
-                                            new Argument('protocol', new Literal('https'))
-                                        ]
-                                    )
-                                ]
-                            ),
-                            new Field(
-                                'posts',
-                                null,
-                                [
-                                    new Argument('first', new Variable('count')),
-                                ],
-                                [
-                                    new Field('count'),
-                                    new Field(
-                                        'edges',
-                                        null,
-                                        [],
-                                        [
-                                            new Field(
-                                                'node',
-                                                'post',
-                                                [],
-                                                [
-                                                    new Field('id'),
-                                                    new Field('title'),
-                                                    new Field('published_at')
-                                                ]
-                                            )
-                                        ]
-                                    )
-                                ]
-                            )
-                        ]
-                    )
+                    'user',
+                    null,
+                    [
+                        new Argument('id', new Variable('id'))
+                    ],
+                    [
+                        new Field('id'),
+                        new Field('nickname'),
+                        new Query(
+                            'avatar',
+                            null,
+                            [
+                                new Argument('width', new Literal('80')),
+                                new Argument('height', new Literal('80'))
+                            ],
+                            [
+                                new Field(
+                                    'url',
+                                    null,
+                                    [
+                                        new Argument('protocol', new Literal('https'))
+                                    ]
+                                )
+                            ]
+                        ),
+                        new Query(
+                            'posts',
+                            null,
+                            [
+                                new Argument('first', new Variable('count')),
+                            ],
+                            [
+                                new Field('count'),
+                                new Query(
+                                    'edges',
+                                    null,
+                                    [],
+                                    [
+                                        new Query(
+                                            'node',
+                                            'post',
+                                            [],
+                                            [
+                                                new Field('id'),
+                                                new Field('title'),
+                                                new Field('published_at')
+                                            ]
+                                        )
+                                    ]
+                                )
+                            ]
+                        )
+                    ]
                 )]
             ]
         ];
