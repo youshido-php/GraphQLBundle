@@ -10,18 +10,9 @@ class Field
 {
     /** @var string */
     private $name;
-    /** @var string */
-    private $alias;
-    /** @var array  */
-    private $params;
-    /** @var Field[] */
-    private $fields;
 
-    public function __construct($name, $alias = null, $params = [], $fields = [])
+    public function __construct($name)
     {
-        $this->name = $name;
-        $this->alias = $alias;
-        $this->params = $params;
-        $this->fields = $fields;
+        $this->name   = $name;
     }
 }

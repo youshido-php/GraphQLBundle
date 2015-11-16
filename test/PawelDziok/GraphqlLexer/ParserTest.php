@@ -19,9 +19,43 @@ class ParserTest extends \PHPUnit_Framework_TestCase
      */
     public function testLexingSampleQueries($rawQuery, $parsedQuery)
     {
-        $parser = new Parser($rawQuery);
+        $parser    = new Parser($rawQuery);
+        $structure = $parser->parseQuery();
 
-        $this->assertEquals($parsedQuery, $parser->parseQuery());
+        $this->assertEquals($parsedQuery, $structure);
+    }
+
+    /**
+     * @dataProvider  getMultipleSampleData
+     */
+    public function testMultipleLexingQueries($rawQuery, $parsedQuery)
+    {
+        $parser    = new Parser($rawQuery);
+        $structure = $parser->parseQuery();
+
+        $this->assertEquals($parsedQuery, $structure);
+    }
+
+    public function getMultipleSampleData()
+    {
+        return [
+            [
+                '
+               {
+                    user {
+                        nickname
+                    },
+                    posts {
+                        id
+                    }
+               }
+              ',
+                [
+                    new Query(new Field('user', null, [], [new Field('nickname')])),
+                    new Query(new Field('posts', null, [], [new Field('id')])),
+                ]
+            ]
+        ];
     }
 
     public function getSampleData()
@@ -29,25 +63,25 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 '{
-    user(id: <id>) {
-      id,
-      nickname,
-      avatar(width: 80, height: 80) {
-        url(protocol: "https")
-      },
-      posts(first: <count>) {
-        count,
-        edges {
-          post: node {
-            id,
-            title,
-            published_at
-          }
-        }
-      }
-    }
-  }',
-                new Query([
+                user(id: <id>) {
+                  id,
+                  nickname,
+                  avatar(width: 80, height: 80) {
+                    url(protocol: "https")
+                  },
+                  posts(first: <count>) {
+                    count,
+                    edges {
+                      post: node {
+                        id,
+                        title,
+                        published_at
+                      }
+                    }
+                  }
+                }
+              }',
+                [new Query(
                     new Field(
                         'user',
                         null,
@@ -103,7 +137,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                             )
                         ]
                     )
-                ])
+                )]
             ]
         ];
     }

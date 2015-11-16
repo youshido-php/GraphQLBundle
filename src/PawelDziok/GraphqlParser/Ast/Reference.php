@@ -6,7 +6,8 @@
 namespace PawelDziok\GraphqlParser\Ast;
 
 
-class Reference {
+class Reference
+{
 
     private $name;
 

@@ -6,6 +6,7 @@
 namespace PawelDziok\GraphqlParser;
 
 
-class SyntaxErrorException extends \InvalidArgumentException {
+class SyntaxErrorException extends \InvalidArgumentException
+{
 
 }

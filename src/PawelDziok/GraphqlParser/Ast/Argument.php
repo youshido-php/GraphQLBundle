@@ -6,14 +6,15 @@
 namespace PawelDziok\GraphqlParser\Ast;
 
 
-class Argument {
+class Argument
+{
 
     private $name;
     private $value;
 
     public function __construct($name, $value)
     {
-        $this->name = $name;
+        $this->name  = $name;
         $this->value = $value;
     }
 }

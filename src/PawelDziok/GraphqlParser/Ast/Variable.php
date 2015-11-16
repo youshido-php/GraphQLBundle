@@ -5,7 +5,8 @@
 
 namespace PawelDziok\GraphqlParser\Ast;
 
-class Variable {
+class Variable
+{
 
     private $name;
 

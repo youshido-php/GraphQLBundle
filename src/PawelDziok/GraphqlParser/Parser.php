@@ -14,45 +14,19 @@ use PawelDziok\GraphqlParser\Ast\Variable;
 
 class Parser extends Tokenizer
 {
-    public function match($type)
-    {
-        return $this->lookAhead->getType() === $type;
-    }
-
-    public function eat($type)
-    {
-        if ($this->match($type)) {
-            return $this->lex();
-        }
-
-        return null;
-    }
-
-    public function expect($type)
-    {
-        if ($this->match($type)) {
-            return $this->lex();
-        }
-
-        throw $this->createUnexpected($this->lookAhead);
-    }
-
     public function parseQuery()
     {
-        return new Query($this->parseFieldList());
+        $queries = $this->parseQueries();
+
+        return $queries;
     }
 
-    public function parseIdentifier()
-    {
-        return $this->expect(Token::TYPE_IDENTIFIER)->getData();
-    }
-
-    public function parseFieldList()
+    public function parseQueries()
     {
         $this->expect(Token::TYPE_LBRACE);
 
         $fields = [];
-        $first = true;
+        $first  = true;
 
         while (!$this->match(Token::TYPE_RBRACE) && !$this->end()) {
             if ($first) {
@@ -69,26 +43,58 @@ class Parser extends Tokenizer
         }
 
         $this->expect(Token::TYPE_RBRACE);
+
         return $fields;
+    }
+
+    public function expect($type)
+    {
+        if ($this->match($type)) {
+            return $this->lex();
+        }
+
+        throw $this->createUnexpected($this->lookAhead);
+    }
+
+    public function parseReference()
+    {
+        $this->expect(Token::TYPE_AMP);
+
+        if ($this->match(Token::TYPE_NUMBER) || $this->match(Token::TYPE_IDENTIFIER)) {
+            return new Reference($this->lex()->getData());
+        }
+
+        throw $this->createUnexpected($this->lookAhead);
     }
 
     public function parseField()
     {
-        $name = $this->parseIdentifier();
+        $name   = $this->parseIdentifier();
+        $alias  = null;
         $params = $this->match(Token::TYPE_LPAREN) ? $this->parseArgumentList() : [];
-        $alias = null;
+
         if ($this->eat(Token::TYPE_COLON)) {
             $alias = $name;
-            $name = $this->parseIdentifier();
+            $name  = $this->parseIdentifier();
         }
-        $fields = $this->match(Token::TYPE_LBRACE) ? $this->parseFieldList() : [];
 
-        return new Field($name, $alias, $params, $fields);
+        if ($this->match(Token::TYPE_LBRACE)) {
+            $fields = $this->parseQueries();
+
+            return new Query($name, $alias, $params, $fields);
+        } else {
+            return new Field($name, $alias);
+        }
+    }
+
+    public function parseIdentifier()
+    {
+        return $this->expect(Token::TYPE_IDENTIFIER)->getData();
     }
 
     public function parseArgumentList()
     {
-        $args = [];
+        $args  = [];
         $first = true;
 
         $this->expect(Token::TYPE_LPAREN);
@@ -104,6 +110,7 @@ class Parser extends Tokenizer
         }
 
         $this->expect(Token::TYPE_RPAREN);
+
         return $args;
     }
 
@@ -138,17 +145,6 @@ class Parser extends Tokenizer
         throw $this->createUnexpected($this->lookAhead);
     }
 
-    public function parseReference()
-    {
-        $this->expect(Token::TYPE_AMP);
-
-        if ($this->match(Token::TYPE_NUMBER) || $this->match(Token::TYPE_IDENTIFIER)) {
-            return new Reference($this->lex()->getData());
-        }
-
-        throw $this->createUnexpected($this->lookAhead);
-    }
-
     public function parseVariable()
     {
         $this->expect(Token::TYPE_LT);
@@ -156,5 +152,19 @@ class Parser extends Tokenizer
         $this->expect(Token::TYPE_GT);
 
         return new Variable($name);
+    }
+
+    public function eat($type)
+    {
+        if ($this->match($type)) {
+            return $this->lex();
+        }
+
+        return null;
+    }
+
+    public function match($type)
+    {
+        return $this->lookAhead->getType() === $type;
     }
 }

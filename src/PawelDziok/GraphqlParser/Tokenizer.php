@@ -126,7 +126,6 @@ class Tokenizer
             $ch = $this->source[$this->pos];
 
             if ($ch === '_' || $ch === '$' || 'a' <= $ch && $ch <= ('z') || 'A' <= $ch && $ch <= 'Z' || '0' <= $ch && $ch <= '9') {
-//            if (preg_match('/[_\$a-zA-Z0-9]/', $ch)) {
                 $this->pos++;
             } else {
                 break;
@@ -275,5 +274,7 @@ class Tokenizer
             case Token::TYPE_IDENTIFIER:
                 return $this->createError('Unexpected identifier');
         }
+
+        return new \Exception('Unexpected token');
     }
 }

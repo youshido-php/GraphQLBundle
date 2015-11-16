@@ -6,7 +6,8 @@
 namespace PawelDziok\GraphqlParser\Ast;
 
 
-class Literal {
+class Literal
+{
 
     private $value;
 

@@ -6,14 +6,26 @@
 namespace PawelDziok\GraphqlParser\Ast;
 
 
-class Query {
+class Query
+{
 
-    private $fieldList;
+    /** @var string */
+    private $name;
 
-    public function __construct($fieldList = [])
+    /** @var string */
+    private $alias;
+
+    /** @var array */
+    private $params;
+
+    /** @var Field[]|Query[] */
+    private $children;
+
+    public function __construct($name, $alias = null, $params = [], $children = [])
     {
-        $this->fieldList = $fieldList;
+        $this->name     = $name;
+        $this->alias    = $alias;
+        $this->params   = $params;
+        $this->children = $children;
     }
-
-
 }
