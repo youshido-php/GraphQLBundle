@@ -23,7 +23,11 @@ class Parser extends Tokenizer
 
     public function parseQueries()
     {
-        $this->expect(Token::TYPE_LBRACE);
+        $isNamedQuery = true;
+        if (Token::TYPE_QUERY != $this->eatIdentifier()) {
+            $this->expect(Token::TYPE_LBRACE);
+            $isNamedQuery = false;
+        }
 
         $fields = [];
         $first  = true;
@@ -38,13 +42,38 @@ class Parser extends Tokenizer
             if ($this->match(Token::TYPE_AMP)) {
                 $fields[] = $this->parseReference();
             } else {
-                $fields[] = $this->parseField();
+                $fields[] = $this->parseField($isNamedQuery);
             }
         }
 
-        $this->expect(Token::TYPE_RBRACE);
+        if ($isNamedQuery) {
+            $this->expect(Token::TYPE_END);
+        } else {
+            $this->expect(Token::TYPE_RBRACE);
+        }
 
         return $fields;
+    }
+
+    public function eatIdentifier()
+    {
+        $token = $this->eat(Token::TYPE_IDENTIFIER);
+
+        return $token ? $token->getData() : null;
+    }
+
+    public function eat($type)
+    {
+        if ($this->match($type)) {
+            return $this->lex();
+        }
+
+        return null;
+    }
+
+    public function match($type)
+    {
+        return $this->lookAhead->getType() === $type;
     }
 
     public function expect($type)
@@ -67,7 +96,7 @@ class Parser extends Tokenizer
         throw $this->createUnexpected($this->lookAhead);
     }
 
-    public function parseField()
+    public function parseField($isNamedQuery = false)
     {
         $name   = $this->parseIdentifier();
         $alias  = null;
@@ -81,7 +110,10 @@ class Parser extends Tokenizer
         if ($this->match(Token::TYPE_LBRACE)) {
             $fields = $this->parseQueries();
 
-            return new Query($name, $alias, $params, $fields);
+            $query = new Query($name, $alias, $params, $fields);
+            $query->setIsNamed($isNamedQuery);
+
+            return $query;
         } else {
             return new Field($name, $alias);
         }
@@ -152,19 +184,5 @@ class Parser extends Tokenizer
         $this->expect(Token::TYPE_GT);
 
         return new Variable($name);
-    }
-
-    public function eat($type)
-    {
-        if ($this->match($type)) {
-            return $this->lex();
-        }
-
-        return null;
-    }
-
-    public function match($type)
-    {
-        return $this->lookAhead->getType() === $type;
     }
 }

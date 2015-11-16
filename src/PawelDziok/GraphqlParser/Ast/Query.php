@@ -21,6 +21,8 @@ class Query
     /** @var Field[]|Query[] */
     private $children;
 
+    private $isNamed = false;
+
     public function __construct($name, $alias = null, $params = [], $children = [])
     {
         $this->name     = $name;
@@ -28,4 +30,18 @@ class Query
         $this->params   = $params;
         $this->children = $children;
     }
+
+    /**
+     * @param boolean $isNamed
+     *
+     * @return Query
+     */
+    public function setIsNamed($isNamed)
+    {
+        $this->isNamed = $isNamed;
+
+        return $this;
+    }
+
+
 }

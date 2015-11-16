@@ -12,6 +12,8 @@ class Token
     const TYPE_IDENTIFIER = 'identifier';
     const TYPE_NUMBER = 'number';
     const TYPE_STRING = 'string';
+    const TYPE_QUERY = 'query';
+
 
     // Punctuators
     const TYPE_LT = '<';
