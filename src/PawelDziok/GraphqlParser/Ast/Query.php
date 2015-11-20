@@ -3,25 +3,25 @@
  * @author Paweł Dziok <pdziok@gmail.com>
  */
 
-namespace PawelDziok\GraphqlParser\Ast;
+namespace Youshido\GraphqlParser\Ast;
 
 
 class Query
 {
 
     /** @var string */
-    private $name;
+    protected $name;
 
     /** @var string */
-    private $alias;
+    protected $alias;
 
     /** @var array */
-    private $params;
+    protected $params;
 
     /** @var Field[]|Query[] */
-    private $children;
+    protected $children;
 
-    private $isNamed = false;
+    protected $isNamed = false;
 
     public function __construct($name, $alias = null, $params = [], $children = [])
     {

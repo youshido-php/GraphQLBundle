@@ -7,26 +7,17 @@
 
 require_once dirname(__FILE__).'/vendor/autoload.php';
 
-use \PawelDziok\GraphqlParser\Parser;
+use \Youshido\GraphqlParser\Parser;
 
 $source = '
-{
-  latestPost: latestPost {
-    title,
-    cars (order: 123){
-        name
-    }
-  },
-
-  authorNames: authors {
-    name
-  },
-
-  authorIds: authors {
-    _id
+query getFewPosts {
+  recentPosts(count: 10, test: <id>) {
+    title
   }
 }
 ';
 
 $parser = new Parser($source);
 $parsed = $parser->parseQuery();
+
+$a = 'asd';

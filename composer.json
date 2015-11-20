@@ -1,22 +1,22 @@
 {
-  "name": "paweldziok/graphql-php-parser",
+  "name": "youshido/graphql-php-parser",
   "description": "GraphQL PHP Lexer",
   "minimum-stability": "stable",
   "license": "proprietary",
   "authors": [
     {
-      "name": "Paweł Dziok",
-      "email": "pdziok@gmail.com"
+      "name": "Portey Vasil",
+      "email": "portey@gmail.com"
     }
   ],
   "autoload": {
     "psr-4": {
-      "PawelDziok\\": "src/PawelDziok/"
+      "Youshido\\": "src/Youshido/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "PawelDziok\\": "test/PawelDziok/"
+      "Youshido\\": "test/Youshido/"
     }
   },
   "require-dev": {

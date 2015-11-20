@@ -9,7 +9,7 @@ Translated to PHP from [ooflorent/graphql-parser](https://github.com/ooflorent/g
 The suggested installation method is via [composer](https://getcomposer.org/):
 
 ```sh
-composer require "paweldziok/graphql-php-parser"
+composer require "youshido/graphql-php-parser"
 ```
 
 ## Usage

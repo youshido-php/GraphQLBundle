@@ -3,7 +3,7 @@
  * @author Paweł Dziok <pdziok@gmail.com>
  */
 
-namespace PawelDziok\GraphqlParser;
+namespace Youshido\GraphqlParser;
 
 
 class SyntaxErrorException extends \InvalidArgumentException

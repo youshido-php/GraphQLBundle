@@ -3,14 +3,14 @@
  * @author Paweł Dziok <pdziok@gmail->com>
  */
 
-namespace PawelDziok\GraphqlParser;
+namespace Youshido\GraphqlParser;
 
-use PawelDziok\GraphqlParser\Ast\Argument;
-use PawelDziok\GraphqlParser\Ast\Field;
-use PawelDziok\GraphqlParser\Ast\Literal;
-use PawelDziok\GraphqlParser\Ast\Query;
-use PawelDziok\GraphqlParser\Ast\Reference;
-use PawelDziok\GraphqlParser\Ast\Variable;
+use Youshido\GraphqlParser\Ast\Argument;
+use Youshido\GraphqlParser\Ast\Field;
+use Youshido\GraphqlParser\Ast\Literal;
+use Youshido\GraphqlParser\Ast\Query;
+use Youshido\GraphqlParser\Ast\Reference;
+use Youshido\GraphqlParser\Ast\Variable;
 
 class Parser extends Tokenizer
 {

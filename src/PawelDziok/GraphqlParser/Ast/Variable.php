@@ -3,7 +3,7 @@
  * @author Paweł Dziok <pdziok@gmail.com>
  */
 
-namespace PawelDziok\GraphqlParser\Ast;
+namespace Youshido\GraphqlParser\Ast;
 
 class Variable
 {
