@@ -8,14 +8,19 @@
 namespace Youshido\Graphql;
 
 
+use Youshido\GraphqlParser\Ast\Fragment;
+use Youshido\GraphqlParser\Ast\Mutation;
+use Youshido\GraphqlParser\Ast\Query;
+
 class Request
 {
 
     private $queries   = [];
     private $fragments = [];
+    private $mutations = [];
 
     /**
-     * @return array
+     * @return Query[]
      */
     public function getQueries()
     {
@@ -30,7 +35,7 @@ class Request
     }
 
     /**
-     * @return array
+     * @return Fragment[]
      */
     public function getFragments()
     {
@@ -40,5 +45,20 @@ class Request
     public function addFragment($fragment)
     {
         $this->fragments[] = $fragment;
+    }
+
+    /**
+     * @return Mutation[]
+     */
+    public function getMutations()
+    {
+        return $this->mutations;
+    }
+
+    public function addMutations($mutations)
+    {
+        foreach ($mutations as $mutation) {
+            $this->mutations[] = $mutation;
+        }
     }
 }

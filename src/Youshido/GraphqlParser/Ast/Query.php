@@ -16,32 +16,16 @@ class Query
     protected $alias;
 
     /** @var array */
-    protected $params;
+    protected $arguments;
 
     /** @var Field[]|Query[] */
     protected $children;
 
-    protected $isNamed = false;
-
-    public function __construct($name, $alias = null, $params = [], $children = [])
+    public function __construct($name, $alias = null, $arguments = [], $children = [])
     {
-        $this->name     = $name;
-        $this->alias    = $alias;
-        $this->params   = $params;
-        $this->children = $children;
+        $this->name      = $name;
+        $this->alias     = $alias;
+        $this->arguments = $arguments;
+        $this->children  = $children;
     }
-
-    /**
-     * @param boolean $isNamed
-     *
-     * @return Query
-     */
-    public function setIsNamed($isNamed)
-    {
-        $this->isNamed = $isNamed;
-
-        return $this;
-    }
-
-
 }

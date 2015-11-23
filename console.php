@@ -41,6 +41,17 @@ $sourceMutation = '
     }
 ';
 
+$sourceMutationMultiple = '
+    mutation {
+      Ivanov : createUser(login: "Ivanov") {
+        login
+      },
+      Alex : createUser(login: "Alex") {
+        login
+      }
+    }
+';
+
 $sourceFragment = '
     fragment test on User {
         id,
@@ -69,7 +80,7 @@ $sourceQueryFragment = '
     }
 ';
 
-$parser = new Parser($sourceQueryFragment);
+$parser = new Parser($sourceMutationMultiple);
 $parsed = $parser->parse();
 
 $a = 'asd';
