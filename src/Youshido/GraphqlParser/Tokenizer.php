@@ -64,35 +64,35 @@ class Tokenizer
 
         $ch = $this->source[$this->pos];
         switch ($ch) {
-            case '(':
+            case Token::TYPE_LPAREN:
                 ++$this->pos;
 
                 return new Token(Token::TYPE_LPAREN);
-            case ')':
+            case Token::TYPE_RPAREN:
                 ++$this->pos;
 
                 return new Token(Token::TYPE_RPAREN);
-            case '{':
+            case Token::TYPE_LBRACE:
                 ++$this->pos;
 
                 return new Token(Token::TYPE_LBRACE);
-            case '}':
+            case Token::TYPE_RBRACE:
                 ++$this->pos;
 
                 return new Token(Token::TYPE_RBRACE);
-            case '<':
+            case Token::TYPE_LT:
                 ++$this->pos;
 
                 return new Token(Token::TYPE_LT);
-            case '>':
+            case Token::TYPE_GT:
                 ++$this->pos;
 
                 return new Token(Token::TYPE_GT);
-            case '&':
+            case Token::TYPE_AMP:
                 ++$this->pos;
 
                 return new Token(Token::TYPE_AMP);
-            case ',':
+            case Token::TYPE_COMMA:
                 ++$this->pos;
 
                 return new Token(Token::TYPE_COMMA);
