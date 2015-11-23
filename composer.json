@@ -1,6 +1,6 @@
 {
-  "name": "youshido/graphql-php-parser",
-  "description": "GraphQL PHP Lexer",
+  "name": "youshido/graphql-bundle",
+  "description": "Symfony2 GraphQl Bundle",
   "minimum-stability": "stable",
   "license": "proprietary",
   "authors": [
@@ -11,12 +11,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "Youshido\\": "src/Youshido/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Youshido\\": "test/Youshido/"
+      "Youshido\\GraphQLBundle\\": ""
     }
   },
   "require-dev": {
