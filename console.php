@@ -9,15 +9,46 @@ require_once dirname(__FILE__).'/vendor/autoload.php';
 
 use \Youshido\GraphqlParser\Parser;
 
-$source = '
-query getFewPosts {
-  recentPosts(count: 10, test: <id>) {
-    title
-  }
-}
+$sourceQuery = '
+    query {
+      users(count: 10, test: <id>) {
+        title,
+        com: comments {
+            id,
+            body
+        }
+      }
+    }
 ';
 
-$parser = new Parser($source);
-$parsed = $parser->parseQuery();
+$sourceSimpleQuery = '
+    {
+      recentPosts(count: 10, test: <id>) {
+        title,
+        comments {
+            id,
+            body
+        }
+      }
+    }
+';
+
+$sourceMutation = '
+    mutation {
+      createUser(login: 10) {
+        login
+      }
+    }
+';
+
+$sourceFragment = '
+    fragment test on User {
+        id,
+        login
+    }
+';
+
+$parser = new Parser($sourceQuery);
+$parsed = $parser->parse();
 
 $a = 'asd';

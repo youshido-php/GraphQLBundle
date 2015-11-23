@@ -1,10 +1,11 @@
 <?php
 /**
- * @author Paweł Dziok <pdziok@gmail->com>
+ * @author Vasil Portey <portey@gmail.com>
  */
 
 namespace Youshido\GraphqlParser;
 
+use Youshido\Graphql\Request;
 use Youshido\GraphqlParser\Ast\Argument;
 use Youshido\GraphqlParser\Ast\Field;
 use Youshido\GraphqlParser\Ast\Literal;
@@ -14,45 +15,33 @@ use Youshido\GraphqlParser\Ast\Variable;
 
 class Parser extends Tokenizer
 {
-    public function parseQuery()
-    {
-        $queries = $this->parseQueries();
 
-        return $queries;
+    public function parse()
+    {
+        $request = new Request();
+        $currentTokenType = $this->getCurrentTokenType();
+
+        switch ($currentTokenType) {
+            case Token::TYPE_LBRACE:
+            case Token::TYPE_QUERY:
+                $request->addQueries($this->parseQuery());
+                break;
+
+            case Token::TYPE_MUTATION:
+                $this->parseMutation();
+                break;
+
+            case Token::TYPE_FRAGMENT:
+                $this->parseFragment();
+                break;
+        }
+
+        return $request;
     }
 
-    public function parseQueries()
+    public function getCurrentTokenType()
     {
-        $isNamedQuery = true;
-        if (Token::TYPE_QUERY != $this->eatIdentifier()) {
-            $this->expect(Token::TYPE_LBRACE);
-            $isNamedQuery = false;
-        }
-
-        $fields = [];
-        $first  = true;
-
-        while (!$this->match(Token::TYPE_RBRACE) && !$this->end()) {
-            if ($first) {
-                $first = false;
-            } else {
-                $this->expect(Token::TYPE_COMMA);
-            }
-
-            if ($this->match(Token::TYPE_AMP)) {
-                $fields[] = $this->parseReference();
-            } else {
-                $fields[] = $this->parseField($isNamedQuery);
-            }
-        }
-
-        if ($isNamedQuery) {
-            $this->expect(Token::TYPE_END);
-        } else {
-            $this->expect(Token::TYPE_RBRACE);
-        }
-
-        return $fields;
+        return $this->lookAhead->getType();
     }
 
     public function eatIdentifier()
@@ -76,6 +65,36 @@ class Parser extends Tokenizer
         return $this->lookAhead->getType() === $type;
     }
 
+    public function parseQuery()
+    {
+        $fields       = [];
+        $first        = true;
+
+        if ($this->getCurrentTokenType() == Token::TYPE_QUERY) {
+            $this->lex();
+        }
+
+        $this->lex();
+
+        while (!$this->match(Token::TYPE_RBRACE) && !$this->end()) {
+            if ($first) {
+                $first = false;
+            } else {
+                $this->expect(Token::TYPE_COMMA);
+            }
+
+            if ($this->match(Token::TYPE_AMP)) {
+                $fields[] = $this->parseReference();
+            } else {
+                $fields[] = $this->parseField();
+            }
+        }
+
+        $this->expect(Token::TYPE_RBRACE);
+
+        return $fields;
+    }
+
     public function expect($type)
     {
         if ($this->match($type)) {
@@ -96,7 +115,7 @@ class Parser extends Tokenizer
         throw $this->createUnexpected($this->lookAhead);
     }
 
-    public function parseField($isNamedQuery = false)
+    public function parseField()
     {
         $name   = $this->parseIdentifier();
         $alias  = null;
@@ -108,10 +127,9 @@ class Parser extends Tokenizer
         }
 
         if ($this->match(Token::TYPE_LBRACE)) {
-            $fields = $this->parseQueries();
+            $fields = $this->parseQuery();
 
             $query = new Query($name, $alias, $params, $fields);
-            $query->setIsNamed($isNamedQuery);
 
             return $query;
         } else {
@@ -184,5 +202,15 @@ class Parser extends Tokenizer
         $this->expect(Token::TYPE_GT);
 
         return new Variable($name);
+    }
+
+    public function parseMutation()
+    {
+
+    }
+
+    public function parseFragment()
+    {
+
     }
 }

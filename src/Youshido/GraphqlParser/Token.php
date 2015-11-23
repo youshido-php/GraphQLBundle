@@ -8,11 +8,14 @@ namespace Youshido\GraphqlParser;
 class Token
 {
     // Special
-    const TYPE_END = 'end';
+    const TYPE_END        = 'end';
     const TYPE_IDENTIFIER = 'identifier';
-    const TYPE_NUMBER = 'number';
-    const TYPE_STRING = 'string';
-    const TYPE_QUERY = 'query';
+    const TYPE_NUMBER     = 'number';
+    const TYPE_STRING     = 'string';
+
+    const TYPE_QUERY    = 'query';
+    const TYPE_MUTATION = 'mutation';
+    const TYPE_FRAGMENT = 'fragment';
 
 
     // Punctuators
@@ -42,6 +45,11 @@ class Token
         $this->type = $type;
     }
 
+    public function toString()
+    {
+        return "<" . $this->getData() . ", " . $this->getType() . ">";
+    }
+
     public function getData()
     {
         return $this->data;
@@ -50,10 +58,5 @@ class Token
     public function getType()
     {
         return $this->type;
-    }
-
-    public function toString()
-    {
-        return "<" . $this->getData() . ", " . $this->getType() . ">";
     }
 }

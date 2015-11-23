@@ -142,10 +142,22 @@ class Tokenizer
         switch ($name) {
             case 'null':
                 return Token::TYPE_NULL;
+
             case 'true':
                 return Token::TYPE_TRUE;
+
             case 'false':
                 return Token::TYPE_FALSE;
+
+            case 'query':
+                return Token::TYPE_QUERY;
+
+            case 'fragment':
+                return Token::TYPE_FRAGMENT;
+
+            case 'mutation':
+                return Token::TYPE_MUTATION;
+
             case 'as':
                 return Token::TYPE_AS;
         }
