@@ -1,0 +1,4 @@
+services:
+#    graph_ql.example:
+#        class: Youshido\GraphQLBundle\Example
+#        arguments: [@service_id, "plain_value", %parameter%]
