@@ -1,9 +1,11 @@
 <?php
 /**
- * @author Paweł Dziok <pdziok@gmail.com>
+ * Date: 23.11.15
+ *
+ * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphqlParser\Ast;
+namespace Youshido\GraphQLBundle\Parser\Ast;
 
 
 class Literal

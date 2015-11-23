@@ -3,7 +3,7 @@
  * @author Paweł Dziok <pdziok@gmail.com>
  */
 
-namespace Youshido\GraphqlParser\Ast;
+namespace Youshido\GraphQLBundle\Parser\Ast;
 
 
 class Reference

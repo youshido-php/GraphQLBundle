@@ -7,7 +7,7 @@
 
 require_once dirname(__FILE__).'/vendor/autoload.php';
 
-use \Youshido\GraphqlParser\Parser;
+use \Youshido\GraphQLBundle\Parser\Parser;
 
 $sourceQuery = '
     query {

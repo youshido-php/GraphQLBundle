@@ -1,20 +1,22 @@
 <?php
 /**
- * @author Vasil Portey <portey@gmail.com>
+ * Date: 23.11.15
+ *
+ * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphqlParser;
+namespace Youshido\GraphQLBundle\Parser;
 
-use Youshido\Graphql\Request;
-use Youshido\GraphqlParser\Ast\Argument;
-use Youshido\GraphqlParser\Ast\Field;
-use Youshido\GraphqlParser\Ast\Fragment;
-use Youshido\GraphqlParser\Ast\FragmentReference;
-use Youshido\GraphqlParser\Ast\Literal;
-use Youshido\GraphqlParser\Ast\Mutation;
-use Youshido\GraphqlParser\Ast\Query;
-use Youshido\GraphqlParser\Ast\Reference;
-use Youshido\GraphqlParser\Ast\Variable;
+use Youshido\GraphQLBundle\GraphQL\Request;
+use Youshido\GraphQLBundle\Parser\Ast\Argument;
+use Youshido\GraphQLBundle\Parser\Ast\Field;
+use Youshido\GraphQLBundle\Parser\Ast\Fragment;
+use Youshido\GraphQLBundle\Parser\Ast\FragmentReference;
+use Youshido\GraphQLBundle\Parser\Ast\Literal;
+use Youshido\GraphQLBundle\Parser\Ast\Mutation;
+use Youshido\GraphQLBundle\Parser\Ast\Query;
+use Youshido\GraphQLBundle\Parser\Ast\Reference;
+use Youshido\GraphQLBundle\Parser\Ast\Variable;
 
 class Parser extends Tokenizer
 {

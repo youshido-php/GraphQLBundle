@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphqlParser\Ast;
+namespace Youshido\GraphQLBundle\Parser\Ast;
 
 
 class FragmentReference

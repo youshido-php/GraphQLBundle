@@ -5,12 +5,12 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\Graphql;
+namespace Youshido\GraphQLBundle\GraphQL;
 
 
-use Youshido\GraphqlParser\Ast\Fragment;
-use Youshido\GraphqlParser\Ast\Mutation;
-use Youshido\GraphqlParser\Ast\Query;
+use Youshido\GraphQLBundle\Parser\Ast\Fragment;
+use Youshido\GraphQLBundle\Parser\Ast\Mutation;
+use Youshido\GraphQLBundle\Parser\Ast\Query;
 
 class Request
 {
