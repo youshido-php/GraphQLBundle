@@ -8,6 +8,8 @@ namespace Youshido\GraphqlParser;
 use Youshido\Graphql\Request;
 use Youshido\GraphqlParser\Ast\Argument;
 use Youshido\GraphqlParser\Ast\Field;
+use Youshido\GraphqlParser\Ast\Fragment;
+use Youshido\GraphqlParser\Ast\FragmentReference;
 use Youshido\GraphqlParser\Ast\Literal;
 use Youshido\GraphqlParser\Ast\Query;
 use Youshido\GraphqlParser\Ast\Reference;
@@ -18,22 +20,26 @@ class Parser extends Tokenizer
 
     public function parse()
     {
-        $request = new Request();
-        $currentTokenType = $this->getCurrentTokenType();
+        $request          = new Request();
 
-        switch ($currentTokenType) {
-            case Token::TYPE_LBRACE:
-            case Token::TYPE_QUERY:
-                $request->addQueries($this->parseQuery());
-                break;
+        while (!$this->end()) {
+            $tokenType = $this->getCurrentTokenType();
 
-            case Token::TYPE_MUTATION:
-                $this->parseMutation();
-                break;
+            switch ($tokenType) {
+                case Token::TYPE_LBRACE:
+                case Token::TYPE_QUERY:
+                    $request->addQueries($this->parseQuery());
+                    break;
 
-            case Token::TYPE_FRAGMENT:
-                $this->parseFragment();
-                break;
+                case Token::TYPE_MUTATION:
+                    $this->parseMutation();
+                    break;
+
+                case Token::TYPE_FRAGMENT:
+                    $fragments = $this->parseFragment();
+                    $request->addFragment($fragments);
+                    break;
+            }
         }
 
         return $request;
@@ -44,31 +50,10 @@ class Parser extends Tokenizer
         return $this->lookAhead->getType();
     }
 
-    public function eatIdentifier()
-    {
-        $token = $this->eat(Token::TYPE_IDENTIFIER);
-
-        return $token ? $token->getData() : null;
-    }
-
-    public function eat($type)
-    {
-        if ($this->match($type)) {
-            return $this->lex();
-        }
-
-        return null;
-    }
-
-    public function match($type)
-    {
-        return $this->lookAhead->getType() === $type;
-    }
-
     public function parseQuery()
     {
-        $fields       = [];
-        $first        = true;
+        $fields = [];
+        $first  = true;
 
         if ($this->getCurrentTokenType() == Token::TYPE_QUERY) {
             $this->lex();
@@ -85,6 +70,10 @@ class Parser extends Tokenizer
 
             if ($this->match(Token::TYPE_AMP)) {
                 $fields[] = $this->parseReference();
+            } elseif ($this->match(Token::TYPE_FRAGMENT_REFERENCE)) {
+                $this->lex();
+
+                $fields[] = $this->parseFragmentReference();
             } else {
                 $fields[] = $this->parseField();
             }
@@ -93,6 +82,13 @@ class Parser extends Tokenizer
         $this->expect(Token::TYPE_RBRACE);
 
         return $fields;
+    }
+
+    public function parseFragmentReference()
+    {
+        $name = $this->parseIdentifier();
+
+        return new FragmentReference($name);
     }
 
     public function expect($type)
@@ -211,6 +207,21 @@ class Parser extends Tokenizer
 
     public function parseFragment()
     {
+        $this->lex();
+        $name = $this->parseIdentifier();
 
+        $this->eat(Token::TYPE_ON);
+
+        $model  = $this->parseIdentifier();
+        $fields = $this->parseQuery();
+
+        return new Fragment($name, $model, $fields);
+    }
+
+    public function eatIdentifier()
+    {
+        $token = $this->eat(Token::TYPE_IDENTIFIER);
+
+        return $token ? $token->getData() : null;
     }
 }

@@ -100,6 +100,13 @@ class Tokenizer
                 ++$this->pos;
 
                 return new Token(Token::TYPE_COLON);
+
+            case Token::TYPE_POINT:
+                if($this->checkFragment()){
+                    return new Token(Token::TYPE_FRAGMENT_REFERENCE);
+                }
+
+                break;
         }
 
         if ($ch === '_' || $ch === '$' || 'a' <= $ch && $ch <= 'z' || 'A' <= $ch && $ch <= 'Z') {
@@ -115,6 +122,25 @@ class Tokenizer
         }
 
         throw $this->createIllegal();
+    }
+
+    protected function checkFragment()
+    {
+        $this->pos++;
+        $ch = $this->source[$this->pos];
+
+        $this->pos++;
+        $nextCh = $this->source[$this->pos];
+
+        $isset = $ch == Token::TYPE_POINT && $nextCh == Token::TYPE_POINT;
+
+        if ($isset) {
+            $this->pos++;
+
+            return true;
+        }
+
+        return false;
     }
 
     public function scanWord()
@@ -157,6 +183,9 @@ class Tokenizer
 
             case 'mutation':
                 return Token::TYPE_MUTATION;
+
+            case 'on':
+                return Token::TYPE_ON;
 
             case 'as':
                 return Token::TYPE_AS;
@@ -288,5 +317,19 @@ class Tokenizer
         }
 
         return new \Exception('Unexpected token');
+    }
+
+    public function eat($type)
+    {
+        if ($this->match($type)) {
+            return $this->lex();
+        }
+
+        return null;
+    }
+
+    public function match($type)
+    {
+        return $this->lookAhead->getType() === $type;
     }
 }

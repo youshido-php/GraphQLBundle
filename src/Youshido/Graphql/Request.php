@@ -11,7 +11,8 @@ namespace Youshido\Graphql;
 class Request
 {
 
-    private $queries = [];
+    private $queries   = [];
+    private $fragments = [];
 
     /**
      * @return array
@@ -28,4 +29,16 @@ class Request
         }
     }
 
+    /**
+     * @return array
+     */
+    public function getFragments()
+    {
+        return $this->fragments;
+    }
+
+    public function addFragment($fragment)
+    {
+        $this->fragments[] = $fragment;
+    }
 }

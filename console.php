@@ -44,11 +44,32 @@ $sourceMutation = '
 $sourceFragment = '
     fragment test on User {
         id,
-        login
+        login,
+        comments {
+            id,
+            body
+        }
     }
 ';
 
-$parser = new Parser($sourceQuery);
+$sourceQueryFragment = '
+    {
+        users {
+            ...test
+        }
+    }
+
+    fragment test on User {
+        id,
+        login,
+        comments {
+            id,
+            body
+        }
+    }
+';
+
+$parser = new Parser($sourceQueryFragment);
 $parsed = $parser->parse();
 
 $a = 'asd';

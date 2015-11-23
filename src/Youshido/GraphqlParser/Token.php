@@ -12,6 +12,7 @@ class Token
     const TYPE_IDENTIFIER = 'identifier';
     const TYPE_NUMBER     = 'number';
     const TYPE_STRING     = 'string';
+    const TYPE_ON         = 'on';
 
     const TYPE_QUERY    = 'query';
     const TYPE_MUTATION = 'mutation';
@@ -28,6 +29,7 @@ class Token
     const TYPE_COLON = ' = ';
     const TYPE_COMMA = ',';
     const TYPE_AMP = '&';
+    const TYPE_POINT = '.';
 
     // Keywords
     const TYPE_NULL = 'null';
@@ -35,6 +37,7 @@ class Token
     const TYPE_FALSE = 'false';
     /** @deprecated */
     const TYPE_AS = 'as';
+    const TYPE_FRAGMENT_REFERENCE = '...';
 
     private $data;
     private $type;
