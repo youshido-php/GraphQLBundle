@@ -17,7 +17,7 @@ class Query
     /** @var string */
     protected $alias;
 
-    /** @var array */
+    /** @var Argument[] */
     protected $arguments;
 
     /** @var Field[]|Query[] */
@@ -29,5 +29,34 @@ class Query
         $this->alias     = $alias;
         $this->arguments = $arguments;
         $this->fields    = $fields;
+    }
+
+    public function hasArguments()
+    {
+        return (bool)count($this->arguments);
+    }
+
+    /**
+     * @return Argument[]
+     */
+    public function getArguments()
+    {
+        return $this->arguments;
+    }
+
+    /**
+     * @return Field[]|Query[]
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @param Field[]|Query[] $fields
+     */
+    public function setFields($fields)
+    {
+        $this->fields = $fields;
     }
 }

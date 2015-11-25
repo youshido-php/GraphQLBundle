@@ -41,3 +41,8 @@ services:
         class: Youshido\GraphQLBundle\Validator\PreValidator\AllFragmentUsedPreValidator
         tags:
             - { name: youshido.graphql.pre_validator }
+
+    youshido.graphql.pre_validator.arguments_unique:
+        class: Youshido\GraphQLBundle\Validator\PreValidator\ArgumentsUniquePreValidator
+        tags:
+            - { name: youshido.graphql.pre_validator }
