@@ -21,13 +21,13 @@ class Query
     protected $arguments;
 
     /** @var Field[]|Query[] */
-    protected $children;
+    protected $fields;
 
-    public function __construct($name, $alias = null, $arguments = [], $children = [])
+    public function __construct($name, $alias = null, $arguments = [], $fields = [])
     {
         $this->name      = $name;
         $this->alias     = $alias;
         $this->arguments = $arguments;
-        $this->children  = $children;
+        $this->fields    = $fields;
     }
 }

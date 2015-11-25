@@ -10,13 +10,13 @@ namespace Youshido\GraphQLBundle\Parser;
 class Token
 {
     // Special
-    const TYPE_END        = 'end';
+    const TYPE_END = 'end';
     const TYPE_IDENTIFIER = 'identifier';
-    const TYPE_NUMBER     = 'number';
-    const TYPE_STRING     = 'string';
-    const TYPE_ON         = 'on';
+    const TYPE_NUMBER = 'number';
+    const TYPE_STRING = 'string';
+    const TYPE_ON = 'on';
 
-    const TYPE_QUERY    = 'query';
+    const TYPE_QUERY = 'query';
     const TYPE_MUTATION = 'mutation';
     const TYPE_FRAGMENT = 'fragment';
 

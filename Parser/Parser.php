@@ -35,8 +35,7 @@ class Parser extends Tokenizer
                     break;
 
                 case Token::TYPE_MUTATION:
-                    $mutations = $this->parseBody(Token::TYPE_MUTATION);
-                    $request->addMutations($mutations);
+                    $request->addMutations($this->parseBody(Token::TYPE_MUTATION));
                     break;
 
                 case Token::TYPE_FRAGMENT:
@@ -48,12 +47,12 @@ class Parser extends Tokenizer
         return $request;
     }
 
-    public function getCurrentTokenType()
+    protected function getCurrentTokenType()
     {
         return $this->lookAhead->getType();
     }
 
-    public function parseBody($token = Token::TYPE_QUERY)
+    protected function parseBody($token = Token::TYPE_QUERY)
     {
         $fields = [];
         $first  = true;
@@ -87,7 +86,7 @@ class Parser extends Tokenizer
         return $fields;
     }
 
-    public function expect($type)
+    protected function expect($type)
     {
         if ($this->match($type)) {
             return $this->lex();
@@ -96,7 +95,7 @@ class Parser extends Tokenizer
         throw $this->createUnexpected($this->lookAhead);
     }
 
-    public function parseReference()
+    protected function parseReference()
     {
         $this->expect(Token::TYPE_AMP);
 
@@ -107,22 +106,22 @@ class Parser extends Tokenizer
         throw $this->createUnexpected($this->lookAhead);
     }
 
-    public function parseFragmentReference()
+    protected function parseFragmentReference()
     {
         $name = $this->parseIdentifier();
 
         return new FragmentReference($name);
     }
 
-    public function parseIdentifier()
+    protected function parseIdentifier()
     {
         return $this->expect(Token::TYPE_IDENTIFIER)->getData();
     }
 
-    public function parseBodyItem($type = Token::TYPE_QUERY)
+    protected function parseBodyItem($type = Token::TYPE_QUERY)
     {
-        $name   = $this->parseIdentifier();
-        $alias  = null;
+        $name  = $this->parseIdentifier();
+        $alias = null;
 
         if ($this->eat(Token::TYPE_COLON)) {
             $alias = $name;
@@ -144,7 +143,7 @@ class Parser extends Tokenizer
         }
     }
 
-    public function parseArgumentList()
+    protected function parseArgumentList()
     {
         $args  = [];
         $first = true;
@@ -166,7 +165,7 @@ class Parser extends Tokenizer
         return $args;
     }
 
-    public function parseArgument()
+    protected function parseArgument()
     {
         $name = $this->parseIdentifier();
         $this->expect(Token::TYPE_COLON);
@@ -175,7 +174,7 @@ class Parser extends Tokenizer
         return new Argument($name, $value);
     }
 
-    public function parseValue()
+    protected function parseValue()
     {
         switch ($this->lookAhead->getType()) {
             case Token::TYPE_AMP:
@@ -197,7 +196,7 @@ class Parser extends Tokenizer
         throw $this->createUnexpected($this->lookAhead);
     }
 
-    public function parseVariable()
+    protected function parseVariable()
     {
         $this->expect(Token::TYPE_LT);
         $name = $this->expect(Token::TYPE_IDENTIFIER)->getData();
@@ -206,7 +205,7 @@ class Parser extends Tokenizer
         return new Variable($name);
     }
 
-    public function parseFragment()
+    protected function parseFragment()
     {
         $this->lex();
         $name = $this->parseIdentifier();
@@ -219,10 +218,24 @@ class Parser extends Tokenizer
         return new Fragment($name, $model, $fields);
     }
 
-    public function eatIdentifier()
+    protected function eatIdentifier()
     {
         $token = $this->eat(Token::TYPE_IDENTIFIER);
 
         return $token ? $token->getData() : null;
+    }
+
+    protected function eat($type)
+    {
+        if ($this->match($type)) {
+            return $this->lex();
+        }
+
+        return null;
+    }
+
+    protected function match($type)
+    {
+        return $this->lookAhead->getType() === $type;
     }
 }

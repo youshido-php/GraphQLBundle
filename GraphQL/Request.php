@@ -15,7 +15,7 @@ use Youshido\GraphQLBundle\Parser\Ast\Query;
 class Request
 {
 
-    private $queries   = [];
+    private $queries = [];
     private $fragments = [];
     private $mutations = [];
 
@@ -60,5 +60,13 @@ class Request
         foreach ($mutations as $mutation) {
             $this->mutations[] = $mutation;
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasFragments()
+    {
+        return (bool)count($this->fragments);
     }
 }

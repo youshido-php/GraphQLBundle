@@ -18,6 +18,9 @@ class Fragment
     /** @var Field[]|Query[] */
     protected $children;
 
+    /** @var bool */
+    private $used = false;
+
     /**
      * Fragment constructor.
      *
@@ -32,5 +35,35 @@ class Fragment
         $this->children = $children;
     }
 
+    /**
+     * @return boolean
+     */
+    public function isUsed()
+    {
+        return $this->used;
+    }
 
+    /**
+     * @param boolean $used
+     */
+    public function setUsed($used)
+    {
+        $this->used = $used;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 }

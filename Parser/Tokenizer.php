@@ -21,7 +21,7 @@ class Tokenizer
         $this->lookAhead = $this->next();
     }
 
-    public function next()
+    protected function next()
     {
         $this->skipWhitespace();
 
@@ -35,7 +35,7 @@ class Tokenizer
         return $token;
     }
 
-    public function skipWhitespace()
+    protected function skipWhitespace()
     {
         while ($this->pos < strlen($this->source)) {
             $ch = $this->source[$this->pos];
@@ -58,7 +58,7 @@ class Tokenizer
         }
     }
 
-    public function scan()
+    protected function scan()
     {
         if ($this->pos >= strlen($this->source)) {
             return new Token(Token::TYPE_END);
@@ -104,7 +104,7 @@ class Tokenizer
                 return new Token(Token::TYPE_COLON);
 
             case Token::TYPE_POINT:
-                if($this->checkFragment()){
+                if ($this->checkFragment()) {
                     return new Token(Token::TYPE_FRAGMENT_REFERENCE);
                 }
 
@@ -145,7 +145,7 @@ class Tokenizer
         return false;
     }
 
-    public function scanWord()
+    protected function scanWord()
     {
         $start = $this->pos;
         $this->pos++;
@@ -165,7 +165,7 @@ class Tokenizer
         return new Token($this->getKeyword($value), $value);
     }
 
-    public function getKeyword($name)
+    protected function getKeyword($name)
     {
         switch ($name) {
             case 'null':
@@ -196,7 +196,7 @@ class Tokenizer
         return Token::TYPE_IDENTIFIER;
     }
 
-    public function scanNumber()
+    protected function scanNumber()
     {
         $start = $this->pos;
 
@@ -228,7 +228,7 @@ class Tokenizer
         return new Token(Token::TYPE_NUMBER, $value);
     }
 
-    public function skipInteger()
+    protected function skipInteger()
     {
         $start = $this->pos;
 
@@ -246,24 +246,24 @@ class Tokenizer
         }
     }
 
-    public function createIllegal()
+    protected function createIllegal()
     {
         return $this->pos < strlen($this->source)
             ? $this->createError("Unexpected {$this->source[$this->pos]}")
             : $this->createError('Unexpected end of input');
     }
 
-    public function createError($message)
+    protected function createError($message)
     {
         return new SyntaxErrorException($message . " ({$this->line}:{$this->getColumn()})");
     }
 
-    public function getColumn()
+    protected function getColumn()
     {
         return $this->pos - $this->lineStart;
     }
 
-    public function scanString()
+    protected function scanString()
     {
         $this->pos++;
 
@@ -287,17 +287,17 @@ class Tokenizer
         throw $this->createIllegal();
     }
 
-    public function end()
+    protected function end()
     {
         return $this->lookAhead->getType() === Token::TYPE_END;
     }
 
-    public function peek()
+    protected function peek()
     {
         return $this->lookAhead;
     }
 
-    public function lex()
+    protected function lex()
     {
         $prev            = $this->lookAhead;
         $this->lookAhead = $this->next();
@@ -305,7 +305,7 @@ class Tokenizer
         return $prev;
     }
 
-    public function createUnexpected(Token $token)
+    protected function createUnexpected(Token $token)
     {
         switch ($token) {
             case Token::TYPE_END:
@@ -319,19 +319,5 @@ class Tokenizer
         }
 
         return new \Exception('Unexpected token');
-    }
-
-    public function eat($type)
-    {
-        if ($this->match($type)) {
-            return $this->lex();
-        }
-
-        return null;
-    }
-
-    public function match($type)
-    {
-        return $this->lookAhead->getType() === $type;
     }
 }

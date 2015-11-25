@@ -11,7 +11,7 @@ namespace Youshido\GraphQLBundle\Parser\Ast;
 class FragmentReference
 {
 
-    protected  $name;
+    protected $name;
 
     /**
      * FragmentReference constructor.
