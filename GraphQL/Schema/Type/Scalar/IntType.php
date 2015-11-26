@@ -23,7 +23,7 @@ class IntType extends AbstractScalar
         }
     }
 
-    public function resolve($value = null, $args = [], $parent = null)
+    public function resolve($value = null, $args = [])
     {
         return (int)$value;
     }

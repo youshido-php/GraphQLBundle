@@ -13,9 +13,8 @@ interface TypeInterface
     /**
      * @param null  $value
      * @param array $args
-     * @param null  $parent
      *
      * @return mixed
      */
-    public function resolve($value = null, $args = [], $parent = null);
+    public function resolve($value = null, $args = []);
 }

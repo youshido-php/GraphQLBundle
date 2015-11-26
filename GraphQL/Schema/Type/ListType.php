@@ -14,20 +14,13 @@ class ListType implements TypeInterface
     /** @var TypeInterface */
     protected $type;
 
-    public function __construct(TypeInterface $type)
+    public function getArguments()
     {
-        $this->type = $type;
+        return [];
     }
 
-    public function resolve($value = null, $args = [], $parent = null)
+    public function resolve($value = null, $args = [])
     {
-        $value = (array)$value;
-
-        $result = [];
-        foreach ($value as $valueItem) {
-            $result[] = $this->resolve($valueItem);
-        }
-
-        return $result;
+        return [];
     }
 }

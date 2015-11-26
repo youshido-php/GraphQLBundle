@@ -13,4 +13,5 @@ use Youshido\GraphQLBundle\GraphQL\Schema\Type\TypeInterface;
 
 abstract class AbstractScalar extends AbstractInput implements TypeInterface
 {
+
 }

@@ -11,7 +11,8 @@ namespace Youshido\GraphQLBundle\GraphQL;
 class Schema
 {
 
-    private $modelSchemes;
+    private $baseObjectType;
+
 
 
 }

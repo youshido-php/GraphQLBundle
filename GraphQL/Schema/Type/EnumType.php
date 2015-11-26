@@ -36,7 +36,7 @@ class EnumType extends AbstractInput implements TypeInterface
     /**
      * @inheritdoc
      */
-    public function resolve($value = null, $args = [], $parent = null)
+    public function resolve($value = null, $args = [])
     {
         if (in_array($value, $this->options['values'])) {
             return $value;

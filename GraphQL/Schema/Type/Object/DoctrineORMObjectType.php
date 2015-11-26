@@ -10,11 +10,17 @@ namespace Youshido\GraphQLBundle\GraphQL\Schema\Type\Object;
 
 use Youshido\GraphQLBundle\GraphQL\Schema\Type\TypeInterface;
 
-class ObjectType implements TypeInterface
+class DoctrineORMObjectType implements TypeInterface
 {
 
     /** @var  string */
     protected $name;
+
+    /** @var  string */
+    protected $description;
+
+    /** @var  string */
+    protected $entityClass = null;
 
     public function getFields()
     {
