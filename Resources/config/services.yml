@@ -2,7 +2,7 @@ parameters:
     youshido.graphql.helper.class: Youshido\GraphQLBundle\Helper\HelpersContainer
     youshido.graphql.processor.class: Youshido\GraphQLBundle\GraphQL\Processor
     youshido.graphql.pre_validator_container.class: Youshido\GraphQLBundle\Validator\PreValidator\PreValidatorsContainer
-
+    youshido.graphql.schema.validator.class: Youshido\GraphQLBundle\GraphQL\Schema\Validator\Validator
 
 services:
 
@@ -11,6 +11,9 @@ services:
         arguments:
             - @youshido.graphql.helper_container
             - @youshido.graphql.pre_validator_container
+            - @youshido.graphql.schema.validator
+        calls:
+            - [setQuerySchemaClass, [%youshido.graphql.project_schema%]]
 
     youshido.graphql.helper_container:
         class: %youshido.graphql.helper.class%
@@ -18,9 +21,8 @@ services:
     youshido.graphql.pre_validator_container:
         class: %youshido.graphql.pre_validator_container.class%
 
-
-
-
+    youshido.graphql.schema.validator:
+        class: %youshido.graphql.schema.validator.class%
 
     ################## helpers ##################
 

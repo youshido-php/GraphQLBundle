@@ -7,7 +7,6 @@
 
 namespace Youshido\GraphQLBundle\GraphQL\Schema\Type\Object;
 
-
 use Youshido\GraphQLBundle\GraphQL\Builder\ListBuilderInterface;
 use Youshido\GraphQLBundle\GraphQL\Schema\Type\TypeInterface;
 

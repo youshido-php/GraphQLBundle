@@ -8,6 +8,7 @@
 namespace Youshido\GraphQLBundle\GraphQL;
 
 
+use Youshido\GraphQLBundle\GraphQL\Schema\Validator\ValidatorInterface;
 use Youshido\GraphQLBundle\Helper\HelpersContainer;
 use Youshido\GraphQLBundle\Parser\Parser;
 use Youshido\GraphQLBundle\Parser\SyntaxErrorException;
@@ -29,11 +30,20 @@ class Processor
     /** @var  array */
     private $data;
 
+    /** @var ValidatorInterface */
+    private $schemaValidator;
+
+    /** @var  string */
+    private $querySchemaClass;
+
     public function __construct(HelpersContainer $helpersContainer,
-                                PreValidatorsContainer $preValidatorsContainer)
+                                PreValidatorsContainer $preValidatorsContainer,
+                                ValidatorInterface $schemaValidator
+    )
     {
         $this->helpersContainer      = $helpersContainer;
         $this->preValidatorContainer = $preValidatorsContainer;
+        $this->schemaValidator       = $schemaValidator;
     }
 
 
@@ -77,7 +87,44 @@ class Processor
 
     protected function execute(Request $request, $arguments = [])
     {
-        /** todo */
+        $querySchema = $this->getQuerySchema();
+        $this->schemaValidator->validate($querySchema);
+
+    }
+
+    public function getQuerySchema()
+    {
+        $valid = true;
+        if (!$this->getQuerySchemaClass() || !class_exists($this->getQuerySchemaClass())) {
+            $valid = false;
+        }
+
+        if ($valid) {
+            $querySchemaClass = $this->getQuerySchemaClass();
+            $querySchema      = new $querySchemaClass();
+
+//            if (!$querySchema instanceof SchemaInterface) {
+            return $querySchema;
+//            }
+        }
+
+        throw new \Exception('Not valid object was set as query schema');
+    }
+
+    /**
+     * @return string
+     */
+    public function getQuerySchemaClass()
+    {
+        return $this->querySchemaClass;
+    }
+
+    /**
+     * @param string $querySchemaClass
+     */
+    public function setQuerySchemaClass($querySchemaClass)
+    {
+        $this->querySchemaClass = $querySchemaClass;
     }
 
     public function getErrors()
@@ -93,5 +140,4 @@ class Processor
 
         return ['data' => $this->data];
     }
-
 }
