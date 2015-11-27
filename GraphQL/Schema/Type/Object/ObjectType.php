@@ -10,11 +10,8 @@ namespace Youshido\GraphQLBundle\GraphQL\Schema\Type\Object;
 
 use Youshido\GraphQLBundle\GraphQL\Schema\Type\TypeInterface;
 
-class ObjectType implements TypeInterface
+abstract class ObjectType implements TypeInterface
 {
-
-    /** @var  string */
-    protected $name;
 
     public function getFields()
     {

@@ -8,23 +8,37 @@
 namespace Youshido\GraphQLBundle\GraphQL\Schema\Type\Scalar;
 
 
+use Youshido\GraphQLBundle\GraphQL\Schema\Type\AbstractInputType;
 use Youshido\GraphQLBundle\Validator\Exception\ValidationException;
 use Youshido\GraphQLBundle\Validator\ValidationErrorList;
 
-class FloatType extends AbstractScalar
+class FloatType extends AbstractInputType
 {
 
-    function validate(ValidationErrorList $errorList, $name)
+    function parseValue($value, $name, ValidationErrorList $errorList)
     {
-        if (!is_float($this->getValue())) {
+        if (!is_float($value)) {
             $errorList->addError(new ValidationException(
                 sprintf('Argument \"%s\" expected type \"Float\"', $name)
             ));
+
+            return null;
         }
+
+        return $value;
     }
 
     public function resolve($value = null, $args = [])
     {
         return (float)$value;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return 'Float';
     }
 }

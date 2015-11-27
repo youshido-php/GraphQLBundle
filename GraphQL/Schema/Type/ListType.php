@@ -8,19 +8,24 @@
 namespace Youshido\GraphQLBundle\GraphQL\Schema\Type;
 
 
-class ListType implements TypeInterface
+use Youshido\GraphQLBundle\GraphQL\Schema\Type\Object\ObjectType;
+
+class ListType extends ObjectType
 {
 
     /** @var TypeInterface */
     protected $type;
 
-    public function getArguments()
+    public function resolve($value = null, $args = [])
     {
         return [];
     }
 
-    public function resolve($value = null, $args = [])
+    /**
+     * @return string
+     */
+    public function getName()
     {
-        return [];
+        return 'List';
     }
 }

@@ -12,37 +12,14 @@ use Youshido\GraphQLBundle\Validator\ValidationErrorList;
 
 abstract class AbstractInput
 {
-    /** @var  mixed */
-    protected $value;
-
-    /** @var bool */
-    protected $required = false;
-
     /** @var array */
     protected $options = [];
 
-    public function __construct($required = false, $options = [])
+    public function __construct($options = [])
     {
-        $this->required = $required;
-        $this->options  = $options;
+        $this->options = $options;
     }
 
-    abstract function validate(ValidationErrorList $errorList, $name);
-
-    /**
-     * @return mixed
-     */
-    public function getValue()
-    {
-        return $this->value;
-    }
-
-    /**
-     * @param mixed $value
-     */
-    public function setValue($value)
-    {
-        $this->value = $value;
-    }
+    abstract function parseValue($value, $name, ValidationErrorList $errorList);
 
 }

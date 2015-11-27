@@ -13,8 +13,6 @@ use Youshido\GraphQLBundle\GraphQL\Schema\Type\TypeInterface;
 class DoctrineORMObjectType implements TypeInterface
 {
 
-    /** @var  string */
-    protected $name;
 
     /** @var  string */
     protected $description;
@@ -41,5 +39,14 @@ class DoctrineORMObjectType implements TypeInterface
     public function resolve($value = null, $args = [])
     {
         return null;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return 'DoctrineORMObject';
     }
 }

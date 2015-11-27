@@ -8,23 +8,36 @@
 namespace Youshido\GraphQLBundle\GraphQL\Schema\Type\Scalar;
 
 
+use Youshido\GraphQLBundle\GraphQL\Schema\Type\AbstractInputType;
 use Youshido\GraphQLBundle\Validator\Exception\ValidationException;
 use Youshido\GraphQLBundle\Validator\ValidationErrorList;
 
-class IntType extends AbstractScalar
+class IntType extends AbstractInputType
 {
 
-    function validate(ValidationErrorList $errorList, $name)
+    function parseValue($value, $name, ValidationErrorList $errorList)
     {
-        if (!is_numeric($this->getValue())) {
+        if (!is_numeric($value)) {
             $errorList->addError(new ValidationException(
                 sprintf('Argument \"%s\" expected type \"Int\"', $name)
             ));
+
+            return null;
         }
+
+        return $value;
     }
 
     public function resolve($value = null, $args = [])
     {
         return (int)$value;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return 'Integer';
     }
 }
