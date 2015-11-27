@@ -61,7 +61,7 @@ class Processor
     }
 
 
-    public function process($query, $variables = [])
+    public function processQuery($query, $variables = [])
     {
         $this->preProcess();
 

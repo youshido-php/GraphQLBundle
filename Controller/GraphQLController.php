@@ -22,13 +22,13 @@ class GraphQLController extends Controller
     public function apiAction(Request $request)
     {
         $query     = $request->get('query', null);
-        $arguments = $request->get('arguments', null);
+        $variables = $request->get('variables', null);
 
-        $arguments = json_decode($arguments, true) ?: [];
+        $variables = json_decode($variables, true) ?: [];
 
         $processor = $this->get('youshido.graphql.processor');
 
-        $processor->process($query, $arguments);
+        $processor->processQuery($query, $variables);
 
         return new JsonResponse($processor->getResponseData());
     }

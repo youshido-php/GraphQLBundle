@@ -8,18 +8,12 @@
 namespace Youshido\GraphQLBundle\GraphQL\Schema\Type\Object;
 
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Youshido\GraphQLBundle\GraphQL\Builder\ListBuilderInterface;
-use Youshido\GraphQLBundle\GraphQL\Schema\Type\TypeInterface;
+use Youshido\GraphQLBundle\GraphQL\Schema\Type\Scalar\IntType;
 
-class DoctrineORMObjectType implements TypeInterface
+abstract class DoctrineORMObjectType extends ObjectType implements ContainerAwareInterface
 {
-
-
-    /** @var  string */
-    protected $description;
-
-    /** @var  string */
-    protected $entityClass = null;
 
     public function getFields(ListBuilderInterface $builder)
     {
@@ -28,7 +22,7 @@ class DoctrineORMObjectType implements TypeInterface
 
     public function getArguments(ListBuilderInterface $builder)
     {
-
+        $builder->add('id', new IntType(), ['required' => true]);
     }
 
     /**
@@ -39,8 +33,12 @@ class DoctrineORMObjectType implements TypeInterface
      */
     public function resolve($value = null, $args = [])
     {
-        return null;
+        return $this->container->get('doctrine')
+            ->getRepository($this->getEntityClass())
+            ->find($args['id']);
     }
+
+    abstract function getEntityClass();
 
     /**
      * @inheritdoc
