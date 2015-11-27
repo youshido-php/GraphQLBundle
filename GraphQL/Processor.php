@@ -14,6 +14,7 @@ use Youshido\GraphQLBundle\GraphQL\Builder\ArgumentListBuilder;
 use Youshido\GraphQLBundle\GraphQL\Builder\FieldListBuilder;
 use Youshido\GraphQLBundle\GraphQL\Builder\ListBuilderInterface;
 use Youshido\GraphQLBundle\GraphQL\Schema\SchemaInterface;
+use Youshido\GraphQLBundle\GraphQL\Schema\Type\ListType;
 use Youshido\GraphQLBundle\GraphQL\Schema\Validator\ValidatorInterface;
 use Youshido\GraphQLBundle\Helper\HelpersContainer;
 use Youshido\GraphQLBundle\Parser\Ast\Field;
@@ -60,7 +61,7 @@ class Processor
     }
 
 
-    public function process($query, $arguments = [])
+    public function process($query, $variables = [])
     {
         $this->preProcess();
 
@@ -73,7 +74,7 @@ class Processor
 
             $this->preValidatorContainer->validate($request, $this->errorList);
 
-            $this->execute($request, $arguments);
+            $this->execute($request, $variables);
         } catch (\Exception $e) {
             $this->errorList->addError($e);
         }
@@ -98,7 +99,7 @@ class Processor
         return $parser->parse();
     }
 
-    protected function execute(Request $request, $arguments = [])
+    protected function execute(Request $request, $variables = [])
     {
         /** @var SchemaInterface $querySchema */
         $querySchema = $this->getQuerySchema();
@@ -127,9 +128,9 @@ class Processor
             $querySchemaClass = $this->getQuerySchemaClass();
             $querySchema      = new $querySchemaClass();
 
-//            if (!$querySchema instanceof SchemaInterface) {
-            return $querySchema;
-//            }
+            if (in_array('Youshido\GraphQLBundle\GraphQL\Schema\SchemaInterface', class_implements($querySchemaClass))) {
+                return $querySchema;
+            }
         }
 
         throw new \Exception('Not valid object was set as query schema');
@@ -173,13 +174,27 @@ class Processor
 
                 $data[$query->getName()] = $resolvedValue;
             } else {
+                //todo: replace variables with arguments
+                //todo: here check arguments
+
                 $resolvedValue = $querySchema->getType()->resolve($value, $query->getArguments());
+
+                //todo: check result is equal to type
 
                 $valueProperty        = $query->hasAlias() ? $query->getAlias() : $query->getName();
                 $data[$valueProperty] = [];
 
-                foreach ($query->getFields() as $field) {
-                    $this->executeQuery($fieldListBuilder, $field, $resolvedValue, $data[$valueProperty]);
+                if ($querySchema->getType() instanceof ListType) {
+                    foreach ($resolvedValue as $resolvedValueItem) {
+                        $data[$valueProperty][] = [];
+                        foreach ($query->getFields() as $field) {
+                            $this->executeQuery($fieldListBuilder, $field, $resolvedValueItem, $data[$valueProperty][count($data[$valueProperty]) - 1]);
+                        }
+                    }
+                } else {
+                    foreach ($query->getFields() as $field) {
+                        $this->executeQuery($fieldListBuilder, $field, $resolvedValue, $data[$valueProperty]);
+                    }
                 }
             }
         } else {

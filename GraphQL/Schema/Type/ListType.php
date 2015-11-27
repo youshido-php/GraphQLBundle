@@ -26,7 +26,7 @@ class ListType extends ObjectType
     public function resolve($value = null, $args = [])
     {
         if ($this->resolveFunction && is_callable($this->resolveFunction)) {
-            return call_user_func($this->resolveFunction, [$value, $args]);
+            return call_user_func_array($this->resolveFunction, [$value, $args]);
         }
 
         return null;
