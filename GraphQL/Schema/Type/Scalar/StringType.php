@@ -33,7 +33,6 @@ class StringType extends AbstractInputType
         return (string)$value;
     }
 
-
     /**
      * @return string
      */

@@ -8,19 +8,34 @@
 namespace Youshido\GraphQLBundle\GraphQL\Schema\Type\Object;
 
 
+use Youshido\GraphQLBundle\GraphQL\Builder\ListBuilderInterface;
 use Youshido\GraphQLBundle\GraphQL\Schema\Type\TypeInterface;
 
 abstract class ObjectType implements TypeInterface
 {
 
-    public function getFields()
+    /**
+     * @inheritdoc
+     */
+    public function getFields(ListBuilderInterface $builder)
     {
-        return [];
+
     }
 
-    public function getArguments()
+    /**
+     * @inheritdoc
+     */
+    public function getArguments(ListBuilderInterface $builder)
     {
-        return [];
+
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDescription()
+    {
+        return '';
     }
 
     /**

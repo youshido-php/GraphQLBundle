@@ -8,12 +8,19 @@
 namespace Youshido\GraphQLBundle\GraphQL\Schema\Type;
 
 
+use Youshido\GraphQLBundle\GraphQL\Builder\ListBuilderInterface;
+
 interface TypeInterface
 {
     /**
      * @return string
      */
     public function getName();
+
+    /**
+     * @return string
+     */
+    public function getDescription();
 
     /**
      * @param null  $value
@@ -24,12 +31,12 @@ interface TypeInterface
     public function resolve($value = null, $args = []);
 
     /**
-     * @return array
+     * @param ListBuilderInterface $builder
      */
-    public function getArguments();
+    public function getArguments(ListBuilderInterface $builder);
 
     /**
-     * @return array
+     * @param ListBuilderInterface $builder
      */
-    public function getFields();
+    public function getFields(ListBuilderInterface $builder);
 }

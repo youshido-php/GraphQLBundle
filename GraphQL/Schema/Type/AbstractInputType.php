@@ -8,8 +8,8 @@
 namespace Youshido\GraphQLBundle\GraphQL\Schema\Type;
 
 
+use Youshido\GraphQLBundle\GraphQL\Builder\ListBuilderInterface;
 use Youshido\GraphQLBundle\GraphQL\Schema\InputValue\InputValue\AbstractInput;
-use Youshido\GraphQLBundle\GraphQL\Schema\Type\TypeInterface;
 
 abstract class AbstractInputType extends AbstractInput implements TypeInterface
 {
@@ -17,7 +17,15 @@ abstract class AbstractInputType extends AbstractInput implements TypeInterface
     /**
      * @inheritdoc
      */
-    public function getFields()
+    public function getDescription()
+    {
+        return '';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFields(ListBuilderInterface $builder)
     {
         return [];
     }
@@ -25,7 +33,7 @@ abstract class AbstractInputType extends AbstractInput implements TypeInterface
     /**
      * @inheritdoc
      */
-    public function getArguments()
+    public function getArguments(ListBuilderInterface $builder)
     {
         return [];
     }

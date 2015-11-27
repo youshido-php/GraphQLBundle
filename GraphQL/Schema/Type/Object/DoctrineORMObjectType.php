@@ -8,6 +8,7 @@
 namespace Youshido\GraphQLBundle\GraphQL\Schema\Type\Object;
 
 
+use Youshido\GraphQLBundle\GraphQL\Builder\ListBuilderInterface;
 use Youshido\GraphQLBundle\GraphQL\Schema\Type\TypeInterface;
 
 class DoctrineORMObjectType implements TypeInterface
@@ -20,14 +21,14 @@ class DoctrineORMObjectType implements TypeInterface
     /** @var  string */
     protected $entityClass = null;
 
-    public function getFields()
+    public function getFields(ListBuilderInterface $builder)
     {
-        return [];
+
     }
 
-    public function getArguments()
+    public function getArguments(ListBuilderInterface $builder)
     {
-        return [];
+
     }
 
     /**
@@ -41,6 +42,13 @@ class DoctrineORMObjectType implements TypeInterface
         return null;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getDescription()
+    {
+        return '';
+    }
 
     /**
      * @return string
