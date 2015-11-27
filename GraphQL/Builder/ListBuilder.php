@@ -16,6 +16,9 @@ class ListBuilder implements ListBuilderInterface
 
     protected $fields = [];
 
+    /**
+     * @inheritdoc
+     */
     public function add($name, TypeInterface $type, $options = [])
     {
         $field = new Field();
@@ -25,8 +28,13 @@ class ListBuilder implements ListBuilderInterface
             ->setOptions($options);
 
         $this->fields[$name] = $field;
+
+        return $this;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function get($name)
     {
         if ($this->has($name)) {
@@ -36,11 +44,17 @@ class ListBuilder implements ListBuilderInterface
         return null;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function has($name)
     {
         return array_key_exists($name, $this->fields);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function all()
     {
         return $this->fields;

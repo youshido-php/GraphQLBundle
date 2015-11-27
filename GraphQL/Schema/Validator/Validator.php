@@ -15,7 +15,7 @@ class Validator implements ValidatorInterface
 
     public function validate(SchemaInterface $schema)
     {
-        $a = 'asd';
+        //todo: here must be validate schema code
     }
 
 }

@@ -59,4 +59,26 @@ class Query
     {
         $this->fields = $fields;
     }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAlias()
+    {
+        return $this->alias;
+    }
+
+    public function hasAlias()
+    {
+        return $this->alias ? true : false;
+    }
+
 }

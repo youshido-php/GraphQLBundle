@@ -8,6 +8,7 @@
 namespace Youshido\GraphQLBundle\GraphQL\Builder;
 
 
+use Youshido\GraphQLBundle\GraphQL\Schema\Field;
 use Youshido\GraphQLBundle\GraphQL\Schema\Type\TypeInterface;
 
 interface ListBuilderInterface
@@ -22,7 +23,21 @@ interface ListBuilderInterface
      */
     public function add($name, TypeInterface $type, $options = []);
 
+    /**
+     * @param $name
+     * @return Field|null
+     */
     public function get($name);
 
+    /**
+     * @return Field[]
+     */
     public function all();
+
+    /**
+     * @param $name
+     *
+     * @return Field
+     */
+    public function has($name);
 }

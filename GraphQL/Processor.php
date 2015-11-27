@@ -8,8 +8,16 @@
 namespace Youshido\GraphQLBundle\GraphQL;
 
 
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Youshido\GraphQLBundle\GraphQL\Builder\ArgumentListBuilder;
+use Youshido\GraphQLBundle\GraphQL\Builder\FieldListBuilder;
+use Youshido\GraphQLBundle\GraphQL\Builder\ListBuilderInterface;
+use Youshido\GraphQLBundle\GraphQL\Schema\SchemaInterface;
 use Youshido\GraphQLBundle\GraphQL\Schema\Validator\ValidatorInterface;
 use Youshido\GraphQLBundle\Helper\HelpersContainer;
+use Youshido\GraphQLBundle\Parser\Ast\Field;
+use Youshido\GraphQLBundle\Parser\Ast\Query;
 use Youshido\GraphQLBundle\Parser\Parser;
 use Youshido\GraphQLBundle\Parser\SyntaxErrorException;
 use Youshido\GraphQLBundle\Validator\PreValidator\PreValidatorsContainer;
@@ -36,6 +44,9 @@ class Processor
     /** @var  string */
     private $querySchemaClass;
 
+    /** @var PropertyAccessor */
+    private $propertyAccessor;
+
     public function __construct(HelpersContainer $helpersContainer,
                                 PreValidatorsContainer $preValidatorsContainer,
                                 ValidatorInterface $schemaValidator
@@ -44,6 +55,8 @@ class Processor
         $this->helpersContainer      = $helpersContainer;
         $this->preValidatorContainer = $preValidatorsContainer;
         $this->schemaValidator       = $schemaValidator;
+
+        $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
 
@@ -87,9 +100,20 @@ class Processor
 
     protected function execute(Request $request, $arguments = [])
     {
+        /** @var SchemaInterface $querySchema */
         $querySchema = $this->getQuerySchema();
         $this->schemaValidator->validate($querySchema);
 
+        $fieldListBuilder = new FieldListBuilder();
+        $querySchema->getFields($fieldListBuilder);
+
+        $data = [];
+
+        foreach ($request->getQueries() as $query) {
+            $this->executeQuery($fieldListBuilder, $query, null, $data);
+        }
+
+        $this->data = $data;
     }
 
     public function getQuerySchema()
@@ -127,6 +151,67 @@ class Processor
         $this->querySchemaClass = $querySchemaClass;
     }
 
+    /**
+     * TODO: this code not end result, just test
+     *
+     * @param ListBuilderInterface $listBuilder
+     * @param Query|Field          $query
+     * @param null                 $value
+     * @param array                $data
+     */
+    protected function executeQuery(ListBuilderInterface $listBuilder, $query, $value = null, &$data)
+    {
+        if ($listBuilder->has($query->getName())) {
+            $querySchema = $listBuilder->get($query->getName());
+
+            $fieldListBuilder = new FieldListBuilder();
+            $querySchema->getType()->getFields($fieldListBuilder);
+
+            if ($query instanceof Field) {
+                $preResolvedValue = $this->getPreResolvedValue($value, $query);
+                $resolvedValue    = $querySchema->getType()->resolve($preResolvedValue, []);
+
+                $data[$query->getName()] = $resolvedValue;
+            } else {
+                $resolvedValue = $querySchema->getType()->resolve($value, $query->getArguments());
+
+                $valueProperty        = $query->hasAlias() ? $query->getAlias() : $query->getName();
+                $data[$valueProperty] = [];
+
+                foreach ($query->getFields() as $field) {
+                    $this->executeQuery($fieldListBuilder, $field, $resolvedValue, $data[$valueProperty]);
+                }
+            }
+        } else {
+            $this->errorList->addError(new \Exception(
+                sprintf('Field "%s" not found in schema', $query->getName())
+            ));
+        }
+    }
+
+    /**
+     * @param $value
+     * @param $query Field
+     *
+     * @throws \Exception
+     *
+     * @return mixed
+     */
+    protected function getPreResolvedValue($value, $query)
+    {
+        if (is_array($value)) {
+            if (array_key_exists($query->getName(), $value)) {
+                return $value[$query->getName()];
+            } else {
+                throw new \Exception('Not found in resolve result', $query->getName());
+            }
+        } elseif (is_object($value)) {
+            return $this->propertyAccessor->getValue($value, $query->getName());
+        }
+
+        return $value;
+    }
+
     public function getErrors()
     {
         return $this->errorList;
@@ -134,10 +219,16 @@ class Processor
 
     public function getResponseData()
     {
-        if ($this->errorList->hasErrors()) {
-            return ['errors' => $this->errorList->toArray()];
+        $result = [];
+
+        if ($this->data) {
+            $result['data'] = $this->data;
         }
 
-        return ['data' => $this->data];
+        if ($this->errorList->hasErrors()) {
+            $result['errors'] = $this->errorList->toArray();
+        }
+
+        return $result;
     }
 }

@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQLBundle\GraphQL\Schema\InputValue\InputValue;
+namespace Youshido\GraphQLBundle\GraphQL\Schema\Type\Input;
 
 
 use Youshido\GraphQLBundle\Validator\ValidationErrorList;

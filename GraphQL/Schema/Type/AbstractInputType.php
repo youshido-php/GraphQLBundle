@@ -9,7 +9,7 @@ namespace Youshido\GraphQLBundle\GraphQL\Schema\Type;
 
 
 use Youshido\GraphQLBundle\GraphQL\Builder\ListBuilderInterface;
-use Youshido\GraphQLBundle\GraphQL\Schema\InputValue\InputValue\AbstractInput;
+use Youshido\GraphQLBundle\GraphQL\Schema\Type\Input\AbstractInput;
 
 abstract class AbstractInputType extends AbstractInput implements TypeInterface
 {
