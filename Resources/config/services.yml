@@ -1,50 +1,9 @@
 parameters:
-    youshido.graphql.helper.class: Youshido\GraphQLBundle\Helper\HelpersContainer
     youshido.graphql.processor.class: Youshido\GraphQLBundle\GraphQL\Processor
-    youshido.graphql.pre_validator_container.class: Youshido\GraphQLBundle\Validator\PreValidator\PreValidatorsContainer
-    youshido.graphql.schema.validator.class: Youshido\GraphQLBundle\GraphQL\Schema\Validator\Validator
 
 services:
 
     youshido.graphql.processor:
         class: %youshido.graphql.processor.class%
-        arguments:
-            - @youshido.graphql.helper_container
-            - @youshido.graphql.pre_validator_container
-            - @youshido.graphql.schema.validator
         calls:
             - [setQuerySchemaClass, [%youshido.graphql.project_schema%]]
-
-    youshido.graphql.helper_container:
-        class: %youshido.graphql.helper.class%
-
-    youshido.graphql.pre_validator_container:
-        class: %youshido.graphql.pre_validator_container.class%
-
-    youshido.graphql.schema.validator:
-        class: %youshido.graphql.schema.validator.class%
-
-    ################## helpers ##################
-
-    youshido.graphql.fragment_helper:
-        class: Youshido\GraphQLBundle\Helper\FragmentHelper
-        tags:
-            - { name: youshido.graphql.helper }
-
-
-    ################## pre validators ##################
-
-    youshido.graphql.pre_validator.fragment_unique:
-        class: Youshido\GraphQLBundle\Validator\PreValidator\FragmentUniquePreValidator
-        tags:
-            - { name: youshido.graphql.pre_validator }
-
-    youshido.graphql.pre_validator._all_fragment_used:
-        class: Youshido\GraphQLBundle\Validator\PreValidator\AllFragmentUsedPreValidator
-        tags:
-            - { name: youshido.graphql.pre_validator }
-
-    youshido.graphql.pre_validator.arguments_unique:
-        class: Youshido\GraphQLBundle\Validator\PreValidator\ArgumentsUniquePreValidator
-        tags:
-            - { name: youshido.graphql.pre_validator }

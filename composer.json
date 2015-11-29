@@ -14,9 +14,6 @@
       "Youshido\\GraphQLBundle\\": ""
     }
   },
-  "required": {
-    "youshido/graphql": "master-dev"
-  },
   "require-dev": {
     "phpunit/phpunit": "~4.7"
   }

@@ -27,20 +27,11 @@ use Youshido\GraphQLBundle\Validator\ValidationErrorList;
 class Processor
 {
 
-    /** @var  HelpersContainer */
-    private $helpersContainer;
-
-    /** @var  PreValidatorsContainer */
-    private $preValidatorContainer;
-
     /** @var ValidationErrorList */
     private $errorList;
 
     /** @var  array */
     private $data;
-
-    /** @var ValidatorInterface */
-    private $schemaValidator;
 
     /** @var  string */
     private $querySchemaClass;
@@ -48,41 +39,13 @@ class Processor
     /** @var PropertyAccessor */
     private $propertyAccessor;
 
-    public function __construct(HelpersContainer $helpersContainer,
-                                PreValidatorsContainer $preValidatorsContainer,
-                                ValidatorInterface $schemaValidator
-    )
-    {
-        $this->helpersContainer      = $helpersContainer;
-        $this->preValidatorContainer = $preValidatorsContainer;
-        $this->schemaValidator       = $schemaValidator;
-
-        $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
-    }
-
-
     public function processQuery($query, $variables = [])
     {
-        $this->preProcess();
-
-        try {
-            $request = $this->createRequest($query);
-
-            if ($request->hasFragments()) {
-                $this->helpersContainer->process($request);
-            }
-
-            $this->preValidatorContainer->validate($request, $this->errorList);
-
-            $this->execute($request, $variables);
-        } catch (\Exception $e) {
-            $this->errorList->addError($e);
-        }
-    }
-
-    private function preProcess()
-    {
         $this->errorList = new ValidationErrorList();
+
+        $request = $this->createRequest($query);
+
+        $this->executeQueries($request, $variables);
     }
 
     /**
@@ -99,11 +62,10 @@ class Processor
         return $parser->parse();
     }
 
-    protected function execute(Request $request, $variables = [])
+    protected function executeQueries(Request $request, $variables = [])
     {
         /** @var SchemaInterface $querySchema */
         $querySchema = $this->getQuerySchema();
-        $this->schemaValidator->validate($querySchema);
 
         $fieldListBuilder = new FieldListBuilder();
         $querySchema->getFields($fieldListBuilder);
@@ -153,8 +115,6 @@ class Processor
     }
 
     /**
-     * TODO: this code not end result, just test
-     *
      * @param ListBuilderInterface $listBuilder
      * @param Query|Field          $query
      * @param null                 $value

@@ -17,7 +17,7 @@ class GraphQLController extends Controller
 {
 
     /**
-     * @Route("/graph")
+     * @Route("/graphql")
      */
     public function apiAction(Request $request)
     {
