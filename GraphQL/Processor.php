@@ -10,18 +10,14 @@ namespace Youshido\GraphQLBundle\GraphQL;
 
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
-use Youshido\GraphQLBundle\GraphQL\Builder\ArgumentListBuilder;
 use Youshido\GraphQLBundle\GraphQL\Builder\FieldListBuilder;
 use Youshido\GraphQLBundle\GraphQL\Builder\ListBuilderInterface;
 use Youshido\GraphQLBundle\GraphQL\Schema\SchemaInterface;
 use Youshido\GraphQLBundle\GraphQL\Schema\Type\ListType;
-use Youshido\GraphQLBundle\GraphQL\Schema\Validator\ValidatorInterface;
-use Youshido\GraphQLBundle\Helper\HelpersContainer;
 use Youshido\GraphQLBundle\Parser\Ast\Field;
 use Youshido\GraphQLBundle\Parser\Ast\Query;
 use Youshido\GraphQLBundle\Parser\Parser;
 use Youshido\GraphQLBundle\Parser\SyntaxErrorException;
-use Youshido\GraphQLBundle\Validator\PreValidator\PreValidatorsContainer;
 use Youshido\GraphQLBundle\Validator\ValidationErrorList;
 
 class Processor
@@ -31,7 +27,7 @@ class Processor
     private $errorList;
 
     /** @var  array */
-    private $data;
+    private $data = [];
 
     /** @var PropertyAccessor */
     private $propertyAccessor;
@@ -68,25 +64,24 @@ class Processor
 
     protected function executeQueries(Request $request, $variables = [])
     {
+        $this->data = [];
+
         $fieldListBuilder = new FieldListBuilder();
         $this->schema->getFields($fieldListBuilder);
 
-        $data = [];
-
         foreach ($request->getQueries() as $query) {
-            $this->executeQuery($fieldListBuilder, $query, null, $data);
+            $this->data = array_merge($this->data, $this->executeQuery($fieldListBuilder, $query));
         }
-
-        $this->data = $data;
     }
 
     /**
      * @param ListBuilderInterface $listBuilder
      * @param Query|Field          $query
      * @param null                 $value
-     * @param array                $data
+     *
+     * @return array
      */
-    protected function executeQuery(ListBuilderInterface $listBuilder, $query, $value = null, &$data)
+    protected function executeQuery(ListBuilderInterface $listBuilder, $query, $value = null)
     {
         if ($listBuilder->has($query->getName())) {
             $querySchema = $listBuilder->get($query->getName());
@@ -95,39 +90,45 @@ class Processor
             $querySchema->getType()->getFields($fieldListBuilder);
 
             if ($query instanceof Field) {
-                $preResolvedValue = $this->getPreResolvedValue($value, $query);
-                $resolvedValue    = $querySchema->getType()->resolve($preResolvedValue, []);
+                $alias = $query->getName();
 
-                $data[$query->getName()] = $resolvedValue;
+                $preResolvedValue = $this->getPreResolvedValue($value, $query);
+                $value            = $querySchema->getType()->resolve($preResolvedValue, []);
             } else {
                 //todo: replace variables with arguments
                 //todo: here check arguments
+
+                $value = [];
+                $alias = $query->hasAlias() ? $query->getAlias() : $query->getName();
 
                 $resolvedValue = $querySchema->getType()->resolve($value, $query->getArguments());
 
                 //todo: check result is equal to type
 
-                $valueProperty        = $query->hasAlias() ? $query->getAlias() : $query->getName();
-                $data[$valueProperty] = [];
-
                 if ($querySchema->getType() instanceof ListType) {
                     foreach ($resolvedValue as $resolvedValueItem) {
-                        $data[$valueProperty][] = [];
+                        $value[$alias][] = [];
+                        $index           = count($value[$alias]) - 1;
+
                         foreach ($query->getFields() as $field) {
-                            $this->executeQuery($fieldListBuilder, $field, $resolvedValueItem, $data[$valueProperty][count($data[$valueProperty]) - 1]);
+                            $value[$alias][$index] = array_merge($value[$alias][$index], $this->executeQuery($fieldListBuilder, $field, $resolvedValueItem));
                         }
                     }
                 } else {
                     foreach ($query->getFields() as $field) {
-                        $this->executeQuery($fieldListBuilder, $field, $resolvedValue, $data[$valueProperty]);
+                        $value = array_merge($value, $this->executeQuery($fieldListBuilder, $field, $resolvedValue));
                     }
                 }
             }
+
+            return [$alias => $value];
         } else {
             $this->errorList->addError(new \Exception(
                 sprintf('Field "%s" not found in schema', $query->getName())
             ));
         }
+
+        return null;
     }
 
     /**
