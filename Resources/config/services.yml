@@ -5,5 +5,8 @@ services:
 
     youshido.graphql.processor:
         class: %youshido.graphql.processor.class%
-        calls:
-            - [setQuerySchemaClass, [%youshido.graphql.project_schema%]]
+        arguments: [ @youshido.graphql.schema ]
+
+
+    youshido.graphql.schema:
+        class: %youshido.graphql.project_schema%

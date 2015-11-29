@@ -33,11 +33,15 @@ class Processor
     /** @var  array */
     private $data;
 
-    /** @var  string */
-    private $querySchemaClass;
-
     /** @var PropertyAccessor */
     private $propertyAccessor;
+
+    public function __construct(SchemaInterface $schema)
+    {
+        $this->schema = $schema;
+
+        $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
+    }
 
     public function processQuery($query, $variables = [])
     {
@@ -64,11 +68,8 @@ class Processor
 
     protected function executeQueries(Request $request, $variables = [])
     {
-        /** @var SchemaInterface $querySchema */
-        $querySchema = $this->getQuerySchema();
-
         $fieldListBuilder = new FieldListBuilder();
-        $querySchema->getFields($fieldListBuilder);
+        $this->schema->getFields($fieldListBuilder);
 
         $data = [];
 
@@ -77,41 +78,6 @@ class Processor
         }
 
         $this->data = $data;
-    }
-
-    public function getQuerySchema()
-    {
-        $valid = true;
-        if (!$this->getQuerySchemaClass() || !class_exists($this->getQuerySchemaClass())) {
-            $valid = false;
-        }
-
-        if ($valid) {
-            $querySchemaClass = $this->getQuerySchemaClass();
-            $querySchema      = new $querySchemaClass();
-
-            if (in_array('Youshido\GraphQLBundle\GraphQL\Schema\SchemaInterface', class_implements($querySchemaClass))) {
-                return $querySchema;
-            }
-        }
-
-        throw new \Exception('Not valid object was set as query schema');
-    }
-
-    /**
-     * @return string
-     */
-    public function getQuerySchemaClass()
-    {
-        return $this->querySchemaClass;
-    }
-
-    /**
-     * @param string $querySchemaClass
-     */
-    public function setQuerySchemaClass($querySchemaClass)
-    {
-        $this->querySchemaClass = $querySchemaClass;
     }
 
     /**
@@ -185,11 +151,6 @@ class Processor
         }
 
         return $value;
-    }
-
-    public function getErrors()
-    {
-        return $this->errorList;
     }
 
     public function getResponseData()
