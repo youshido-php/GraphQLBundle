@@ -1,5 +1,5 @@
 parameters:
-    youshido.graphql.processor.class: Youshido\GraphQL\Processor
+    youshido.graphql.processor.class: Youshido\GraphQLBundle\Processor\Processor
     youshido.graphql.validator.class: Youshido\GraphQL\Validator\Validator
 
 services:
@@ -9,6 +9,7 @@ services:
         arguments: [ @youshido.graphql.validator ]
         calls:
             - [ setSchema, [@youshido.graphql.schema]]
+            - [ setContainer, [@service_container]]
 
 
     youshido.graphql.schema:
