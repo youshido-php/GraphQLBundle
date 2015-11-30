@@ -9,13 +9,5 @@ use Youshido\GraphQLBundle\DependencyInjection\CompilerPass\PreValidatorContaine
 
 class GraphQLBundle extends Bundle
 {
-    public function build(ContainerBuilder $container)
-    {
-        parent::build($container);
-
-        $container->addCompilerPass(new HelperContainerCompilerPass());
-        $container->addCompilerPass(new PreValidatorContainerCompilerPass());
-    }
-
 
 }

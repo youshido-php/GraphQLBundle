@@ -1,12 +1,18 @@
 parameters:
-    youshido.graphql.processor.class: Youshido\GraphQLBundle\GraphQL\Processor
+    youshido.graphql.processor.class: Youshido\GraphQL\Processor
+    youshido.graphql.validator.class: Youshido\GraphQL\Validator\Validator
 
 services:
 
     youshido.graphql.processor:
         class: %youshido.graphql.processor.class%
-        arguments: [ @youshido.graphql.schema ]
+        arguments: [ @youshido.graphql.validator ]
+        calls:
+            - [ setSchema, [@youshido.graphql.schema]]
 
 
     youshido.graphql.schema:
         class: %youshido.graphql.project_schema%
+
+    youshido.graphql.validator:
+        class: %youshido.graphql.validator.class%
