@@ -10,11 +10,11 @@ namespace Youshido\GraphQLBundle\Type;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Youshido\GraphQL\Type\Config\ObjectTypeConfig;
-use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Type\Config\TypeConfigInterface;
+use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
-class DoctrineORMObjectType extends ObjectType implements ContainerAwareInterface
+abstract class DoctrineORMObjectType extends AbstractObjectType implements ContainerAwareInterface
 {
 
     /** @var ContainerInterface */
@@ -36,7 +36,14 @@ class DoctrineORMObjectType extends ObjectType implements ContainerAwareInterfac
             ->find($args['id']);
     }
 
-    public function buildArguments(ObjectTypeConfig $config)
+    /**
+     * @throws ResolveException
+     *
+     * @return String
+     */
+    abstract function getEntityClass();
+
+    public function build(TypeConfigInterface $config)
     {
         $config
             ->addArgument('id', 'int', [
@@ -44,8 +51,4 @@ class DoctrineORMObjectType extends ObjectType implements ContainerAwareInterfac
             ]);
     }
 
-    public function getEntityClass()
-    {
-        throw new ResolveException('You must specified entity class to use this object type');
-    }
 }

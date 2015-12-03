@@ -1,6 +1,6 @@
 parameters:
     youshido.graphql.processor.class: Youshido\GraphQLBundle\Processor\Processor
-    youshido.graphql.validator.class: Youshido\GraphQL\Validator\ResolveValidator
+    youshido.graphql.validator.class: Youshido\GraphQL\Validator\ResolveValidator\ResolveValidator
 
 services:
 
