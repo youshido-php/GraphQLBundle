@@ -29,13 +29,13 @@ class Processor extends \Youshido\GraphQL\Processor implements ContainerAwareInt
     /**
      * @inheritdoc
      */
-    protected function resolveValue($queryType, $contextValue, $query)
+    protected function resolveValue($field, $contextValue, $query)
     {
-        if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($queryType))) {
-            /** @var $queryType ContainerAwareInterface|ObjectType */
-            $queryType->setContainer($this->container);
+        if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field->getType()))) {
+            /** @var $queryType ContainerAwareInterface */
+            $field->getType()->setContainer($this->container);
         }
 
-        return $queryType->resolve($contextValue, $this->parseArgumentsValues($queryType, $query));
+        return parent::resolveValue($field, $contextValue, $query);
     }
 }
