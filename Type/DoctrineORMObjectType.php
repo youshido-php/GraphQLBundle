@@ -18,7 +18,7 @@ abstract class DoctrineORMObjectType extends AbstractObjectType implements Conta
 {
 
     /** @var ContainerInterface */
-    private $container;
+    protected $container;
 
     /**
      * Sets the container.
