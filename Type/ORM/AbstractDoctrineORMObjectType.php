@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQLBundle\Type;
+namespace Youshido\GraphQLBundle\Type\ORM;
 
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -14,7 +14,7 @@ use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
-abstract class DoctrineORMObjectType extends AbstractObjectType implements ContainerAwareInterface
+abstract class AbstractDoctrineORMObjectType extends AbstractObjectType implements ContainerAwareInterface
 {
 
     /** @var ContainerInterface */
