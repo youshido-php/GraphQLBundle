@@ -30,6 +30,16 @@ class GraphQLController extends Controller
 
         $variables = json_decode($variables, true) ?: [];
 
+        $content = $this->get("request")->getContent();
+        if (!empty($content)) {
+            $params = json_decode($content, true);
+
+            if ($params) {
+                $query     = isset($params['query']) ? $params['query'] : $query;
+                $variables = isset($params['variables']) ? $params['variables'] : $variables;
+            }
+        }
+
         $processor = $this->get('youshido.graphql.processor');
 
         $processor->processQuery($query, $variables);
