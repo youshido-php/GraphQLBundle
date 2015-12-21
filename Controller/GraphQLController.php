@@ -44,7 +44,9 @@ class GraphQLController extends Controller
 
         $processor->processQuery($query, $variables);
 
-        return new JsonResponse($processor->getResponseData());
+        return new JsonResponse($processor->getResponseData(), 200, [
+            'Access-Control-Allow-Origin' => '*'
+        ]);
     }
 
 }
