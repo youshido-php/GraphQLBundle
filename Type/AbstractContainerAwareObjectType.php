@@ -5,7 +5,7 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQLBundle\Type\ORM;
+namespace Youshido\GraphQLBundle\Type;
 
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
