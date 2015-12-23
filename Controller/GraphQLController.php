@@ -46,7 +46,7 @@ class GraphQLController extends Controller
 
         return new JsonResponse($processor->getResponseData(), 200, [
             'Access-Control-Allow-Origin'  => '*',
-            'Access-Control-Allow-Headers' => '*'
+            'Access-Control-Allow-Headers' => 'apikey'
         ]);
     }
 
