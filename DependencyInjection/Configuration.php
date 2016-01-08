@@ -23,7 +23,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('query_schema')->cannotBeEmpty()->isRequired()->end()
+                ->scalarNode('query_schema')->cannotBeEmpty()->end()
             ->end();
 
         return $treeBuilder;

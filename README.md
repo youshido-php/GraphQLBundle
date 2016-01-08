@@ -12,6 +12,18 @@ After that, simply run
 ```
 $> composer require youshido/graphql-bundle='dev-master'
 ```
+Than add bundle to your `app/AppKernel.php`
+```
+...
+new Youshido\GraphQLBundle\GraphQLBundle(),
+...
+```
+
+And finally adding routing reference to the `app/config/routing.yml`:
+```
+graphql:
+    resource: "@GraphQLBundle/Controller/"
+```
 
 ## Examples
 
