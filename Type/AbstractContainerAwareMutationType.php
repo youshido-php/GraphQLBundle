@@ -1,6 +1,6 @@
 <?php
 /**
- * Date: 10.12.15
+ * Date: 14.01.16
  *
  * @author Portey Vasil <portey@gmail.com>
  */
@@ -10,14 +10,11 @@ namespace Youshido\GraphQLBundle\Type;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Youshido\GraphQL\Type\Object\AbstractInputObjectType;
+use Youshido\GraphQL\Type\Object\AbstractMutationType;
 
-abstract class AbstractContainerAwareInputType extends AbstractInputObjectType implements ContainerAwareInterface
+abstract class AbstractContainerAwareMutationType extends AbstractMutationType implements ContainerAwareInterface
 {
-
-    /**
-     * @var ContainerInterface
-     */
+    /** @var ContainerInterface */
     protected $container;
 
     /**
@@ -29,5 +26,4 @@ abstract class AbstractContainerAwareInputType extends AbstractInputObjectType i
     {
         $this->container = $container;
     }
-
 }
