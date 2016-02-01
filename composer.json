@@ -16,7 +16,7 @@
   },
   "require": {
     "php": ">=5.5",
-    "youshido/graphql": "^0.0.2"
+    "youshido/graphql": "~0.0.2"
   },
   "require-dev": {
     "phpunit/phpunit": "~4.7"
