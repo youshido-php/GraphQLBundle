@@ -8,15 +8,19 @@
 namespace Youshido\GraphQLBundle\Processor;
 
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Youshido\GraphQL\Type\Object\ObjectType;
+use Youshido\GraphQL\Processor as BaseProcessor;
 
-class Processor extends \Youshido\GraphQL\Processor implements ContainerAwareInterface
+class Processor extends BaseProcessor implements ContainerAwareInterface
 {
 
     /** @var  ContainerInterface */
     protected $container;
+
+    /** @var  LoggerInterface */
+    protected $logger;
 
     /**
      * @inheritdoc
@@ -24,6 +28,15 @@ class Processor extends \Youshido\GraphQL\Processor implements ContainerAwareInt
     public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
+    }
+
+    public function processQuery($queryString, $variables = [])
+    {
+        if ($this->logger) {
+            $this->logger->debug(sprintf('GraphQL query: %s', $queryString), ['a' => 'b']);
+        }
+
+        parent::processQuery($queryString, $variables);
     }
 
     /**
@@ -37,5 +50,10 @@ class Processor extends \Youshido\GraphQL\Processor implements ContainerAwareInt
         }
 
         return parent::resolveValue($field, $contextValue, $query);
+    }
+
+    public function setLogger($loggerAlias)
+    {
+        $this->logger = $loggerAlias ? $this->container->get($loggerAlias) : null;
     }
 }

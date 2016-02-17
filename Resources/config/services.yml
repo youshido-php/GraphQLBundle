@@ -10,6 +10,7 @@ services:
         calls:
             - [ setSchema, [@youshido.graphql.schema]]
             - [ setContainer, [@service_container]]
+            - [ setLogger, [%youshido.graphql.logger%] ]
 
 
     youshido.graphql.schema:

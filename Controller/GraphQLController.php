@@ -44,10 +44,7 @@ class GraphQLController extends Controller
 
         $processor->processQuery($query, $variables);
 
-        return new JsonResponse($processor->getResponseData(), 200, [
-            'Access-Control-Allow-Origin'  => '*',
-            'Access-Control-Allow-Headers' => 'apikey'
-        ]);
+        return new JsonResponse($processor->getResponseData(), 200, $this->getParameter('youshido.graphql.response_headers'));
     }
 
 }

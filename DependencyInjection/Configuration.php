@@ -24,6 +24,15 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('query_schema')->cannotBeEmpty()->end()
+                ->scalarNode('logger')->defaultValue(null)->end()
+                ->arrayNode('response_headers')
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('name')->end()
+                            ->scalarNode('value')->defaultValue(null)->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end();
 
         return $treeBuilder;
