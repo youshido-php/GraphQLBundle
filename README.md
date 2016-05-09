@@ -1,6 +1,6 @@
 # Symfony GraphQl Bundle
 
-### This is a bundle based on the pure [GraphQL PHP Server implementation](http://github.com/youshido/graphql/)
+### This is a bundle based on the pure [PHP GraphQL Server](http://github.com/youshido/graphql/) implementation
 
 This bundle provides you with:
 
@@ -14,7 +14,11 @@ This bundle provides you with:
 ## Installing GraphQL Bundle
 
 We assume you have `composer`, but if you're not – install it from the [official website](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx).
-Once you have your composer up and running – you're ready to install the GraphQL Bundle
+Also, if you need any help installing Symfony framework – here's the link [http://symfony.com/doc/current/book/installation.html](http://symfony.com/doc/current/book/installation.html).
+> Shortcut to install symfony using composer is `composer create-project symfony/framework-standard-edition my_project_name`
+
+Once you have your composer up and running – you're ready to install the GraphQL Bundle. 
+Go to your project folder and run: 
 ```sh
 composer require youshido/graphql-bundle
 ```
