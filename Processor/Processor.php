@@ -30,13 +30,13 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
         $this->container = $container;
     }
 
-    public function processQuery($queryString, $variables = [])
+    public function processRequest($queryString, $variables = [])
     {
         if ($this->logger) {
             $this->logger->debug(sprintf('GraphQL query: %s', $queryString), (array) $variables);
         }
 
-        parent::processQuery($queryString, $variables);
+        parent::processRequest($queryString, $variables);
     }
 
     /**

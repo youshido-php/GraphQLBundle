@@ -14,23 +14,57 @@ This bundle provides you with:
 ## Installing GraphQL Bundle
 
 We assume you have `composer`, but if you're not – install it from the [official website](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx).
-After you've done with that, simply run
-```
-$> composer require youshido/graphql-bundle
+Once you have your composer up and running – you're ready to install the GraphQL Bundle
+```sh
+composer require youshido/graphql-bundle
 ```
 
-Than add bundle to your `app/AppKernel.php`
-```
-...
+Than enable bundle in your `app/AppKernel.php`
+```php
 new Youshido\GraphQLBundle\GraphQLBundle(),
-...
 ```
 
-And finally add the routing reference to the `app/config/routing.yml`:
-```
+Add the routing reference to the `app/config/routing.yml`:
+```yaml
 graphql:
     resource: "@GraphQLBundle/Controller/"
 ```
+
+Let's check if you've done everything right so far – try to access the `localhost:8000/graphql` url.
+You should get a JSON response with the following error:
+```js
+{"errors":[{"message":"You have to set GraphQL Schema to process"}]}
+```
+
+That's because there was no GraphQL Schema specified for the processor yet.
+You need to create a GraphQL Schema class and set it inside your `app/config/config.yml` file.
+
+> THere is a way where you can use inline approach, in order to do that you have to define your own GraphQL controller and use a `->setSchema` method of the processor to set the Schema
+
+The fastest way to create a Schema class is to use a generator shipped with this bundle:
+```sh
+php bin/console graphql:schema:generate App
+```
+Here *App* is a name of the bundle where the class will be generated in.
+You will be requested for a confirmation to create a class and then presented with instructions to update your config file.
+
+```sh
+Update your app/config/config.yml with the parameter:
+graph_ql:
+  schema_class: AppBundle\GraphQL\Schema
+```
+
+After you've added parameters to config file, try to access the following link in the browser – 'http://localhost:8000/graphql?query={hello}'
+
+> Alternatively, you can execute the same request using CURL client in your console
+> `curl http://localhost:8000/graphql --data "query={ hello }"`
+
+Successful response from a test Schema will be displayed:
+```js
+{"data":{"hello":"world!"}}
+```
+
+That means you have GraphQL Bundle for the Symfony Framework configured and now can architect your GraphQL Schema:
 
 ## Documentation
 

@@ -14,26 +14,39 @@ use Symfony\Component\DependencyInjection\Loader;
  */
 class GraphQLExtension extends Extension
 {
+    private $config = [];
+
     /**
      * {@inheritdoc}
      */
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = new Configuration();
-        $config        = $this->processConfiguration($configuration, $configs);
+        $this->config  = $this->processConfiguration($configuration, $configs);
 
         $responseHeaders = [];
-        if (isset($config['response_headers']) && is_array($config['response_headers'])) {
-            foreach ($config['response_headers'] as $responseHeader) {
-                $responseHeaders[$responseHeader['name']] = $responseHeader['value'];
-            }
+        foreach ($this->getConfig('response_headers', $this->getDefaultHeaders()) as $responseHeader) {
+            $responseHeaders[$responseHeader['name']] = $responseHeader['value'];
         }
 
-        $container->setParameter('youshido.graphql.project_schema', $config['query_schema']);
+        $container->setParameter('youshido.graphql.project_schema', $this->getConfig('query_schema', null));
         $container->setParameter('youshido.graphql.response_headers', $responseHeaders);
-        $container->setParameter('youshido.graphql.logger', isset($config['logger']) ? $config['logger'] : null);
+        $container->setParameter('youshido.graphql.logger', $this->getConfig('logger', null));
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
     }
+
+    private function getDefaultHeaders()
+    {
+        return [
+            ['name'  => 'Access-Control-Allow-Origin', 'value' => '*'],
+        ];
+    }
+
+    private function getConfig($key, $default = null)
+    {
+        return array_key_exists($key, $this->config) ? $this->config[$key] : $default;
+    }
+
 }

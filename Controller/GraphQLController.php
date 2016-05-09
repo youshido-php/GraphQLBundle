@@ -10,27 +10,27 @@ namespace Youshido\GraphQLBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Youshido\GraphQL\Validator\Exception\ConfigurationException;
 
 class GraphQLController extends Controller
 {
 
     /**
-     * @param Request $request
-     *
-     * @return JsonResponse
-     *
      * @Route("/graphql")
+     *
+     * @throws ConfigurationException
+     * @return JsonResponse
      */
-    public function apiAction(Request $request)
+    public function defaultAction()
     {
+        $request   = $this->get('request_stack')->getCurrentRequest();
         $query     = $request->get('query', null);
         $variables = $request->get('variables', null);
 
         $variables = json_decode($variables, true) ?: [];
 
-        $content = $this->get("request")->getContent();
+        $content = $request->getContent();
         if (!empty($content)) {
             $params = json_decode($content, true);
 
@@ -41,8 +41,13 @@ class GraphQLController extends Controller
         }
 
         $processor = $this->get('youshido.graphql.processor');
-
-        $processor->processQuery($query, $variables);
+        if ($schemaClass = $this->getParameter('youshido.graphql.schema_class')) {
+            if (!class_exists($schemaClass)) {
+                throw new ConfigurationException('Schema class ' . $schemaClass . ' does not exist');
+            }
+            $processor->setSchema(new $schemaClass());
+        }
+        $processor->processRequest($query, $variables);
 
         return new JsonResponse($processor->getResponseData(), 200, $this->getParameter('youshido.graphql.response_headers'));
     }
