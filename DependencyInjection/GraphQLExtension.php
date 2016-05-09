@@ -29,7 +29,7 @@ class GraphQLExtension extends Extension
             $responseHeaders[$responseHeader['name']] = $responseHeader['value'];
         }
 
-        $container->setParameter('youshido.graphql.project_schema', $this->getConfig('query_schema', null));
+        $container->setParameter('youshido.graphql.schema_class', $this->getConfig('schema_class', null));
         $container->setParameter('youshido.graphql.response_headers', $responseHeaders);
         $container->setParameter('youshido.graphql.logger', $this->getConfig('logger', null));
 
@@ -40,7 +40,7 @@ class GraphQLExtension extends Extension
     private function getDefaultHeaders()
     {
         return [
-            ['name'  => 'Access-Control-Allow-Origin', 'value' => '*'],
+            ['name' => 'Access-Control-Allow-Origin', 'value' => '*'],
         ];
     }
 

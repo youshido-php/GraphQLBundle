@@ -41,7 +41,8 @@ class GraphQLController extends Controller
         }
 
         $processor = $this->get('youshido.graphql.processor');
-        if ($schemaClass = $this->getParameter('youshido.graphql.schema_class')) {
+        if ($this->container->hasParameter('youshido.graphql.schema_class')) {
+            $schemaClass = $this->getParameter('youshido.graphql.schema_class');
             if (!class_exists($schemaClass)) {
                 throw new ConfigurationException('Schema class ' . $schemaClass . ' does not exist');
             }

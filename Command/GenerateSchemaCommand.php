@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Command;
+namespace Youshido\GraphQLBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -14,7 +14,7 @@ class GenerateSchemaCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('graphql:generate-schema')
+            ->setName('graphql:schema:generate')
             ->setDescription('Generates GraphQL Schema class')
             ->addArgument('bundle', InputArgument::REQUIRED, 'Bundle to generate class to');
     }

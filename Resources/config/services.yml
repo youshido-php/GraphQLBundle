@@ -6,10 +6,5 @@ services:
     youshido.graphql.processor:
         class: %youshido.graphql.processor.class%
         calls:
-            - [ setSchema, [@youshido.graphql.schema]]
-            - [ setContainer, [@service_container]]
+            - [ setContainer, ['@service_container']]
             - [ setLogger, [%youshido.graphql.logger%] ]
-
-
-    youshido.graphql.schema:
-        class: %youshido.graphql.project_schema%
