@@ -10,9 +10,9 @@ namespace Youshido\GraphQLBundle\Type;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Youshido\GraphQL\Type\Object\AbstractMutationType;
+use Youshido\GraphQL\Type\Object\AbstractMutationObjectType;
 
-abstract class AbstractContainerAwareMutationType extends AbstractMutationType implements ContainerAwareInterface
+abstract class AbstractContainerAwareMutationType extends AbstractMutationObjectType implements ContainerAwareInterface
 {
     /** @var ContainerInterface */
     protected $container;

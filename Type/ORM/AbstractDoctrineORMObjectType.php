@@ -10,7 +10,6 @@ namespace Youshido\GraphQLBundle\Type\ORM;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Youshido\GraphQL\Type\Config\TypeConfigInterface;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 
@@ -30,10 +29,9 @@ abstract class AbstractDoctrineORMObjectType extends AbstractObjectType implemen
         $this->container = $container;
     }
 
-    public function resolve($value = null, $args = [])
+    public function resolve($value = null, $args = [], $type = null)
     {
-        return $this->container->get('doctrine')->getRepository($this->getEntityClass())
-            ->find($args['id']);
+        return $this->container->get('doctrine')->getRepository($this->getEntityClass())->find($args['id']);
     }
 
     /**
@@ -43,12 +41,9 @@ abstract class AbstractDoctrineORMObjectType extends AbstractObjectType implemen
      */
     abstract function getEntityClass();
 
-    public function build(TypeConfigInterface $config)
+    public function build($config)
     {
-        $config
-            ->addArgument('id', 'int', [
-                'required' => true
-            ]);
+        $config->addArgument('id', 'int', ['required' => true]);
     }
 
 }
