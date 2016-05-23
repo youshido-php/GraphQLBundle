@@ -15,6 +15,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Youshido\GraphQL\Execution\Processor as BaseProcessor;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Parser\Ast\Query;
+use Youshido\GraphQL\Schema\AbstractSchema;
+use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
+use Youshido\GraphQLBundle\Config\Rule\TypeValidationRule;
 
 class Processor extends BaseProcessor implements ContainerAwareInterface
 {
@@ -23,6 +26,18 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
 
     /** @var  LoggerInterface */
     protected $logger;
+
+    /**
+     * @inheritdoc
+     */
+    public function __construct(AbstractSchema $schema)
+    {
+        $validator = ConfigValidator::getInstance();
+        $validator->addRule('type', new TypeValidationRule($validator));
+
+        parent::__construct($schema);
+    }
+
 
     /**
      * @inheritdoc
