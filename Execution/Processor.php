@@ -46,7 +46,7 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
      */
     protected function resolveFieldValue(AbstractField $field, $contextValue, Query $query)
     {
-        if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field->getType()))) {
+        if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field))) {
             $field->setContainer($this->container);
         }
 
