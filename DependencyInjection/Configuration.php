@@ -23,7 +23,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('schema_class')->cannotBeEmpty()->end()
+                ->scalarNode('schema_class')->isRequired()->cannotBeEmpty()->end()
                 ->scalarNode('logger')->defaultValue(null)->end()
                 ->arrayNode('response_headers')
                     ->prototype('array')

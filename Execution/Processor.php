@@ -5,19 +5,21 @@
  * @author Portey Vasil <portey@gmail.com>
  */
 
-namespace Youshido\GraphQLBundle\Processor;
+namespace Youshido\GraphQLBundle\Execution;
 
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Youshido\GraphQL\Processor as BaseProcessor;
+use Youshido\GraphQL\Execution\Processor as BaseProcessor;
+use Youshido\GraphQL\Field\AbstractField;
+use Youshido\GraphQL\Parser\Ast\Query;
 
 class Processor extends BaseProcessor implements ContainerAwareInterface
 {
 
-    /** @var  ContainerInterface */
-    protected $container;
+    use ContainerAwareTrait;
 
     /** @var  LoggerInterface */
     protected $logger;
@@ -30,26 +32,25 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
         $this->container = $container;
     }
 
-    public function processRequest($queryString, $variables = [])
+    public function processPayload($queryString, $variables = [])
     {
         if ($this->logger) {
             $this->logger->debug(sprintf('GraphQL query: %s', $queryString), (array) $variables);
         }
 
-        parent::processRequest($queryString, $variables);
+        parent::processPayload($queryString, $variables);
     }
 
     /**
      * @inheritdoc
      */
-    protected function resolveValue($field, $contextValue, $query)
+    protected function resolveFieldValue(AbstractField $field, $contextValue, Query $query)
     {
         if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field->getType()))) {
-            /** @var $queryType ContainerAwareInterface */
-            $field->getType()->setContainer($this->container);
+            $field->setContainer($this->container);
         }
 
-        return parent::resolveValue($field, $contextValue, $query);
+        return parent::resolveFieldValue($field, $contextValue, $query);
     }
 
     public function setLogger($loggerAlias)

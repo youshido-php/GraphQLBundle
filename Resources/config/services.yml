@@ -1,10 +1,11 @@
 parameters:
-    youshido.graphql.processor.class: Youshido\GraphQLBundle\Processor\Processor
+    youshido.graphql.processor.class: Youshido\GraphQLBundle\Execution\Processor
 
 services:
 
     youshido.graphql.processor:
         class: %youshido.graphql.processor.class%
+        arguments: ["@youshido.graphql.schema"]
         calls:
             - [ setContainer, ['@service_container']]
             - [ setLogger, [%youshido.graphql.logger%] ]
