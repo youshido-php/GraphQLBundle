@@ -8,9 +8,9 @@ This bundle provides you with:
  * Agile object oriented structure to architect your GraphQL Schema
  * Intuitive Type system that allows you to build your project much faster and stay consistent
  * Build-in validation for the GraphQL Schema you develop
- * Well documented classes with a lot of examples 
+ * Well documented classes with a lot of examples
  * Automatically created endpoint /graphql to handle requests
- 
+
 ## Installing GraphQL Bundle
 
 We assume you have `composer`, if you're not – install it from the [official website](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx).  
@@ -18,7 +18,7 @@ If you need any help installing Symfony framework – here's the link [http://sy
 > Shortcut to install Symfony: `composer create-project symfony/framework-standard-edition my_project_name`
 
 Once you have your composer up and running – you're ready to install the GraphQL Bundle.   
-Go to your project folder and run: 
+Go to your project folder and run:
 ```sh
 composer require youshido/graphql-bundle
 ```
@@ -71,4 +71,44 @@ That means you have GraphQL Bundle for the Symfony Framework configured and now 
 
 ## Documentation
 
-Detailed documentation is available on the main GraphQL repository – http://github.com/youshido/graphql/.
+Symfony features include:
+- AbstractContainerAwareField class used for auto passing container to field, ability to use it in resolve field function:
+```php
+class RootDirField extends AbstractContainerAwareField
+{
+
+    /**
+     * @inheritdoc
+     */
+    public function getType()
+    {
+        return new StringType();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function resolve($value, array $args, ResolveInfo $info)
+    {
+        return $this->container->getParameter('kernel.root_dir');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getName()
+    {
+        return 'rootDir';
+    }
+```
+
+- Ability to resolve field in service method
+```php
+$config->addField(new Field([
+    'name'    => 'cacheDir',
+    'type'    => new StringType(),
+    'resolve' => ['@resolve_service', 'getCacheDir']
+]))
+```
+
+Rest detailed documentation is available on the main GraphQL repository – http://github.com/youshido/graphql/.

@@ -92,6 +92,10 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
                 return $propertyValue;
             }
         } else { //instance of AbstractField
+            if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field))) {
+                $field->setContainer($this->container);
+            }
+
             return $field->resolve($contextValue, $args, $resolveInfo);
         }
 
