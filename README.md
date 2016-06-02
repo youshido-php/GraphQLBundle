@@ -72,7 +72,7 @@ That means you have GraphQL Bundle for the Symfony Framework configured and now 
 ## Documentation
 
 Symfony features include:
-- AbstractContainerAwareField class used for auto passing container to field, ability to use it in resolve field function:
+- AbstractContainerAwareField class used for auto passing container to field, add ability to use container in resolve function:
 ```php
 class RootDirField extends AbstractContainerAwareField
 {
@@ -102,7 +102,7 @@ class RootDirField extends AbstractContainerAwareField
     }
 ```
 
-- Ability to resolve field in service method
+- Ability to pass service method as resolve callable:
 ```php
 $config->addField(new Field([
     'name'    => 'cacheDir',
