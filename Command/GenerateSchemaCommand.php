@@ -22,7 +22,7 @@ class GenerateSchemaCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $bundleName = $input->getArgument('bundle');
-        if (strpos($bundleName, -6) != 'Bundle') $bundleName .= 'Bundle';
+        if (substr($bundleName, -6) != 'Bundle') $bundleName .= 'Bundle';
 
         $srcPath       = realpath($this->getContainer()->getParameter('kernel.root_dir') . '/../src');
         $activeBundles = $this->getContainer()->getParameter('kernel.bundles');
@@ -62,8 +62,8 @@ class GenerateSchemaCommand extends ContainerAwareCommand
 
 namespace $bundleName\GraphQL;
 
-use Youshido\GraphQL\AbstractSchema;
-use Youshido\GraphQL\Type\Config\Schema\SchemaConfig;
+use Youshido\GraphQL\Schema\AbstractSchema;
+use Youshido\GraphQL\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
 class $className extends AbstractSchema
