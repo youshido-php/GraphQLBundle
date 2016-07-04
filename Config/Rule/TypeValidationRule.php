@@ -20,10 +20,12 @@ class TypeValidationRule extends BaseTypeValidationRule
             return false;
         }
 
-        if ($ruleInfo == TypeService::TYPE_CALLABLE && is_array($data) && count($data) == 2 && substr($data[0], 0, 1) == '@') {
+        if (($ruleInfo == TypeService::TYPE_CALLABLE) && (
+                is_callable($data) ||
+                (is_array($data) && count($data) == 2 && substr($data[0], 0, 1) == '@'))
+        ) {
             return true;
         }
-
         return parent::validate($data, $ruleInfo);
     }
 
