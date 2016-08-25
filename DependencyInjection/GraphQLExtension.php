@@ -4,7 +4,6 @@ namespace Youshido\GraphQLBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
@@ -15,6 +14,7 @@ use Symfony\Component\DependencyInjection\Loader;
  */
 class GraphQLExtension extends Extension
 {
+
     private $config = [];
 
     /**
@@ -33,9 +33,6 @@ class GraphQLExtension extends Extension
         $container->setParameter('youshido.graphql.schema_class', $this->getConfig('schema_class', null));
         $container->setParameter('youshido.graphql.response_headers', $responseHeaders);
         $container->setParameter('youshido.graphql.logger', $this->getConfig('logger', null));
-
-        $definition = new Definition($this->getConfig('schema_class', null));
-        $container->setDefinition('youshido.graphql.schema', $definition);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');

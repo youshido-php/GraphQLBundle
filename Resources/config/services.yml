@@ -4,8 +4,7 @@ parameters:
 services:
 
     youshido.graphql.processor:
-        class: %youshido.graphql.processor.class%
+        class: "%youshido.graphql.processor.class%"
         arguments: ["@youshido.graphql.schema"]
         calls:
-            - [ setContainer, ['@service_container']]
-            - [ setLogger, [%youshido.graphql.logger%] ]
+            - [ setContainer, ["@service_container"]]

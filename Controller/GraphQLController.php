@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
+use Youshido\GraphQLBundle\Execution\Processor;
 
 class GraphQLController extends Controller
 {
@@ -20,9 +21,29 @@ class GraphQLController extends Controller
      * @Route("/graphql")
      *
      * @throws ConfigurationException
+     *
      * @return JsonResponse
      */
     public function defaultAction()
+    {
+        list($query, $variables) = $this->getPayload();
+
+        $schemaClass = $this->getParameter('youshido.graphql.schema_class');
+        if (!$schemaClass || !class_exists($schemaClass)) {
+            throw new ConfigurationException('Schema class ' . $schemaClass . ' does not exist');
+        }
+
+        $this->get('service_container')->set('youshido.graphql.schema', new $schemaClass());
+
+        /** @var Processor $processor */
+        $processor = $this->get('youshido.graphql.processor');
+
+        $processor->processPayload($query, $variables);
+
+        return new JsonResponse($processor->getResponseData(), 200, $this->getParameter('youshido.graphql.response_headers'));
+    }
+
+    private function getPayload()
     {
         $request   = $this->get('request_stack')->getCurrentRequest();
         $query     = $request->get('query', null);
@@ -40,17 +61,7 @@ class GraphQLController extends Controller
             }
         }
 
-        $processor = $this->get('youshido.graphql.processor');
-        if ($this->container->hasParameter('youshido.graphql.schema_class')) {
-            $schemaClass = $this->getParameter('youshido.graphql.schema_class');
-            if (!class_exists($schemaClass)) {
-                throw new ConfigurationException('Schema class ' . $schemaClass . ' does not exist');
-            }
-            $processor->setSchema(new $schemaClass());
-        }
-        $processor->processRequest($query, $variables);
-
-        return new JsonResponse($processor->getResponseData(), 200, $this->getParameter('youshido.graphql.response_headers'));
+        return [$query, $variables];
     }
 
 }

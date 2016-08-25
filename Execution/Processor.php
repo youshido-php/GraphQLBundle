@@ -11,7 +11,6 @@ namespace Youshido\GraphQLBundle\Execution;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Youshido\GraphQL\Execution\Processor as BaseProcessor;
 use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\AbstractField;
@@ -42,22 +41,13 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
         parent::__construct($schema);
     }
 
-
-    /**
-     * @inheritdoc
-     */
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
-    }
-
-    public function processPayload($queryString, $variables = [])
+    public function processPayload($payload, $variables = [], $reducers = [])
     {
         if ($this->logger) {
-            $this->logger->debug(sprintf('GraphQL query: %s', $queryString), (array)$variables);
+            $this->logger->debug(sprintf('GraphQL query: %s', $payload), (array)$variables);
         }
 
-        parent::processPayload($queryString, $variables);
+        parent::processPayload($payload, $variables);
     }
 
     /**
@@ -93,6 +83,7 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
             }
         } else { //instance of AbstractField
             if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field))) {
+                /** @var $field ContainerAwareInterface */
                 $field->setContainer($this->container);
             }
 
@@ -102,8 +93,8 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
         return null;
     }
 
-    public function setLogger($loggerAlias)
+    public function setLogger($logger = null)
     {
-        $this->logger = $loggerAlias ? $this->container->get($loggerAlias) : null;
+        $this->logger = $logger;
     }
 }
