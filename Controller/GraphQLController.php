@@ -30,17 +30,18 @@ class GraphQLController extends Controller
 
         $schemaClass = $this->getParameter('youshido.graphql.schema_class');
         if (!$schemaClass || !class_exists($schemaClass)) {
-            throw new ConfigurationException('Schema class ' . $schemaClass . ' does not exist');
+            return $this->json([
+                ['message' => 'Schema class ' . $schemaClass . ' does not exist']
+            ]);
         }
 
         $this->get('service_container')->set('youshido.graphql.schema', new $schemaClass());
 
         /** @var Processor $processor */
         $processor = $this->get('youshido.graphql.processor');
-
         $processor->processPayload($query, $variables);
 
-        return new JsonResponse($processor->getResponseData(), 200, $this->getParameter('youshido.graphql.response_headers'));
+        return $this->json($processor->getResponseData(), 200, $this->getParameter('youshido.graphql.response_headers'));
     }
 
     private function getPayload()
