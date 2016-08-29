@@ -1,10 +1,22 @@
 parameters:
-    youshido.graphql.processor.class: Youshido\GraphQLBundle\Execution\Processor
+    youshido.graphql.processor.class: "Youshido\\GraphQLBundle\\Execution\\Processor"
+    youshido.graphql.security_manager.class: "Youshido\\GraphQLBundle\\Security\\Manager\\DefaultSecurityManager"
 
 services:
 
+    youshido.graphql.schema:
+        synthetic: true
+
+    youshido.graphql.security_manager:
+        class: "%youshido.graphql.security_manager.class%"
+        lazy: true
+        arguments:
+            - "@security.authorization_checker"
+
     youshido.graphql.processor:
         class: "%youshido.graphql.processor.class%"
-        arguments: ["@youshido.graphql.schema"]
+        arguments:
+            - "@youshido.graphql.schema"
+            - "@youshido.graphql.security_manager"
         calls:
             - [ setContainer, ["@service_container"]]

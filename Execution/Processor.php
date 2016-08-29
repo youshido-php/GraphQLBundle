@@ -21,6 +21,7 @@ use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQLBundle\Config\Rule\TypeValidationRule;
+use Youshido\GraphQLBundle\Security\Manager\SecurityManagerInterface;
 
 class Processor extends BaseProcessor implements ContainerAwareInterface
 {
@@ -28,15 +29,20 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
     use ContainerAwareTrait;
 
     /** @var  LoggerInterface */
-    protected $logger;
+    private $logger;
+
+    /** @var  SecurityManagerInterface */
+    private $securityManger;
 
     /**
      * @inheritdoc
      */
-    public function __construct(AbstractSchema $schema)
+    public function __construct(AbstractSchema $schema, SecurityManagerInterface $securityManager = null)
     {
         $validator = ConfigValidator::getInstance();
         $validator->addRule('type', new TypeValidationRule($validator));
+
+        $this->securityManger = $securityManager;
 
         parent::__construct($schema);
     }
@@ -58,9 +64,17 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
         $resolveInfo = new ResolveInfo($field, $query->getFields(), $field->getType(), $this->executionContext);
         $args        = $this->parseArgumentsValues($field, $query);
 
+        //security check
+        if ($this->securityManger
+            && $this->securityManger->isSecurityEnabled()
+            && !$this->securityManger->isGrantedToResolve($resolveInfo)
+        ) {
+            throw $this->securityManger->createNewAccessDeniedException($resolveInfo);
+        }
+
         if ($field instanceof Field) {
             if ($resolveFunc = $field->getConfig()->getResolveFunction()) {
-                if (is_array($resolveFunc) && count($resolveFunc) == 2 && strpos($resolveFunc[0], '@') === 0) {
+                if ($this->isServiceReference($resolveFunc)) {
                     $service = substr($resolveFunc[0], 1);
                     $method  = $resolveFunc[1];
 
@@ -91,6 +105,11 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
         }
 
         return null;
+    }
+
+    private function isServiceReference($resolveFunc)
+    {
+        return is_array($resolveFunc) && count($resolveFunc) == 2 && strpos($resolveFunc[0], '@') === 0;
     }
 
     public function setLogger($logger = null)

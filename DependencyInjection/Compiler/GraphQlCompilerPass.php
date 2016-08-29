@@ -4,7 +4,6 @@ namespace Youshido\GraphQLBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
@@ -22,10 +21,6 @@ class GraphQlCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $definition = new Definition();
-        $definition->setSynthetic(true);
-        $container->setDefinition('youshido.graphql.schema', $definition);
-
         if ($loggerAlias = $container->getParameter('youshido.graphql.logger')) {
             if (strpos($loggerAlias, '@') === 0) {
                 $loggerAlias = substr($loggerAlias, 1);
@@ -36,6 +31,10 @@ class GraphQlCompilerPass implements CompilerPassInterface
             }
 
             $container->getDefinition('youshido.graphql.processor')->addMethodCall('setLogger', [new Reference($loggerAlias)]);
+        }
+
+        if($container->getParameter('youshido.graphql.security.enable')) {
+            $container->getDefinition('youshido.graphql.security_manager')->addMethodCall('setEnabled', [true]);
         }
     }
 }

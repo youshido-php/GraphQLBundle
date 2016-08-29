@@ -25,6 +25,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('schema_class')->cannotBeEmpty()->end()
                 ->scalarNode('logger')->defaultValue(null)->end()
+                ->booleanNode('security_enable')->defaultValue(false)->end()
                 ->arrayNode('response_headers')
                     ->prototype('array')
                         ->children()
