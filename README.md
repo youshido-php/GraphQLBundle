@@ -11,7 +11,17 @@ This bundle provides you with:
  * Well documented classes with a lot of examples
  * Automatically created endpoint /graphql to handle requests
 
-## Installing GraphQL Bundle
+## Table of Contents
+
+ * [Installation](#installation)
+ * [Symfony features included](#symfony-features-included-)
+    * [AbstractContainerAwareField class](#class-abstractcontainerawarefield-)
+    * [Service method as callable](#service-method-as-callable-)
+    * [Resolve field security](#resolve-field-security-)
+ * [Documentation](#documentation)
+
+
+## Installation
 
 We assume you have `composer`, if you're not – install it from the [official website](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx).  
 If you need any help installing Symfony framework – here's the link [http://symfony.com/doc/current/book/installation.html](http://symfony.com/doc/current/book/installation.html).
@@ -69,10 +79,9 @@ Successful response from a test Schema will be displayed:
 
 That means you have GraphQL Bundle for the Symfony Framework configured and now can architect your GraphQL Schema:
 
-## Documentation
-
-Symfony features include:
-- AbstractContainerAwareField class used for auto passing container to field, add ability to use container in resolve function:
+## Symfony features included:
+### Class AbstractContainerAwareField:
+AbstractContainerAwareField class used for auto passing container to field, add ability to use container in resolve function:
 ```php
 class RootDirField extends AbstractContainerAwareField
 {
@@ -102,7 +111,8 @@ class RootDirField extends AbstractContainerAwareField
     }
 ```
 
-- Ability to pass service method as resolve callable:
+### Service method as callable:
+Ability to pass service method as resolve callable:
 ```php
 $config->addField(new Field([
     'name'    => 'cacheDir',
@@ -111,4 +121,51 @@ $config->addField(new Field([
 ]))
 ```
 
-Rest detailed documentation is available on the main GraphQL repository – http://github.com/youshido/graphql/.
+### Resolve field security:
+First of all, you need to enable it in your config.yml file:
+```yaml
+graph_ql:
+    security_enable: true
+```
+Then create standard security voter for that ([official documentation](http://symfony.com/doc/current/security/voters.html)), as in example below:
+```php
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQLBundle\Security\Manager\SecurityManagerInterface;
+
+class GraphQLVoter extends Voter
+{
+
+    /**
+     * @inheritdoc
+     */
+    protected function supports($attribute, $subject)
+    {
+        return $attribute == SecurityManagerInterface::RESOLVE_ATTRIBUTE && $subject instanceof ResolveInfo;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    {
+        // your own validation logic here
+
+        /** @var $subject ResolveInfo */
+        if ($subject->getField()->getName() == 'hello') { //example
+            return false;
+        }
+
+        return true;
+    }
+}
+```
+Now GraphQL executor will check access for every resolved field before resolve it.
+
+
+## GraphiQL extension:
+To run [graphiql extension](https://github.com/graphql/graphiql) just try to access to `http://your_domain/explorer`
+
+## Documentation
+All detailed documentation is available on the main GraphQL repository – http://github.com/youshido/graphql/.
