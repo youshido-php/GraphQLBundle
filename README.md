@@ -14,10 +14,10 @@ This bundle provides you with:
 ## Table of Contents
 
  * [Installation](#installation)
- * [Symfony features included](#symfony-features-included-)
-    * [AbstractContainerAwareField class](#class-abstractcontainerawarefield-)
-    * [Service method as callable](#service-method-as-callable-)
-    * [Resolve field security](#resolve-field-security-)
+ * [Symfony features included](#symfony-features-included)
+    * [AbstractContainerAwareField class](#class-abstractcontainerawarefield)
+    * [Service method as callable](#service-method-as-callable)
+    * [Resolve field security](#resolve-field-security)
  * [Documentation](#documentation)
 
 
