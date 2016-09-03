@@ -43,6 +43,7 @@ class GraphQLExtension extends Extension
     {
         return [
             ['name' => 'Access-Control-Allow-Origin', 'value' => '*'],
+            ['name' => 'Access-Control-Allow-Headers', 'value' => 'Content-Type'],
         ];
     }
 
