@@ -18,12 +18,9 @@ class ScriptHandler
 
     public static function configure(Event $event)
     {
-        if (!$event->getIO()->askConfirmation('Create a boilerplate Schema? [Y/n] ', true)) {
-            return;
-        }
         $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
         $rootDir   = realpath($vendorDir . '/..');
-        static::executeCommand($event, static::getConsoleDir($rootDir), 'graphql:configure');
+        static::executeCommand($event, static::getConsoleDir($rootDir), 'graphql:configure --composer');
     }
 
     protected static function getPhp()

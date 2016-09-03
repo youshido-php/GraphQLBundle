@@ -18,12 +18,14 @@ class GraphQLConfigureCommand extends ContainerAwareCommand
         $this
             ->setName('graphql:configure')
             ->setDescription('Generates GraphQL Schema class')
-            ->addArgument('bundle', InputArgument::OPTIONAL, 'Bundle to generate class to', 'AppBundle');
+            ->addArgument('bundle', InputArgument::OPTIONAL, 'Bundle to generate class to', 'AppBundle')
+            ->addOption('composer');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $bundleName = $input->getArgument('bundle');
+        $bundleName     = $input->getArgument('bundle');
+        $isComposerCall = $input->getOption('composer');
         if (substr($bundleName, -6) != 'Bundle') $bundleName .= 'Bundle';
 
         $srcPath       = realpath($this->getContainer()->getParameter('kernel.root_dir') . '/../src');
@@ -39,7 +41,9 @@ class GraphQLConfigureCommand extends ContainerAwareCommand
 
         $inputHelper = $this->getHelper('question');
         if (file_exists($classPath)) {
-            $output->writeln(sprintf('Schema class %s was found.', $namespaceClassName));
+            if (!$isComposerCall) {
+                $output->writeln(sprintf('Schema class %s was found.', $namespaceClassName));
+            }
         } else {
             $question = new ConfirmationQuestion(sprintf('Confirm creating class at %s ? [Y/n]', $namespaceClassName), true);
             if (!$inputHelper->ask($input, $output, $question)) {
@@ -71,8 +75,9 @@ CONFIG;
                 $output->writeln('Config was added to ' . $resource);
             }
         } else {
-            $output->writeln('GraphQL default route was found.');
-
+            if (!$isComposerCall) {
+                $output->writeln('GraphQL default route was found.');
+            }
         }
     }
 
