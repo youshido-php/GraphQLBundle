@@ -12,12 +12,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class FeatureController extends Controller
+class GraphQLExplorerController extends Controller
 {
 
     /**
      * @Cache(expires="tomorrow", public=true)
-     * @Route("/explorer")
+     * @Route("/graphql/explorer")
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
