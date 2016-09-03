@@ -48,7 +48,7 @@ class GraphQLExtension extends Extension
 
     private function getConfig($key, $default = null)
     {
-        return array_key_exists($key, $this->config) ? $this->config[$key] : $default;
+        return array_key_exists($key, $this->config) && $this->config[$key] ? $this->config[$key] : $default;
     }
 
 }
