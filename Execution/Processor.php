@@ -61,7 +61,7 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
      */
     protected function resolveFieldValue(AbstractField $field, $contextValue, Query $query)
     {
-        $resolveInfo = new ResolveInfo($field, $query->getFields(), $field->getType(), $this->executionContext);
+        $resolveInfo = $this->createResolveInfo($field, $query->getFields());
         $args        = $this->parseArgumentsValues($field, $query);
 
         //security check
@@ -106,6 +106,14 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
 
         return null;
     }
+
+    protected function createResolveInfo($field, $fields)
+    {
+        $info = new ResolveInfo($field, $fields, $this->executionContext);
+        $info->setContainer($this->container);
+        return $info;
+    }
+
 
     private function isServiceReference($resolveFunc)
     {

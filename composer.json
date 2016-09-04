@@ -19,14 +19,6 @@
       "Youshido\\GraphQLBundle\\": ""
     }
   },
-  "scripts": {
-    "post-install-cmd": [
-      "Youshido\\GraphQLBundle\\Composer\\ScriptHandler::configure"
-    ],
-    "post-update-cmd": [
-      "Youshido\\GraphQLBundle\\Composer\\ScriptHandler::configure"
-    ]
-  },
   "require": {
     "php": ">=5.5",
     "youshido/graphql": "~1.1"
