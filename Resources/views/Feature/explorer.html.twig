@@ -12,6 +12,40 @@
         #graphiql {
             height: 100vh;
         }
+        .token-button {
+            position: absolute;
+            left: 250px;
+            top: 12px;
+            background: -webkit-linear-gradient(#fbfbfb, #f8f8f8);
+            background:         linear-gradient(#fbfbfb, #f8f8f8);
+            border-width: 1px;
+            border-style: solid;
+            border-color: #d3d3d3 #d0d0d0 #bababa;
+            border-radius: 4px;
+            box-shadow: 0 1px 1px -1px rgba(0, 0, 0, 0.13), inset 0 1px #fff;
+            color: #444;
+            cursor: pointer;
+            display: inline-block;
+            margin: 0 5px 0;
+            padding: 2px 8px 4px;
+            text-decoration: none;
+            height: 26px;
+            font-family: system, -apple-system, 'San Francisco', '.SFNSDisplay-Regular', 'Segoe UI', Segoe, 'Segoe WP', 'Helvetica Neue', helvetica, 'Lucida Grande', arial, sans-serif;
+            font-size: 14px;
+        }
+        #token-input {
+            display: none;
+            position: absolute;
+            left: 250px;
+            top: 12px;
+            width: 350px;
+            font-size: 13px;
+            line-height: 20px;
+            height: 20px;
+            padding: 2px 10px;
+            border: 1px solid #ccc;
+            border-radius: 2px;
+        }
     </style>
 
     <link rel="stylesheet" href="{{ asset('bundles/graphql/graphiql.css') }}"/>
@@ -23,6 +57,8 @@
     <script src="{{ asset('bundles/graphql/graphiql.min.js') }}"></script>
 </head>
 <body>
+<button class="token-button">Enter Token</button>
+<input type="text" placeholder="AccessToken" id="token-input">
 <div id="graphiql">Loading...</div>
 <script>
 
@@ -79,7 +115,7 @@
                     return Boolean(parameters[key]);
                 }).map(function (key) {
                     return encodeURIComponent(key) + '=' +
-                            encodeURIComponent(parameters[key]);
+                           encodeURIComponent(parameters[key]);
                 }).join('&');
         history.replaceState(null, null, newSearch);
     }
@@ -87,14 +123,16 @@
     // Defines a GraphQL fetcher using the fetch API.
     function graphQLFetcher(graphQLParams) {
         var headers = {
-            'Accept': 'application/json',
+            'Accept':       'application/json',
             'Content-Type': 'application/json',
         };
-
+        if (window.tokenInput) {
+            headers['accessToken'] = tokenInput.value;
+        }
         return fetch("{{ graphQLUrl }}", {
-            method: 'post',
-            headers: headers,
-            body: JSON.stringify(graphQLParams),
+            method:      'post',
+            headers:     headers,
+            body:        JSON.stringify(graphQLParams),
             credentials: 'include'
         }).then(function (response) {
             return response.text();
@@ -110,16 +148,35 @@
     // Render <GraphiQL /> into the body.
     ReactDOM.render(
             React.createElement(GraphiQL, {
-                fetcher: graphQLFetcher,
-                query: parameters.query,
-                variables: parameters.variables,
-                operationName: parameters.operationName,
-                onEditQuery: onEditQuery,
-                onEditVariables: onEditVariables,
+                fetcher:             graphQLFetcher,
+                query:               parameters.query,
+                variables:           parameters.variables,
+                operationName:       parameters.operationName,
+                onEditQuery:         onEditQuery,
+                onEditVariables:     onEditVariables,
                 onEditOperationName: onEditOperationName
             }),
             document.getElementById('graphiql')
     );
+</script>
+<script>
+    var button     = document.querySelector('.token-button');
+    var tokenInput = document.querySelector('#token-input');
+    button.addEventListener('click', function() {
+        button.style.display     = 'none';
+        tokenInput.style.display = 'inline-block';
+    });
+    tokenInput.addEventListener('change', function() {
+        if (window.localStorage) {
+            window.localStorage.setItem('api-token', tokenInput.value);
+        }
+    });
+    if (window.localStorage) {
+        var tokenValue = window.localStorage.getItem('api-token');
+        if (tokenValue) {
+            tokenInput.value = tokenValue;
+        }
+    }
 </script>
 </body>
 </html>
