@@ -11,35 +11,67 @@ namespace Youshido\GraphQLBundle\Security\Manager;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Parser\Ast\Query;
 
 class DefaultSecurityManager implements SecurityManagerInterface
 {
 
     /** @var bool */
-    private $enabled = false;
+    private $fieldSecurityEnabled = false;
+
+    /** @var bool */
+    private $rootOperationSecurityEnabled = false;
 
     /** @var  AuthorizationCheckerInterface */
     private $authorizationChecker;
 
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker)
+    public function __construct(AuthorizationCheckerInterface $authorizationChecker, $fieldSecurityEnabled, $rootOperationSecurityEnabled)
     {
-        $this->authorizationChecker = $authorizationChecker;
+        $this->authorizationChecker         = $authorizationChecker;
+        $this->fieldSecurityEnabled         = $fieldSecurityEnabled;
+        $this->rootOperationSecurityEnabled = $rootOperationSecurityEnabled;
     }
 
     /**
+     * @param string $attribute
+     *
      * @return bool
      */
-    public function isSecurityEnabled()
+    public function isSecurityEnabledFor($attribute)
     {
-        return $this->enabled;
+        if (SecurityManagerInterface::RESOLVE_FIELD_ATTRIBUTE == $attribute) {
+            return $this->fieldSecurityEnabled;
+        } else if (SecurityManagerInterface::RESOLVE_ROOT_OPERATION_ATTRIBUTE == $attribute) {
+            return $this->rootOperationSecurityEnabled;
+        }
+
+        return false;
     }
 
     /**
-     * @param boolean $enabled
+     * @param boolean $fieldSecurityEnabled
      */
-    public function setEnabled($enabled)
+    public function setFieldSecurityEnabled($fieldSecurityEnabled)
     {
-        $this->enabled = $enabled;
+        $this->fieldSecurityEnabled = $fieldSecurityEnabled;
+    }
+
+    /**
+     * @param boolean $rootOperationSecurityEnabled
+     */
+    public function setRooOperationSecurityEnabled($rootOperationSecurityEnabled)
+    {
+        $this->rootOperationSecurityEnabled = $rootOperationSecurityEnabled;
+    }
+
+    /**
+     * @param Query $query
+     *
+     * @return bool
+     */
+    public function isGrantedToOperationResolve(Query $query)
+    {
+        return $this->authorizationChecker->isGranted(SecurityManagerInterface::RESOLVE_ROOT_OPERATION_ATTRIBUTE, $query);
     }
 
     /**
@@ -47,9 +79,9 @@ class DefaultSecurityManager implements SecurityManagerInterface
      *
      * @return bool
      */
-    public function isGrantedToResolve(ResolveInfo $resolveInfo)
+    public function isGrantedToFieldResolve(ResolveInfo $resolveInfo)
     {
-        return $this->authorizationChecker->isGranted(SecurityManagerInterface::RESOLVE_ATTRIBUTE, $resolveInfo);
+        return $this->authorizationChecker->isGranted(SecurityManagerInterface::RESOLVE_FIELD_ATTRIBUTE, $resolveInfo);
     }
 
     /**
@@ -59,7 +91,19 @@ class DefaultSecurityManager implements SecurityManagerInterface
      *
      * @throw \Exception
      */
-    public function createNewAccessDeniedException(ResolveInfo $resolveInfo)
+    public function createNewFieldAccessDeniedException(ResolveInfo $resolveInfo)
+    {
+        return new AccessDeniedException();
+    }
+
+    /**
+     * @param Query $query
+     *
+     * @return mixed
+     *
+     * @throw \Exception
+     */
+    public function createNewOperationAccessDeniedException(Query $query)
     {
         return new AccessDeniedException();
     }

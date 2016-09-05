@@ -12,6 +12,9 @@ services:
         lazy: true
         arguments:
             - "@security.authorization_checker"
+            - "%youshido.graphql.security.root_operation.enable%"
+            - "%youshido.graphql.security.field.enable%"
+
 
     youshido.graphql.processor:
         class: "%youshido.graphql.processor.class%"

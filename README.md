@@ -17,7 +17,7 @@ This bundle provides you with:
  * [Symfony features included](#symfony-features-included)
     * [AbstractContainerAwareField class](#class-abstractcontainerawarefield)
     * [Service method as callable](#service-method-as-callable)
-    * [Resolve field security](#resolve-field-security)
+    * [Security](#security)
  * [Documentation](#documentation)
 
 
@@ -121,13 +121,21 @@ $config->addField(new Field([
 ]))
 ```
 
-### Resolve field security:
-First of all, you need to enable it in your config.yml file:
+### Security:
+Bundle provides two type of security check:
+* check access to resolve root level operation
+* check access to resolve any field (include root level fields, child field, ast fields).
+
+> Note: Enabling field security lead to a significant reduction in performance
+
+To enable security you need to write following in your config.yml file:
 ```yaml
 graph_ql:
-    security_enable: true
+    security:
+        field_resolve: true          # for any field security
+        root_operation_resolve: true # for root level security
 ```
-Then create standard security voter for that ([official documentation](http://symfony.com/doc/current/security/voters.html)), as in example below:
+Then to create standard security voter for that ([official documentation](http://symfony.com/doc/current/security/voters.html)), as in example below:
 ```php
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -142,7 +150,7 @@ class GraphQLVoter extends Voter
      */
     protected function supports($attribute, $subject)
     {
-        return $attribute == SecurityManagerInterface::RESOLVE_ATTRIBUTE && $subject instanceof ResolveInfo;
+        return in_array($attribute, [SecurityManagerInterface::RESOLVE_FIELD_ATTRIBUTE, SecurityManagerInterface::RESOLVE_ROOT_OPERATION_ATTRIBUTE]);
     }
 
     /**
@@ -152,16 +160,23 @@ class GraphQLVoter extends Voter
     {
         // your own validation logic here
 
-        /** @var $subject ResolveInfo */
-        if ($subject->getField()->getName() == 'hello') { //example
-            return false;
-        }
+        if (SecurityManagerInterface::RESOLVE_FIELD_ATTRIBUTE == $attribute) {
+            /** @var $subject ResolveInfo */
+            if ($subject->getField()->getName() == 'hello') {
+                return false;
+            }
 
-        return true;
+            return true;
+        } elseif (SecurityManagerInterface::RESOLVE_ROOT_OPERATION_ATTRIBUTE == $attribute) {
+            /** @var $subject Query */
+            if ($subject->getName() == '__schema') {
+                return true;
+            }
+        }
     }
 }
 ```
-Now GraphQL executor will check access for every resolved field before resolve it.
+Now GraphQL executor will check access for every field/operation, based on configuration.
 
 
 ## GraphiQL extension:

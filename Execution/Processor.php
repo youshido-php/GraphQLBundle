@@ -37,7 +37,7 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
     /**
      * @inheritdoc
      */
-    public function __construct(AbstractSchema $schema, SecurityManagerInterface $securityManager = null)
+    public function __construct(AbstractSchema $schema, SecurityManagerInterface $securityManager)
     {
         $validator = ConfigValidator::getInstance();
         $validator->addRule('type', new TypeValidationRule($validator));
@@ -56,6 +56,13 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
         parent::processPayload($payload, $variables);
     }
 
+    protected function executeOperation(Query $query, $currentLevelSchema)
+    {
+        $this->assertClientHasOperationAccess($query);
+
+        return parent::executeOperation($query, $currentLevelSchema);
+    }
+
     /**
      * @inheritdoc
      */
@@ -64,13 +71,7 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
         $resolveInfo = $this->createResolveInfo($field, $query->getFields());
         $args        = $this->parseArgumentsValues($field, $query);
 
-        //security check
-        if ($this->securityManger
-            && $this->securityManger->isSecurityEnabled()
-            && !$this->securityManger->isGrantedToResolve($resolveInfo)
-        ) {
-            throw $this->securityManger->createNewAccessDeniedException($resolveInfo);
-        }
+        $this->assertClientHasFieldAccess($resolveInfo);
 
         if ($field instanceof Field) {
             if ($resolveFunc = $field->getConfig()->getResolveFunction()) {
@@ -107,10 +108,29 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
         return null;
     }
 
+    private function assertClientHasOperationAccess(Query $query)
+    {
+        if ($this->securityManger->isSecurityEnabledFor(SecurityManagerInterface::RESOLVE_ROOT_OPERATION_ATTRIBUTE)
+            && !$this->securityManger->isGrantedToOperationResolve($query)
+        ) {
+            throw $this->securityManger->createNewOperationAccessDeniedException($query);
+        }
+    }
+
+    private function assertClientHasFieldAccess(ResolveInfo $resolveInfo)
+    {
+        if ($this->securityManger->isSecurityEnabledFor(SecurityManagerInterface::RESOLVE_FIELD_ATTRIBUTE)
+            && !$this->securityManger->isGrantedToFieldResolve($resolveInfo)
+        ) {
+            throw $this->securityManger->createNewFieldAccessDeniedException($resolveInfo);
+        }
+    }
+
     protected function createResolveInfo($field, $fields)
     {
         $info = new ResolveInfo($field, $fields, $this->executionContext);
         $info->setContainer($this->container);
+
         return $info;
     }
 

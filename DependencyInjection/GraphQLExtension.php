@@ -32,8 +32,9 @@ class GraphQLExtension extends Extension
 
         $container->setParameter('youshido.graphql.schema_class', $this->getConfig('schema_class', null));
         $container->setParameter('youshido.graphql.response_headers', $responseHeaders);
-        $container->setParameter('youshido.graphql.logger', $this->getConfig('logger', null));
-        $container->setParameter('youshido.graphql.security.enable', $this->getConfig('security_enable', false));
+        $container->setParameter('youshido.graphql.logger', $this->config['logger']);
+        $container->setParameter('youshido.graphql.security.root_operation.enable', $this->config['security']['root_operation_resolve']);
+        $container->setParameter('youshido.graphql.security.field.enable', $this->config['security']['field_resolve']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');

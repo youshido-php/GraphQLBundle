@@ -32,9 +32,5 @@ class GraphQlCompilerPass implements CompilerPassInterface
 
             $container->getDefinition('youshido.graphql.processor')->addMethodCall('setLogger', [new Reference($loggerAlias)]);
         }
-
-        if($container->getParameter('youshido.graphql.security.enable')) {
-            $container->getDefinition('youshido.graphql.security_manager')->addMethodCall('setEnabled', [true]);
-        }
     }
 }
