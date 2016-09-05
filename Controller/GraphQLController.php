@@ -35,7 +35,7 @@ class GraphQLController extends Controller
             ]);
         }
 
-        if (!$this->get('service_container')->has('youshido.graphql.schema')) {
+        if (!$this->get('service_container')->initialized('youshido.graphql.schema')) {
             $this->get('service_container')->set('youshido.graphql.schema', new $schemaClass());
         }
 
