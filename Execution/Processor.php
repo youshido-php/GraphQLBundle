@@ -56,6 +56,30 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
         parent::processPayload($payload, $variables);
     }
 
+    protected function executeOperation(Query $query, $currentLevelSchema)
+    {
+        $authRequired = false;
+        $anonymousAccess = $this->container->getParameter('youshido.graphql.anonymous');
+        if ($anonymousAccess === null) {
+            $authRequired = true;
+        } elseif(is_array($anonymousAccess)) {
+            if (!in_array($query->getName(), $anonymousAccess)) {
+                $authRequired = true;
+            }
+        }
+        if ($authRequired) {
+            $token = $this->container->get('security.token_storage')->getToken();
+            $user = $token ? $token->getUser() : null;
+            if (is_object($user)) {
+                // add to execution context
+            } else {
+                throw new ResolveException('Access denied', 403);
+            }
+        }
+        return parent::executeOperation($query, $currentLevelSchema);
+    }
+
+
     /**
      * @inheritdoc
      */

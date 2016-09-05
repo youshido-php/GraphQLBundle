@@ -30,6 +30,7 @@ class GraphQLExtension extends Extension
             $responseHeaders[$responseHeader['name']] = $responseHeader['value'];
         }
 
+        $container->setParameter('youshido.graphql.anonymous', $this->getConfig('anonymous', null));
         $container->setParameter('youshido.graphql.schema_class', $this->getConfig('schema_class', null));
         $container->setParameter('youshido.graphql.response_headers', $responseHeaders);
         $container->setParameter('youshido.graphql.logger', $this->getConfig('logger', null));
