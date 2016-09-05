@@ -121,27 +121,6 @@ $config->addField(new Field([
 ]))
 ```
 
-### Restrict Access to the whole endpoint or to a specific root fields
-You can specify `anonymous` parameter under `graph_ql` section:
-```yml
-graph_ql:
-    anonymous: true #default
-```
-Allow full anonymous access
-
-```yml
-graph_ql:
-    anonymous: false
-```
-Disable access for unauthenticated users
-
-```yml
-graph_ql:
-    anonymous: ["info", "login"]
-```
-Allowing access to those `info` and `login` fields under the rootQuery or rootMutation
-
-
 ### Resolve field security:
 First of all, you need to enable it in your config.yml file:
 ```yaml
