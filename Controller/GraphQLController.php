@@ -9,6 +9,7 @@ namespace Youshido\GraphQLBundle\Controller;
 
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Youshido\GraphQL\Validator\Exception\ConfigurationException;
@@ -36,7 +37,11 @@ class GraphQLController extends Controller
         }
 
         if (!$this->get('service_container')->initialized('youshido.graphql.schema')) {
-            $this->get('service_container')->set('youshido.graphql.schema', new $schemaClass());
+            $schema = new $schemaClass();
+            if ($schema instanceof ContainerAwareInterface) {
+                $schema->setContainer($this->get('service_container'));
+            }
+            $this->get('service_container')->set('youshido.graphql.schema', $schema);
         }
 
         /** @var Processor $processor */
