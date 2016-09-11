@@ -57,7 +57,7 @@ class GraphQLController extends Controller
         $query     = $request->get('query', null);
         $variables = $request->get('variables', null);
 
-        $variables = json_decode($variables, true) ?: [];
+        $variables = is_string($variables) ? json_decode($variables, true) : [];
 
         $content = $request->getContent();
         if (!empty($content)) {

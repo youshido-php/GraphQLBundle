@@ -66,10 +66,9 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
     /**
      * @inheritdoc
      */
-    protected function resolveFieldValue(AbstractField $field, $contextValue, Query $query)
+    protected function resolveFieldValue(AbstractField $field, $contextValue, array $fields, array $args)
     {
-        $resolveInfo = $this->createResolveInfo($field, $query->getFields());
-        $args        = $this->parseArgumentsValues($field, $query);
+        $resolveInfo = $this->createResolveInfo($field, $fields);
 
         $this->assertClientHasFieldAccess($resolveInfo);
 
