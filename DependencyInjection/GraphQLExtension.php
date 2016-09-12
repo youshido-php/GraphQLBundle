@@ -2,10 +2,10 @@
 
 namespace Youshido\GraphQLBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * This is the class that loads and manages your bundle configuration
@@ -33,8 +33,16 @@ class GraphQLExtension extends Extension
         $container->setParameter('youshido.graphql.schema_class', $this->getConfig('schema_class', null));
         $container->setParameter('youshido.graphql.response_headers', $responseHeaders);
         $container->setParameter('youshido.graphql.logger', $this->config['logger']);
-        $container->setParameter('youshido.graphql.security.root_operation.enable', $this->config['security']['root_operation_resolve']);
-        $container->setParameter('youshido.graphql.security.field.enable', $this->config['security']['field_resolve']);
+        $container->setParameter('youshido.graphql.response_json_pretty', $this->config['response_json_pretty']);
+
+        $container->setParameter('youshido.graphql.security.guard_config', [
+            'field'     => $this->config['security']['guard']['field'],
+            'operation' => $this->config['security']['guard']['operation']
+        ]);
+
+        $container->setParameter('youshido.graphql.security.black_list', $this->config['security']['black_list']);
+        $container->setParameter('youshido.graphql.security.white_list', $this->config['security']['white_list']);
+
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');

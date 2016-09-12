@@ -12,8 +12,12 @@ services:
         lazy: true
         arguments:
             - "@security.authorization_checker"
-            - "%youshido.graphql.security.field.enable%"
-            - "%youshido.graphql.security.root_operation.enable%"
+            - "%youshido.graphql.security.guard_config%"
+
+    youshido.graphql.security.voter:
+        class: Youshido\GraphQLBundle\Security\Voter\BlacklistVoter
+        tags:
+            - { name: "security.voter", priority: 255 }
 
     youshido.graphql.processor:
         class: "%youshido.graphql.processor.class%"

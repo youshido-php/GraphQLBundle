@@ -48,7 +48,13 @@ class GraphQLController extends Controller
         $processor = $this->get('youshido.graphql.processor');
         $processor->processPayload($query, $variables);
 
-        return $this->json($processor->getResponseData(), 200, $this->getParameter('youshido.graphql.response_headers'));
+        $response = $this->json($processor->getResponseData(), 200, $this->getParameter('youshido.graphql.response_headers'));
+
+        if($this->getParameter('youshido.graphql.response_json_pretty')) {
+            $response->setEncodingOptions($response->getEncodingOptions() | JSON_PRETTY_PRINT);
+        }
+
+        return $response;
     }
 
     private function getPayload()

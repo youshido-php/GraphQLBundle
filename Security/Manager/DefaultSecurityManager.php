@@ -25,11 +25,11 @@ class DefaultSecurityManager implements SecurityManagerInterface
     /** @var  AuthorizationCheckerInterface */
     private $authorizationChecker;
 
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker, $fieldSecurityEnabled, $rootOperationSecurityEnabled)
+    public function __construct(AuthorizationCheckerInterface $authorizationChecker, array $guardConfig = [])
     {
         $this->authorizationChecker         = $authorizationChecker;
-        $this->fieldSecurityEnabled         = $fieldSecurityEnabled;
-        $this->rootOperationSecurityEnabled = $rootOperationSecurityEnabled;
+        $this->fieldSecurityEnabled         = isset($guardConfig['field']) ? $guardConfig['field'] : false;
+        $this->rootOperationSecurityEnabled = isset($guardConfig['operation']) ? $guardConfig['operation'] : false;
     }
 
     /**
