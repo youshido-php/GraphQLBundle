@@ -23,7 +23,7 @@ class GraphQlCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if ($loggerAlias = $container->getParameter('youshido.graphql.logger')) {
+        if ($loggerAlias = $container->getParameter('graphql.logger')) {
             if (strpos($loggerAlias, '@') === 0) {
                 $loggerAlias = substr($loggerAlias, 1);
             }
@@ -32,7 +32,7 @@ class GraphQlCompilerPass implements CompilerPassInterface
                 throw new \RuntimeException(sprintf('Logger "%s" not found', $loggerAlias));
             }
 
-            $container->getDefinition('youshido.graphql.processor')->addMethodCall('setLogger', [new Reference($loggerAlias)]);
+            $container->getDefinition('graphql.processor')->addMethodCall('setLogger', [new Reference($loggerAlias)]);
         }
 
         $this->processSecurityGuard($container);
@@ -40,9 +40,9 @@ class GraphQlCompilerPass implements CompilerPassInterface
 
     private function processSecurityGuard(ContainerBuilder $container)
     {
-        $guardConfig = $container->getParameter('youshido.graphql.security.guard_config');
-        $whiteList   = $container->getParameter('youshido.graphql.security.white_list');
-        $blackList   = $container->getParameter('youshido.graphql.security.black_list');
+        $guardConfig = $container->getParameter('graphql.security.guard_config');
+        $whiteList   = $container->getParameter('graphql.security.white_list');
+        $blackList   = $container->getParameter('graphql.security.black_list');
 
         if ((!$guardConfig['field'] && !$guardConfig['operation']) && ($whiteList || $blackList)) {
             if ($whiteList && $blackList) {
@@ -58,12 +58,12 @@ class GraphQlCompilerPass implements CompilerPassInterface
     {
         if ($list) {
             $container
-                ->getDefinition('youshido.graphql.security.voter')
+                ->getDefinition('graphql.security.voter')
                 ->setClass($voterClass)
                 ->addMethodCall('setEnabled', [true])
                 ->addMethodCall('setList', [$list]);
 
-            $container->setParameter('youshido.graphql.security.guard_config', [
+            $container->setParameter('graphql.security.guard_config', [
                 'operation' => true,
                 'field'     => false
             ]);

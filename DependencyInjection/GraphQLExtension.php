@@ -25,27 +25,28 @@ class GraphQLExtension extends Extension
         $configuration = new Configuration();
         $this->config  = $this->processConfiguration($configuration, $configs);
 
-        $responseHeaders = [];
-        foreach ($this->getConfig('response_headers', $this->getDefaultHeaders()) as $responseHeader) {
-            $responseHeaders[$responseHeader['name']] = $responseHeader['value'];
+        $preparedHeaders = [];
+        $headers         = $this->config['response']['headers'] ? $this->config['response']['headers'] : $this->getDefaultHeaders();
+        foreach ($headers as $header) {
+            $preparedHeaders[$header['name']] = $header['value'];
         }
 
-        $container->setParameter('youshido.graphql.schema_class', $this->getConfig('schema_class', null));
-        $container->setParameter('youshido.graphql.response_headers', $responseHeaders);
-        $container->setParameter('youshido.graphql.logger', $this->config['logger']);
-        $container->setParameter('youshido.graphql.response_json_pretty', $this->config['response_json_pretty']);
+        $container->setParameter('graphql.response.headers', $preparedHeaders);
+        $container->setParameter('graphql.schema_class', $this->config['schema_class']);
+        $container->setParameter('graphql.logger', $this->config['logger']);
+        $container->setParameter('graphql.response.json_pretty', $this->config['response']['json_pretty']);
 
-        $container->setParameter('youshido.graphql.security.guard_config', [
+        $container->setParameter('graphql.security.guard_config', [
             'field'     => $this->config['security']['guard']['field'],
             'operation' => $this->config['security']['guard']['operation']
         ]);
 
-        $container->setParameter('youshido.graphql.security.black_list', $this->config['security']['black_list']);
-        $container->setParameter('youshido.graphql.security.white_list', $this->config['security']['white_list']);
+        $container->setParameter('graphql.security.black_list', $this->config['security']['black_list']);
+        $container->setParameter('graphql.security.white_list', $this->config['security']['white_list']);
 
 
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('services.yml');
+        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load('services.xml');
     }
 
     private function getDefaultHeaders()
@@ -54,11 +55,6 @@ class GraphQLExtension extends Extension
             ['name' => 'Access-Control-Allow-Origin', 'value' => '*'],
             ['name' => 'Access-Control-Allow-Headers', 'value' => 'Content-Type'],
         ];
-    }
-
-    private function getConfig($key, $default = null)
-    {
-        return array_key_exists($key, $this->config) && $this->config[$key] ? $this->config[$key] : $default;
     }
 
 }

@@ -29,28 +29,29 @@ class GraphQLController extends Controller
     {
         list($query, $variables) = $this->getPayload();
 
-        $schemaClass = $this->getParameter('youshido.graphql.schema_class');
+        $schemaClass = $this->getParameter('graphql.schema_class');
         if (!$schemaClass || !class_exists($schemaClass)) {
             return $this->json([
                 ['message' => 'Schema class ' . $schemaClass . ' does not exist']
             ]);
         }
 
-        if (!$this->get('service_container')->initialized('youshido.graphql.schema')) {
+        if (!$this->get('service_container')->initialized('graphql.schema')) {
             $schema = new $schemaClass();
             if ($schema instanceof ContainerAwareInterface) {
                 $schema->setContainer($this->get('service_container'));
             }
-            $this->get('service_container')->set('youshido.graphql.schema', $schema);
+
+            $this->get('service_container')->set('graphql.schema', $schema);
         }
 
         /** @var Processor $processor */
-        $processor = $this->get('youshido.graphql.processor');
+        $processor = $this->get('graphql.processor');
         $processor->processPayload($query, $variables);
 
-        $response = $this->json($processor->getResponseData(), 200, $this->getParameter('youshido.graphql.response_headers'));
+        $response = $this->json($processor->getResponseData(), 200, $this->getParameter('graphql.response.headers'));
 
-        if($this->getParameter('youshido.graphql.response_json_pretty')) {
+        if($this->getParameter('graphql.response.json_pretty')) {
             $response->setEncodingOptions($response->getEncodingOptions() | JSON_PRETTY_PRINT);
         }
 

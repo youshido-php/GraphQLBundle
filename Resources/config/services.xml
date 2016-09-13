@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="graphql.processor.class">Youshido\GraphQLBundle\Execution\Processor</parameter>
+        <parameter key="graphql.security_manager.class">Youshido\GraphQLBundle\Security\Manager\DefaultSecurityManager</parameter>
+    </parameters>
+
+    <services>
+        <service id="graphql.schema" synthetic="true" />
+
+        <service id="graphql.processor" class="%graphql.processor.class%">
+            <argument type="service" id="graphql.schema" />
+            <argument type="service" id="graphql.security_manager" />
+
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+        </service>
+
+        <service id="graphql.security_manager" class="%graphql.security_manager.class%" lazy="true">
+            <argument type="service" id="security.authorization_checker"/>
+            <argument>%graphql.security.guard_config%</argument>
+        </service>
+
+        <service id="graphql.security.voter" class="Youshido\GraphQLBundle\Security\Voter\BlacklistVoter" public="false">
+            <tag name="security.voter" priority="255" />
+        </service>
+    </services>
+</container>
