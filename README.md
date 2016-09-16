@@ -122,20 +122,34 @@ $config->addField(new Field([
 ```
 
 ### Security:
-Bundle provides two type of security check:
-* check access to resolve root level operation
-* check access to resolve any field (include root level fields, child field, ast fields).
+Bundle provides two ways to guard your application: using black/white operation list or using security voter.
+
+#### Black/white list
+Used to guard some root operations. To enable it you need to write following in your config.yml file:
+```yaml
+graph_ql:
+
+  #...
+
+  security:
+    black_list: ['hello'] # or white_list: ['hello']
+
+```
+#### Using security voter:
+Used to guard any field resolve and support two types of guards: root operation and any other field resolving (including internal fields, scalar type fields, root operations). To guard root operation with your specified logic you need to enable it in configuration and use  `SecurityManagerInterface::RESOLVE_ROOT_OPERATION_ATTRIBUTE` attribute. The same things need to do to enable field guard, but in this case use `SecurityManagerInterface::RESOLVE_FIELD_ATTRIBUTE` attribute.
+[Official documentation](http://symfony.com/doc/current/security/voters.html) about voters.
 
 > Note: Enabling field security lead to a significant reduction in performance
 
-To enable security you need to write following in your config.yml file:
+Config example:
 ```yaml
 graph_ql:
     security:
         field_resolve: true          # for any field security
         root_operation_resolve: true # for root level security
 ```
-Then to create standard security voter for that ([official documentation](http://symfony.com/doc/current/security/voters.html)), as in example below:
+
+Voter example (add in to your `services.yml` file with tag `security.voter`):
 ```php
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -176,11 +190,10 @@ class GraphQLVoter extends Voter
     }
 }
 ```
-Now GraphQL executor will check access for every field/operation, based on configuration.
 
 
 ## GraphiQL extension:
-To run [graphiql extension](https://github.com/graphql/graphiql) just try to access to `http://your_domain/explorer`
+To run [graphiql extension](https://github.com/graphql/graphiql) just try to access to `http://your_domain/graphql/explorer`
 
 ## Documentation
 All detailed documentation is available on the main GraphQL repository – http://github.com/youshido/graphql/.
