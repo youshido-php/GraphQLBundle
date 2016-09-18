@@ -56,7 +56,7 @@ That's because there was no GraphQL Schema specified for the processor yet. You 
 
 The fastest way to create a Schema class is to use a generator shipped with this bundle:
 ```sh
-php bin/console graphql:schema:generate AppBundle
+php bin/console graphql:configure AppBundle
 ```
 Here *AppBundle* is a name of the bundle where the class will be generated in.  
 You will be requested for a confirmation to create a class and then presented with instructions to update your config file.
