@@ -27,6 +27,10 @@ class GraphQLController extends Controller
      */
     public function defaultAction()
     {
+        if ($this->get('request_stack')->getCurrentRequest()->getMethod() == 'OPTIONS') {
+            return $this->createEmptyResponse();
+        }
+
         list($query, $variables) = $this->getPayload();
 
         $schemaClass = $this->getParameter('graphql.schema_class');
@@ -56,6 +60,11 @@ class GraphQLController extends Controller
         }
 
         return $response;
+    }
+
+    private function createEmptyResponse()
+    {
+        return $this->json([], 200, $this->getParameter('graphql.response.headers'));
     }
 
     private function getPayload()

@@ -127,7 +127,7 @@
             'Content-Type': 'application/json',
         };
         if (window.tokenInput) {
-            headers['accessToken'] = tokenInput.value;
+            headers['{{ tokenHeader }}'] = tokenInput.value;
         }
         return fetch("{{ graphQLUrl }}", {
             method:      'post',

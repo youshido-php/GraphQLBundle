@@ -92,8 +92,8 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
                 }
 
                 return $resolveFunc($contextValue, $args, $resolveInfo);
-            } elseif ($propertyValue = TypeService::getPropertyValue($contextValue, $field->getName())) {
-                return $propertyValue;
+            } else {
+                return TypeService::getPropertyValue($contextValue, $field->getName());
             }
         } else { //instance of AbstractContainerAwareField
             if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field))) {
@@ -103,8 +103,6 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
 
             return $field->resolve($contextValue, $args, $resolveInfo);
         }
-
-        return null;
     }
 
     private function assertClientHasOperationAccess(Query $query)
