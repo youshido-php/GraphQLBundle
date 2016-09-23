@@ -14,10 +14,12 @@
 
         <service id="graphql.processor" class="%graphql.processor.class%">
             <argument type="service" id="graphql.schema" />
-            <argument type="service" id="graphql.security_manager" />
 
             <call method="setContainer">
                 <argument type="service" id="service_container" />
+            </call>
+            <call method="setSecurityManager">
+                <argument type="service" id="graphql.security_manager" />
             </call>
         </service>
 

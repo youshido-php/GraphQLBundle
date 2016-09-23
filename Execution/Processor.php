@@ -32,19 +32,27 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
     private $logger;
 
     /** @var  SecurityManagerInterface */
-    private $securityManger;
+    private $securityManager;
 
     /**
      * @inheritdoc
      */
-    public function __construct(AbstractSchema $schema, SecurityManagerInterface $securityManager)
+    public function __construct(AbstractSchema $schema)
     {
         $validator = ConfigValidator::getInstance();
         $validator->addRule('type', new TypeValidationRule($validator));
 
-        $this->securityManger = $securityManager;
-
         parent::__construct($schema);
+    }
+
+    /**
+     * @param SecurityManagerInterface $securityManger
+     * @return Processor
+     */
+    public function setSecurityManager(SecurityManagerInterface $securityManger)
+    {
+        $this->securityManager = $securityManger;
+        return $this;
     }
 
     public function processPayload($payload, $variables = [], $reducers = [])
@@ -107,19 +115,19 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
 
     private function assertClientHasOperationAccess(Query $query)
     {
-        if ($this->securityManger->isSecurityEnabledFor(SecurityManagerInterface::RESOLVE_ROOT_OPERATION_ATTRIBUTE)
-            && !$this->securityManger->isGrantedToOperationResolve($query)
+        if ($this->securityManager->isSecurityEnabledFor(SecurityManagerInterface::RESOLVE_ROOT_OPERATION_ATTRIBUTE)
+            && !$this->securityManager->isGrantedToOperationResolve($query)
         ) {
-            throw $this->securityManger->createNewOperationAccessDeniedException($query);
+            throw $this->securityManager->createNewOperationAccessDeniedException($query);
         }
     }
 
     private function assertClientHasFieldAccess(ResolveInfo $resolveInfo)
     {
-        if ($this->securityManger->isSecurityEnabledFor(SecurityManagerInterface::RESOLVE_FIELD_ATTRIBUTE)
-            && !$this->securityManger->isGrantedToFieldResolve($resolveInfo)
+        if ($this->securityManager->isSecurityEnabledFor(SecurityManagerInterface::RESOLVE_FIELD_ATTRIBUTE)
+            && !$this->securityManager->isGrantedToFieldResolve($resolveInfo)
         ) {
-            throw $this->securityManger->createNewFieldAccessDeniedException($resolveInfo);
+            throw $this->securityManager->createNewFieldAccessDeniedException($resolveInfo);
         }
     }
 
