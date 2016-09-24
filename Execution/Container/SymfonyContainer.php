@@ -59,4 +59,13 @@ class SymfonyContainer implements ContainerInterface, ContainerAwareInterface
         return $this->container->hasParameter($name);
     }
 
+    /**
+     * Exists temporarily for ContainerAwareField that is to be removed in 1.5
+     * @return mixed
+     */
+    public function getSymfonyContainer()
+    {
+        return $this->container;
+    }
+
 }

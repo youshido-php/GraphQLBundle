@@ -98,7 +98,7 @@ class Processor extends BaseProcessor
         } else { //instance of AbstractContainerAwareField
             if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field))) {
                 /** @var $field ContainerAwareInterface */
-                $field->setContainer($this->executionContext->getContainer());
+                $field->setContainer($this->executionContext->getContainer()->getSymfonyContainer());
             }
 
             return $field->resolve($contextValue, $args, $resolveInfo);
