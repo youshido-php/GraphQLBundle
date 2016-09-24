@@ -10,23 +10,18 @@ namespace Youshido\GraphQLBundle\Execution;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Processor as BaseProcessor;
 use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Parser\Ast\Query;
-use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Type\TypeService;
-use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
-use Youshido\GraphQLBundle\Config\Rule\TypeValidationRule;
 use Youshido\GraphQLBundle\Security\Manager\SecurityManagerInterface;
 
-class Processor extends BaseProcessor implements ContainerAwareInterface
+class Processor extends BaseProcessor
 {
-
-    use ContainerAwareTrait;
 
     /** @var  LoggerInterface */
     private $logger;
@@ -37,12 +32,10 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
     /**
      * @inheritdoc
      */
-    public function __construct(AbstractSchema $schema)
+    public function __construct(ExecutionContextInterface $executionContext)
     {
-        $validator = ConfigValidator::getInstance();
-        $validator->addRule('type', new TypeValidationRule($validator));
-
-        parent::__construct($schema);
+        $this->executionContext = $executionContext;
+        parent::__construct($executionContext->getSchema());
     }
 
     /**
@@ -85,12 +78,11 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
                 if ($this->isServiceReference($resolveFunc)) {
                     $service = substr($resolveFunc[0], 1);
                     $method  = $resolveFunc[1];
-
-                    if (!$this->container->has($service)) {
+                    if (!$this->executionContext->getContainer()->has($service)) {
                         throw new ResolveException(sprintf('Resolve service "%s" not found for field "%s"', $service, $field->getName()));
                     }
 
-                    $serviceInstance = $this->container->get($service);
+                    $serviceInstance = $this->executionContext->getContainer()->get($service);
 
                     if (!method_exists($serviceInstance, $method)) {
                         throw new ResolveException(sprintf('Resolve method "%s" not found in "%s" service for field "%s"', $method, $service, $field->getName()));
@@ -106,7 +98,7 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
         } else { //instance of AbstractContainerAwareField
             if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field))) {
                 /** @var $field ContainerAwareInterface */
-                $field->setContainer($this->container);
+                $field->setContainer($this->executionContext->getContainer());
             }
 
             return $field->resolve($contextValue, $args, $resolveInfo);
@@ -129,14 +121,6 @@ class Processor extends BaseProcessor implements ContainerAwareInterface
         ) {
             throw $this->securityManager->createNewFieldAccessDeniedException($resolveInfo);
         }
-    }
-
-    protected function createResolveInfo($field, $fields)
-    {
-        $info = new ResolveInfo($field, $fields, $this->executionContext);
-        $info->setContainer($this->container);
-
-        return $info;
     }
 
 

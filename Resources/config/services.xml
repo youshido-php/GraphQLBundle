@@ -6,6 +6,7 @@
 
     <parameters>
         <parameter key="graphql.processor.class">Youshido\GraphQLBundle\Execution\Processor</parameter>
+        <parameter key="graphql.execution_context.class">Youshido\GraphQLBundle\Execution\Context\ExecutionContext</parameter>
         <parameter key="graphql.security_manager.class">Youshido\GraphQLBundle\Security\Manager\DefaultSecurityManager</parameter>
     </parameters>
 
@@ -13,15 +14,27 @@
         <service id="graphql.schema" synthetic="true" />
 
         <service id="graphql.processor" class="%graphql.processor.class%">
-            <argument type="service" id="graphql.schema" />
+            <argument type="service" id="graphql.execution_context" />
 
-            <call method="setContainer">
-                <argument type="service" id="service_container" />
-            </call>
             <call method="setSecurityManager">
                 <argument type="service" id="graphql.security_manager" />
             </call>
         </service>
+
+        <service id="graphql.execution_context" class="%graphql.execution_context.class%">
+            <argument type="service" id="graphql.schema" />
+
+            <call method="setContainer">
+                <argument type="service" id="graphql.symfony_container_bridge" />
+            </call>
+        </service>
+
+        <service id="graphql.symfony_container_bridge" class="Youshido\GraphQLBundle\Execution\Container\SymfonyContainer">
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+        </service>
+
 
         <service id="graphql.security_manager" class="%graphql.security_manager.class%" lazy="true">
             <argument type="service" id="security.authorization_checker"/>

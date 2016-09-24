@@ -88,4 +88,16 @@ class GraphQLController extends Controller
         return [$query, $variables];
     }
 
+    protected function json($data, $status = 200, $headers = array(), $context = array())
+    {
+        if ($this->container->has('serializer')) {
+            $json = $this->container->get('serializer')->serialize($data, 'json', array_merge(array(
+                'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
+            ), $context));
+
+            return new JsonResponse($json, $status, $headers, true);
+        }
+        
+        return new JsonResponse($data, $status, $headers);
+    }
 }
