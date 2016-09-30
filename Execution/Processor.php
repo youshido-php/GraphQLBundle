@@ -13,8 +13,8 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Processor as BaseProcessor;
 use Youshido\GraphQL\Execution\ResolveInfo;
-use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\Field;
+use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
@@ -67,7 +67,7 @@ class Processor extends BaseProcessor
     /**
      * @inheritdoc
      */
-    protected function resolveFieldValue(AbstractField $field, $contextValue, array $fields, array $args)
+    protected function resolveFieldValue(FieldInterface $field, $contextValue, array $fields, array $args)
     {
         $resolveInfo = $this->createResolveInfo($field, $fields);
 
