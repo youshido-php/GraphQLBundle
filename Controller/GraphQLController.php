@@ -55,7 +55,7 @@ class GraphQLController extends Controller
 
         $response = $this->json($processor->getResponseData(), 200, $this->getParameter('graphql.response.headers'));
 
-        if($this->getParameter('graphql.response.json_pretty')) {
+        if ($this->getParameter('graphql.response.json_pretty')) {
             $response->setEncodingOptions($response->getEncodingOptions() | JSON_PRETTY_PRINT);
         }
 
@@ -71,33 +71,34 @@ class GraphQLController extends Controller
     {
         $request   = $this->get('request_stack')->getCurrentRequest();
         $query     = $request->get('query', null);
-        $variables = $request->get('variables', null);
+        $variables = $request->get('variables', []);
 
-        $variables = is_string($variables) ? json_decode($variables, true) : [];
+        $variables = is_string($variables) ? json_decode($variables, true) ?: [] : [];
 
         $content = $request->getContent();
         if (!empty($content)) {
             $params = json_decode($content, true);
 
             if ($params) {
-                $query     = isset($params['query']) ? $params['query'] : $query;
-                $variables = isset($params['variables']) ? $params['variables'] : $variables;
+                $query = isset($params['query']) ? $params['query'] : $query;
+
+                if (isset($params['variables'])) {
+                    if (is_string($params['variables'])) {
+                        $variables = json_decode($params['variables'], true) ?: $variables;
+                    } else {
+                        $variables = $params['variables'];
+                    }
+
+                    $variables = is_array($variables) ? $variables : [];
+                }
             }
         }
 
         return [$query, $variables];
     }
 
-    protected function json($data, $status = 200, $headers = array(), $context = array())
+    protected function json($data, $status = 200, $headers = [])
     {
-        if ($this->container->has('serializer')) {
-            $json = $this->container->get('serializer')->serialize($data, 'json', array_merge(array(
-                'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
-            ), $context));
-
-            return new JsonResponse($json, $status, $headers, true);
-        }
-        
         return new JsonResponse($data, $status, $headers);
     }
 }
