@@ -53,7 +53,7 @@ class GraphQLController extends Controller
         $processor = $this->get('graphql.processor');
         $processor->processPayload($query, $variables);
 
-        $response = $this->json($processor->getResponseData(), 200, $this->getParameter('graphql.response.headers'));
+        $response = new JsonResponse($processor->getResponseData(), 200, $this->getParameter('graphql.response.headers'));
 
         if ($this->getParameter('graphql.response.json_pretty')) {
             $response->setEncodingOptions($response->getEncodingOptions() | JSON_PRETTY_PRINT);
@@ -64,7 +64,7 @@ class GraphQLController extends Controller
 
     private function createEmptyResponse()
     {
-        return $this->json([], 200, $this->getParameter('graphql.response.headers'));
+        return new JsonResponse([], 200, $this->getParameter('graphql.response.headers'));
     }
 
     private function getPayload()
@@ -95,10 +95,5 @@ class GraphQLController extends Controller
         }
 
         return [$query, $variables];
-    }
-
-    protected function json($data, $status = 200, $headers = [])
-    {
-        return new JsonResponse($data, $status, $headers);
     }
 }
