@@ -35,9 +35,7 @@ class GraphQLController extends Controller
 
         $schemaClass = $this->getParameter('graphql.schema_class');
         if (!$schemaClass || !class_exists($schemaClass)) {
-            return $this->json([
-                ['message' => 'Schema class ' . $schemaClass . ' does not exist']
-            ]);
+            return new JsonResponse([['message' => 'Schema class ' . $schemaClass . ' does not exist']], 200, $this->getParameter('graphql.response.headers'));
         }
 
         if (!$this->get('service_container')->initialized('graphql.schema')) {
