@@ -7,7 +7,7 @@ This bundle provides you with:
  * Full compatibility with the [RFC Specification for GraphQL](https://facebook.github.io/graphql/)
  * Agile object oriented structure to architect your GraphQL Schema
  * Intuitive Type system that allows you to build your project much faster and stay consistent
- * Build-in validation for the GraphQL Schema you develop
+ * Built-in validation for the GraphQL Schema you develop
  * Well documented classes with a lot of examples
  * Automatically created endpoint /graphql to handle requests
 
