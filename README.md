@@ -11,6 +11,8 @@ This bundle provides you with:
  * Well documented classes with a lot of examples
  * Automatically created endpoint /graphql to handle requests
 
+**There are simple demo application to demonstrate how we build our API, see [GraphQLDemoApp](https://github.com/Youshido/GraphQLDemoApp).**
+
 ## Table of Contents
 
  * [Installation](#installation)

@@ -75,19 +75,23 @@ class GraphQLController extends Controller
 
         $content = $request->getContent();
         if (!empty($content)) {
-            $params = json_decode($content, true);
+            if ($request->headers->has('Content-Type') && 'application/graphql' == $request->headers->get('Content-Type')) {
+                $query = $content;
+            } else {
+                $params = json_decode($content, true);
 
-            if ($params) {
-                $query = isset($params['query']) ? $params['query'] : $query;
+                if ($params) {
+                    $query = isset($params['query']) ? $params['query'] : $query;
 
-                if (isset($params['variables'])) {
-                    if (is_string($params['variables'])) {
-                        $variables = json_decode($params['variables'], true) ?: $variables;
-                    } else {
-                        $variables = $params['variables'];
+                    if (isset($params['variables'])) {
+                        if (is_string($params['variables'])) {
+                            $variables = json_decode($params['variables'], true) ?: $variables;
+                        } else {
+                            $variables = $params['variables'];
+                        }
+
+                        $variables = is_array($variables) ? $variables : [];
                     }
-
-                    $variables = is_array($variables) ? $variables : [];
                 }
             }
         }
