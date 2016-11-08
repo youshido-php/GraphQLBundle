@@ -15,7 +15,10 @@ use Youshido\GraphQL\Execution\Processor as BaseProcessor;
 use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
+use Youshido\GraphQL\Parser\Ast\Field as AstField;
+use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface as AstFieldInterface;
 use Youshido\GraphQL\Parser\Ast\Query;
+use Youshido\GraphQL\Parser\Ast\Query as AstQuery;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQLBundle\Security\Manager\SecurityManagerInterface;
@@ -35,16 +38,19 @@ class Processor extends BaseProcessor
     public function __construct(ExecutionContextInterface $executionContext)
     {
         $this->executionContext = $executionContext;
+
         parent::__construct($executionContext->getSchema());
     }
 
     /**
      * @param SecurityManagerInterface $securityManger
+     *
      * @return Processor
      */
     public function setSecurityManager(SecurityManagerInterface $securityManger)
     {
         $this->securityManager = $securityManger;
+
         return $this;
     }
 
@@ -57,20 +63,20 @@ class Processor extends BaseProcessor
         parent::processPayload($payload, $variables);
     }
 
-    protected function executeOperation(Query $query, $currentLevelSchema)
+    protected function resolveQuery(Query $query)
     {
         $this->assertClientHasOperationAccess($query);
 
-        return parent::executeOperation($query, $currentLevelSchema);
+        return parent::resolveQuery($query);
     }
 
-    /**
-     * @inheritdoc
-     */
-    protected function resolveFieldValue(FieldInterface $field, $contextValue, array $fields, array $args)
+    protected function doResolve(FieldInterface $field, AstFieldInterface $ast, $parentValue = null)
     {
-        $resolveInfo = $this->createResolveInfo($field, $fields);
+        /** @var AstQuery|AstField $ast */
+        $arguments = $this->parseArgumentsValues($field, $ast);
+        $astFields = $ast instanceof AstQuery ? $ast->getFields() : [];
 
+        $resolveInfo = $this->createResolveInfo($field, $astFields);
         $this->assertClientHasFieldAccess($resolveInfo);
 
         if ($field instanceof Field) {
@@ -88,12 +94,12 @@ class Processor extends BaseProcessor
                         throw new ResolveException(sprintf('Resolve method "%s" not found in "%s" service for field "%s"', $method, $service, $field->getName()));
                     }
 
-                    return $serviceInstance->$method($contextValue, $args, $resolveInfo);
+                    return $serviceInstance->$method($parentValue, $arguments, $resolveInfo);
                 }
 
-                return $resolveFunc($contextValue, $args, $resolveInfo);
+                return $resolveFunc($parentValue, $arguments, $resolveInfo);
             } else {
-                return TypeService::getPropertyValue($contextValue, $field->getName());
+                return TypeService::getPropertyValue($parentValue, $field->getName());
             }
         } else { //instance of AbstractContainerAwareField
             if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field))) {
@@ -101,7 +107,7 @@ class Processor extends BaseProcessor
                 $field->setContainer($this->executionContext->getContainer()->getSymfonyContainer());
             }
 
-            return $field->resolve($contextValue, $args, $resolveInfo);
+            return $field->resolve($parentValue, $arguments, $resolveInfo);
         }
     }
 
