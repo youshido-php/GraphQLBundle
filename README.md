@@ -147,8 +147,9 @@ Config example:
 ```yaml
 graph_ql:
     security:
-        field_resolve: true          # for any field security
-        root_operation_resolve: true # for root level security
+        guard:
+            field: true # for any field security
+            operation: true # for root level security
 ```
 
 Voter example (add in to your `services.yml` file with tag `security.voter`):
