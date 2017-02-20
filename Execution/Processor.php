@@ -1,15 +1,10 @@
 <?php
-/**
- * Date: 30.11.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQLBundle\Execution;
 
-
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Processor as BaseProcessor;
 use Youshido\GraphQL\Execution\ResolveInfo;
@@ -22,6 +17,7 @@ use Youshido\GraphQL\Parser\Ast\Query as AstQuery;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Validator\Exception\ResolveException;
 use Youshido\GraphQLBundle\Security\Manager\SecurityManagerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Processor extends BaseProcessor
 {
@@ -32,12 +28,19 @@ class Processor extends BaseProcessor
     /** @var  SecurityManagerInterface */
     private $securityManager;
 
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+
     /**
-     * @inheritdoc
+     * Constructor.
+     *
+     * @param ExecutionContextInterface $executionContext
+     * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(ExecutionContextInterface $executionContext)
+    public function __construct(ExecutionContextInterface $executionContext, EventDispatcherInterface $eventDispatcher)
     {
         $this->executionContext = $executionContext;
+        $this->eventDispatcher = $eventDispatcher;
 
         parent::__construct($executionContext->getSchema());
     }
@@ -76,6 +79,9 @@ class Processor extends BaseProcessor
         $arguments = $this->parseArgumentsValues($field, $ast);
         $astFields = $ast instanceof AstQuery ? $ast->getFields() : [];
 
+        $event = new GenericEvent($field);
+        $this->eventDispatcher->dispatch('graphql.pre_resolve', $event);
+
         $resolveInfo = $this->createResolveInfo($field, $astFields);
         $this->assertClientHasFieldAccess($resolveInfo);
 
@@ -109,6 +115,9 @@ class Processor extends BaseProcessor
 
             return $field->resolve($parentValue, $arguments, $resolveInfo);
         }
+
+        $event = new GenericEvent($field);
+        $this->eventDispatcher->dispatch('graphql.post_resolve', $event);
     }
 
     private function assertClientHasOperationAccess(Query $query)
