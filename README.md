@@ -122,6 +122,45 @@ $config->addField(new Field([
     'resolve' => ['@resolve_service', 'getCacheDir']
 ]))
 ```
+### Events:
+You can use the Symfony Event Dispatcher to get control over specific events which happen when resolving graphql queries.
+
+```php
+namespace ...\...\..;
+
+use Youshido\GraphQL\Event\ResolveEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class MyGraphQLResolveEventSubscriber implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
+        return [
+            'graphql.pre_resolve'  => 'onPreResolve',
+            'graphql.post_resolve' => 'onPostResolve'
+        ];
+    }
+
+    public function onPreResolve(ResolveEvent $event)
+    {
+		//$event->getFields / $event->getAstFields()..
+    }
+
+    public function onPostResolve(ResolveEvent $event)
+    {
+		//$event->getFields / $event->getAstFields()..
+    }
+}
+```
+#### Configuration
+
+Now configure you subscriber so events will be caught. This can be done in Symfony by either XML, Yaml or PHP.
+
+```xml
+<service id="my_own_bundle.event_subscriber.my_graphql_resolve_event_subscriber" class="...\...\...\MyGraphQLResolveEventSubscriber">
+	<tag name="graphql.event_subscriber" />
+</service>
+```
 
 ### Security:
 Bundle provides two ways to guard your application: using black/white operation list or using security voter.
