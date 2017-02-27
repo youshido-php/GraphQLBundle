@@ -4,7 +4,7 @@ namespace Youshido\GraphQLBundle\Execution;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\EventDispatcher\GenericEvent;
+use Youshido\GraphQL\Event\ResolveEvent;
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Processor as BaseProcessor;
 use Youshido\GraphQL\Execution\ResolveInfo;
@@ -79,7 +79,7 @@ class Processor extends BaseProcessor
         $arguments = $this->parseArgumentsValues($field, $ast);
         $astFields = $ast instanceof AstQuery ? $ast->getFields() : [];
 
-        $event = new GenericEvent($field);
+        $event = new ResolveEvent($field, $astFields);
         $this->eventDispatcher->dispatch('graphql.pre_resolve', $event);
 
         $resolveInfo = $this->createResolveInfo($field, $astFields);
@@ -116,7 +116,7 @@ class Processor extends BaseProcessor
             return $field->resolve($parentValue, $arguments, $resolveInfo);
         }
 
-        $event = new GenericEvent($field);
+        $event = new ResolveEvent($field, $astFields);
         $this->eventDispatcher->dispatch('graphql.post_resolve', $event);
     }
 
