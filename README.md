@@ -123,7 +123,7 @@ $config->addField(new Field([
 ]))
 ```
 ### Events:
-You can use the Symfony Eventdispatcher to get control over specific events hapening during resolving graphql queries.
+You can use the Symfony Event Dispatcher to get control over specific events which happen when resolving graphql queries.
 
 ```php
 namespace ...\...\..;
