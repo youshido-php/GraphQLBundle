@@ -20,7 +20,7 @@ use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface as AstFieldInterface;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\Query as AstQuery;
 use Youshido\GraphQL\Type\TypeService;
-use Youshido\GraphQL\Validator\Exception\ResolveException;
+use Youshido\GraphQL\Exception\ResolveException;
 use Youshido\GraphQLBundle\Security\Manager\SecurityManagerInterface;
 
 class Processor extends BaseProcessor
