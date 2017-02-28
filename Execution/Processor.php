@@ -4,7 +4,6 @@ namespace Youshido\GraphQLBundle\Execution;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Youshido\GraphQL\Event\ResolveEvent;
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Processor as BaseProcessor;
 use Youshido\GraphQL\Execution\ResolveInfo;
@@ -16,6 +15,7 @@ use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\Query as AstQuery;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Exception\ResolveException;
+use Youshido\GraphQLBundle\Event\ResolveEvent;
 use Youshido\GraphQLBundle\Security\Manager\SecurityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -100,12 +100,12 @@ class Processor extends BaseProcessor
                         throw new ResolveException(sprintf('Resolve method "%s" not found in "%s" service for field "%s"', $method, $service, $field->getName()));
                     }
 
-                    return $serviceInstance->$method($parentValue, $arguments, $resolveInfo);
+                    $result = $serviceInstance->$method($parentValue, $arguments, $resolveInfo);
+                } else {
+                    $result = $resolveFunc($parentValue, $arguments, $resolveInfo);
                 }
-
-                return $resolveFunc($parentValue, $arguments, $resolveInfo);
             } else {
-                return TypeService::getPropertyValue($parentValue, $field->getName());
+                $result = TypeService::getPropertyValue($parentValue, $field->getName());
             }
         } else { //instance of AbstractContainerAwareField
             if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field))) {
@@ -113,11 +113,12 @@ class Processor extends BaseProcessor
                 $field->setContainer($this->executionContext->getContainer()->getSymfonyContainer());
             }
 
-            return $field->resolve($parentValue, $arguments, $resolveInfo);
+            $result = $field->resolve($parentValue, $arguments, $resolveInfo);
         }
 
         $event = new ResolveEvent($field, $astFields);
         $this->eventDispatcher->dispatch('graphql.post_resolve', $event);
+        return $result;
     }
 
     private function assertClientHasOperationAccess(Query $query)

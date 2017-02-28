@@ -2,9 +2,10 @@
 
 namespace Youshido\GraphQLBundle\Event;
 
+use Composer\EventDispatcher\Event;
 use Youshido\GraphQL\Parser\Ast\Field;
 
-class ResolveEvent
+class ResolveEvent extends Event
 {
     /**
      * @var Field */
@@ -23,6 +24,7 @@ class ResolveEvent
     {
         $this->field = $field;
         $this->astFields = $astFields;
+        parent::__construct('ResolveEvent', [$field, $astFields]);
     }
 
     /**
