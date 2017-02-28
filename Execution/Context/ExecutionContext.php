@@ -12,6 +12,7 @@ use \Youshido\GraphQL\Execution\Context\ExecutionContext as BaseExecutionContext
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Validator\ConfigValidator\ConfigValidator;
 use Youshido\GraphQLBundle\Config\Rule\TypeValidationRule;
+use Youshido\GraphQLBundle\Execution\Container\SymfonyContainer;
 
 class ExecutionContext extends BaseExecutionContext
 {
@@ -20,6 +21,14 @@ class ExecutionContext extends BaseExecutionContext
         $validator->addRule('type', new TypeValidationRule($validator));
 
         parent::__construct($schema);
+    }
+
+    /**
+     * @return SymfonyContainer
+     */
+    public function getContainer()
+    {
+        return parent::getContainer();
     }
 
 

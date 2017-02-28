@@ -2,7 +2,7 @@
 
 namespace Youshido\GraphQLBundle\Security\Manager;
 
-use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Parser\Ast\Query;
 
 /**
@@ -24,11 +24,11 @@ interface SecurityManagerInterface
     public function isSecurityEnabledFor($attribute);
 
     /**
-     * @param ResolveInfo $resolveInfo
+     * @param ResolveInfoInterface $resolveInfo
      *
      * @return bool
      */
-    public function isGrantedToFieldResolve(ResolveInfo $resolveInfo);
+    public function isGrantedToFieldResolve(ResolveInfoInterface $resolveInfo);
 
     /**
      * @param Query $query
@@ -38,13 +38,13 @@ interface SecurityManagerInterface
     public function isGrantedToOperationResolve(Query $query);
 
     /**
-     * @param ResolveInfo $resolveInfo
+     * @param ResolveInfoInterface $resolveInfo
      *
      * @return mixed
      *
      * @throw \Exception
      */
-    public function createNewFieldAccessDeniedException(ResolveInfo $resolveInfo);
+    public function createNewFieldAccessDeniedException(ResolveInfoInterface $resolveInfo);
 
     /**
      * @param Query $query

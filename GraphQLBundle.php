@@ -7,6 +7,7 @@ use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Youshido\GraphQLBundle\DependencyInjection\Compiler\GraphQlCompilerPass;
+use Youshido\GraphQLBundle\DependencyInjection\GraphQLExtension;
 
 class GraphQLBundle extends Bundle
 {
@@ -24,4 +25,14 @@ class GraphQLBundle extends Bundle
             PassConfig::TYPE_BEFORE_REMOVING
         );
     }
+
+    public function getContainerExtension()
+    {
+        if (null === $this->extension) {
+            $this->extension = new GraphQLExtension();
+        }
+
+        return $this->extension;
+    }
+
 }

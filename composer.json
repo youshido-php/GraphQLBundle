@@ -1,7 +1,6 @@
 {
   "name": "youshido/graphql-bundle",
   "description": "Symfony GraphQl Bundle",
-  "minimum-stability": "stable",
   "license": "proprietary",
   "repositories": [
     {
@@ -11,14 +10,13 @@
   ],
   "authors": [
     {
-      "name": "Portey Vasil",
-      "email": "portey@gmail.com"
-    },
-    {
       "name": "Alexandr Viniychuk",
       "email": "a@viniychuk.com"
+    },
+    {
+      "name": "Portey Vasil",
+      "email": "portey@gmail.com"
     }
-
   ],
   "autoload": {
     "psr-4": {
@@ -26,10 +24,11 @@
     }
   },
   "require": {
-    "php": ">=5.5",
-    "youshido/graphql": "~1.4"
+    "php": ">=5.6",
+    "youshido/graphql": "2.0.x-dev"
   },
   "require-dev": {
+    "symfony/symfony": "~3.2",
     "phpunit/phpunit": "~4.7",
     "composer/composer": "~1.2"
   }

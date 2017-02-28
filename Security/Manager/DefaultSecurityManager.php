@@ -10,7 +10,7 @@ namespace Youshido\GraphQLBundle\Security\Manager;
 
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
 use Youshido\GraphQL\Parser\Ast\Query;
 
 class DefaultSecurityManager implements SecurityManagerInterface
@@ -75,23 +75,23 @@ class DefaultSecurityManager implements SecurityManagerInterface
     }
 
     /**
-     * @param ResolveInfo $resolveInfo
+     * @param ResolveInfoInterface $resolveInfo
      *
      * @return bool
      */
-    public function isGrantedToFieldResolve(ResolveInfo $resolveInfo)
+    public function isGrantedToFieldResolve(ResolveInfoInterface $resolveInfo)
     {
         return $this->authorizationChecker->isGranted(SecurityManagerInterface::RESOLVE_FIELD_ATTRIBUTE, $resolveInfo);
     }
 
     /**
-     * @param ResolveInfo $resolveInfo
+     * @param ResolveInfoInterface $resolveInfo
      *
      * @return mixed
      *
      * @throw \Exception
      */
-    public function createNewFieldAccessDeniedException(ResolveInfo $resolveInfo)
+    public function createNewFieldAccessDeniedException(ResolveInfoInterface $resolveInfo)
     {
         return new AccessDeniedException();
     }

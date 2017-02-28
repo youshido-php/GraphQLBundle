@@ -4,10 +4,10 @@ namespace Youshido\GraphQLBundle\Execution;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Youshido\GraphQL\Event\ResolveEvent;
+use Youshido\GraphQL\Execution\ResolveInfo\ResolveInfoInterface;
+use Youshido\GraphQLBundle\Event\ResolveEvent;
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Processor as BaseProcessor;
-use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
@@ -16,6 +16,7 @@ use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\Query as AstQuery;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Exception\ResolveException;
+use Youshido\GraphQLBundle\Execution\ResolveInfo\ResolveInfo;
 use Youshido\GraphQLBundle\Security\Manager\SecurityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -42,7 +43,7 @@ class Processor extends BaseProcessor
         $this->executionContext = $executionContext;
         $this->eventDispatcher = $eventDispatcher;
 
-        parent::__construct($executionContext->getSchema());
+        parent::__construct($executionContext);
     }
 
     /**
@@ -83,7 +84,9 @@ class Processor extends BaseProcessor
         $this->eventDispatcher->dispatch('graphql.pre_resolve', $event);
 
         $resolveInfo = $this->createResolveInfo($field, $astFields);
+
         $this->assertClientHasFieldAccess($resolveInfo);
+        $resolveResult = null;
 
         if ($field instanceof Field) {
             if ($resolveFunc = $field->getConfig()->getResolveFunction()) {
@@ -100,12 +103,13 @@ class Processor extends BaseProcessor
                         throw new ResolveException(sprintf('Resolve method "%s" not found in "%s" service for field "%s"', $method, $service, $field->getName()));
                     }
 
-                    return $serviceInstance->$method($parentValue, $arguments, $resolveInfo);
+                    $resolveResult = $serviceInstance->$method($parentValue, $arguments, $resolveInfo);
+                } else {
+                    $resolveResult = $resolveFunc($parentValue, $arguments, $resolveInfo);
                 }
 
-                return $resolveFunc($parentValue, $arguments, $resolveInfo);
             } else {
-                return TypeService::getPropertyValue($parentValue, $field->getName());
+                $resolveResult = TypeService::getPropertyValue($parentValue, $field->getName());
             }
         } else { //instance of AbstractContainerAwareField
             if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field))) {
@@ -113,12 +117,23 @@ class Processor extends BaseProcessor
                 $field->setContainer($this->executionContext->getContainer()->getSymfonyContainer());
             }
 
-            return $field->resolve($parentValue, $arguments, $resolveInfo);
+            $resolveResult = $field->resolve($parentValue, $arguments, $resolveInfo);
         }
 
-        $event = new ResolveEvent($field, $astFields);
-        $this->eventDispatcher->dispatch('graphql.post_resolve', $event);
+        $this->eventDispatcher->dispatch('graphql.post_resolve', new ResolveEvent($field, $astFields));
+        return $resolveResult;
     }
+
+    /**
+     * @param FieldInterface $field
+     * @param array          $astFields
+     * @return \Youshido\GraphQL\Execution\ResolveInfo\ResolveInfo
+     */
+    protected function createResolveInfo(FieldInterface $field, array $astFields)
+    {
+        return new ResolveInfo($field, $astFields, $this->executionContext);
+    }
+
 
     private function assertClientHasOperationAccess(Query $query)
     {
@@ -129,7 +144,7 @@ class Processor extends BaseProcessor
         }
     }
 
-    private function assertClientHasFieldAccess(ResolveInfo $resolveInfo)
+    private function assertClientHasFieldAccess(ResolveInfoInterface $resolveInfo)
     {
         if ($this->securityManager->isSecurityEnabledFor(SecurityManagerInterface::RESOLVE_FIELD_ATTRIBUTE)
             && !$this->securityManager->isGrantedToFieldResolve($resolveInfo)
