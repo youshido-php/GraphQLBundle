@@ -1,14 +1,7 @@
 {
   "name": "youshido/graphql-bundle",
   "description": "Symfony GraphQl Bundle",
-  "minimum-stability": "stable",
   "license": "proprietary",
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/Youshido/GraphQL"
-    }
-  ],
   "authors": [
     {
       "name": "Portey Vasil",
@@ -18,7 +11,6 @@
       "name": "Alexandr Viniychuk",
       "email": "a@viniychuk.com"
     }
-
   ],
   "autoload": {
     "psr-4": {
