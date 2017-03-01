@@ -58,4 +58,8 @@ class GraphQLExtension extends Extension
         ];
     }
 
+    public function getAlias()
+    {
+        return "graphql";
+    }
 }

@@ -3,6 +3,7 @@
 namespace Youshido\GraphQLBundle\Event;
 
 use Composer\EventDispatcher\Event;
+use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Parser\Ast\Field;
 
 class ResolveEvent extends Event
@@ -17,10 +18,10 @@ class ResolveEvent extends Event
     /**
      * Constructor.
      *
-     * @param Field $field
+     * @param FieldInterface $field
      * @param array $astFields
      */
-    public function __construct(Field $field, array $astFields)
+    public function __construct(FieldInterface $field, array $astFields)
     {
         $this->field = $field;
         $this->astFields = $astFields;
@@ -30,7 +31,7 @@ class ResolveEvent extends Event
     /**
      * Returns the field.
      *
-     * @return Field
+     * @return FieldInterface
      */
     public function getField()
     {
