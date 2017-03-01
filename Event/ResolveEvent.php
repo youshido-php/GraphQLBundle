@@ -2,11 +2,11 @@
 
 namespace Youshido\GraphQLBundle\Event;
 
-use Composer\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Parser\Ast\Field;
 
-class ResolveEvent extends Event
+class ResolveEvent extends GenericEvent
 {
     /**
      * @var Field */
