@@ -35,7 +35,7 @@ Go to your project folder and run:
 composer require youshido/graphql-bundle
 ```
 
-Than enable bundle in your `app/AppKernel.php`
+Then enable bundle in your `app/AppKernel.php`
 ```php
 new Youshido\GraphQLBundle\GraphQLBundle(),
 ```
