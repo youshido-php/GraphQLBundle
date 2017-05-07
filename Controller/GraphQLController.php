@@ -39,9 +39,13 @@ class GraphQLController extends Controller
         }
 
         if (!$this->get('service_container')->initialized('graphql.schema')) {
-            $schema = new $schemaClass();
-            if ($schema instanceof ContainerAwareInterface) {
-                $schema->setContainer($this->get('service_container'));
+            if ($this->container->has($schemaClass)) {
+                $schema = $this->container->get($schemaClass);
+            } else {
+                $schema = new $schemaClass();
+                if ($schema instanceof ContainerAwareInterface) {
+                    $schema->setContainer($this->get('service_container'));
+                }
             }
 
             $this->get('service_container')->set('graphql.schema', $schema);
