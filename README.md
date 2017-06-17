@@ -45,6 +45,7 @@ Add the routing reference to the `app/config/routing.yml`:
 graphql:
     resource: "@GraphQLBundle/Controller/"
 ```
+If you don't have a web server configured you can use a bundled version, simply run `php bin/console server:run`.
 
 Let's check if you've done everything right so far – try to access url `localhost:8000/graphql`.  
 You should get a JSON response with the following error:
