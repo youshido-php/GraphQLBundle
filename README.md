@@ -82,7 +82,13 @@ Successful response from a test Schema will be displayed:
 
 That means you have GraphQL Bundle for the Symfony Framework configured and now can architect your GraphQL Schema:
 
-## Symfony features included:
+Next step would be to link assets for GraphiQL Explorer by executing:
+```sh
+php bin/console assets:install --symlink
+```
+Now you can access it at `http://localhost:8000/graphql/explorer`
+
+## Symfony features
 ### Class AbstractContainerAwareField:
 AbstractContainerAwareField class used for auto passing container to field, add ability to use container in resolve function:
 ```php
