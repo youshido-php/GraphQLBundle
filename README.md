@@ -50,7 +50,7 @@ If you don't have a web server configured you can use a bundled version, simply 
 Let's check if you've done everything right so far – try to access url `localhost:8000/graphql`.  
 You should get a JSON response with the following error:
 ```js
-{"errors":[{"message":"You have to set GraphQL Schema to process"}]}
+{"errors":[{"message":"Schema class does not exist"}]}
 ```
 
 That's because there was no GraphQL Schema specified for the processor yet. You need to create a GraphQL Schema class and set it inside your `app/config/config.yml` file.
