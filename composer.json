@@ -1,7 +1,7 @@
 {
   "name": "youshido/graphql-bundle",
   "description": "Symfony GraphQl Bundle",
-  "license": "proprietary",
+  "license": "MIT",
   "authors": [
     {
       "name": "Portey Vasil",
