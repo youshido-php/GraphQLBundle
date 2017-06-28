@@ -14,7 +14,6 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  */
 class GraphQLExtension extends Extension
 {
-
     private $config = [];
 
     /**
@@ -33,6 +32,7 @@ class GraphQLExtension extends Extension
 
         $container->setParameter('graphql.response.headers', $preparedHeaders);
         $container->setParameter('graphql.schema_class', $this->config['schema_class']);
+        $container->setParameter('graphql.schema_service', $this->config['schema_service']);
         $container->setParameter('graphql.logger', $this->config['logger']);
         $container->setParameter('graphql.max_complexity', $this->config['max_complexity']);
         $container->setParameter('graphql.response.json_pretty', $this->config['response']['json_pretty']);
