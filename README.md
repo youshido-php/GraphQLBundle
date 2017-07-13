@@ -66,14 +66,14 @@ You will be requested for a confirmation to create a class and then presented wi
 
 ```yaml
 # Update your app/config/config.yml with the parameter:
-graphql:
+graph_ql:
   schema_class: AppBundle\GraphQL\Schema
 ```
 
 After you've added parameters to the config file, try to access the following link in the browser – `http://localhost:8000/graphql?query={hello}`
 
 > Alternatively, you can execute the same request using CURL client in your console  
-> `curl http://localhost:8000/graphql --data "query={ hello }"`
+> `curl http://localhost:8000/graphql --data "query={ hello(name: \"World\") }"`
 
 Successful response from a test Schema will be displayed:
 ```js
@@ -175,7 +175,7 @@ Bundle provides two ways to guard your application: using black/white operation 
 #### Black/white list
 Used to guard some root operations. To enable it you need to write following in your config.yml file:
 ```yaml
-graphql:
+graph_ql:
 
   #...
 
@@ -191,7 +191,7 @@ Used to guard any field resolve and support two types of guards: root operation 
 
 Config example:
 ```yaml
-graphql:
+graph_ql:
     security:
         guard:
             field: true # for any field security
