@@ -91,7 +91,10 @@ class GraphQLController extends Controller
         $content = $request->getContent();
         if (!empty($content)) {
             if ($request->headers->has('Content-Type') && 'application/graphql' == $request->headers->get('Content-Type')) {
-                $queries[] = $content;
+                $queries[] = [
+                    'query' => $content,
+                    'variables' => [],
+                ];
             } else {
                 $params = json_decode($content, true);
 
