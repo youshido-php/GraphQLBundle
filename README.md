@@ -70,10 +70,10 @@ graphql:
   schema_class: AppBundle\GraphQL\Schema
 ```
 
-After you've added parameters to the config file, try to access the following link in the browser – `http://localhost:8000/graphql?query={hello}`
+After you've added parameters to the config file, try to access the following link in the browser – `http://localhost:8000/graphql?query={hello(name:"world!")}`
 
 > Alternatively, you can execute the same request using CURL client in your console  
-> `curl http://localhost:8000/graphql --data "query={ hello }"`
+> `curl http://localhost:8000/graphql --data "query={ hello(name: "world!") }"`
 
 Successful response from a test Schema will be displayed:
 ```js
