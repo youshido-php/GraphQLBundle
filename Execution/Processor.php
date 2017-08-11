@@ -86,6 +86,11 @@ class Processor extends BaseProcessor
         $resolveInfo = $this->createResolveInfo($field, $astFields);
         $this->assertClientHasFieldAccess($resolveInfo);
 
+        if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field))) {
+            /** @var $field ContainerAwareInterface */
+            $field->setContainer($this->executionContext->getContainer()->getSymfonyContainer());
+        }
+
         if (($field instanceof AbstractField) && ($resolveFunc = $field->getConfig()->getResolveFunction())) {
             if ($this->isServiceReference($resolveFunc)) {
                 $service = substr($resolveFunc[0], 1);
@@ -106,12 +111,7 @@ class Processor extends BaseProcessor
             }
         } elseif ($field instanceof Field) {
             $result = TypeService::getPropertyValue($parentValue, $field->getName());
-        } else { //instance of AbstractContainerAwareField
-            if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field))) {
-                /** @var $field ContainerAwareInterface */
-                $field->setContainer($this->executionContext->getContainer()->getSymfonyContainer());
-            }
-
+        } else {
             $result = $field->resolve($parentValue, $arguments, $resolveInfo);
         }
 
