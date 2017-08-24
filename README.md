@@ -66,7 +66,7 @@ You will be requested for a confirmation to create a class and then presented wi
 
 ```yaml
 # Update your app/config/config.yml with the parameter:
-graph_ql:
+graphql:
   schema_class: AppBundle\GraphQL\Schema
 ```
 
