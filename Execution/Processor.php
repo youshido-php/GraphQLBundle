@@ -42,7 +42,7 @@ class Processor extends BaseProcessor
         $this->executionContext = $executionContext;
         $this->eventDispatcher = $eventDispatcher;
 
-        parent::__construct($executionContext->getSchema());
+        parent::__construct($executionContext);
     }
 
     /**
