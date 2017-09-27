@@ -116,9 +116,9 @@ class Processor extends BaseProcessor
             $result = $field->resolve($parentValue, $arguments, $resolveInfo);
         }
 
-        $event = new ResolveEvent($field, $astFields);
+        $event = new ResolveEvent($field, $astFields, $result);
         $this->eventDispatcher->dispatch('graphql.post_resolve', $event);
-        return $result;
+        return $event->getResolvedValue();
     }
 
     private function assertClientHasOperationAccess(Query $query)
