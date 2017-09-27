@@ -2,7 +2,7 @@
 
 namespace Youshido\GraphQLBundle\Security\Manager;
 
-use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQLBundle\Execution\ResolveInfo;
 use Youshido\GraphQL\Parser\Ast\Query;
 
 /**
