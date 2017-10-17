@@ -16,17 +16,22 @@ class GraphQLExplorerController extends Controller
 {
 
     /**
-     * @Cache(expires="tomorrow", public=true)
      * @Route("/graphql/explorer")
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function explorerAction()
     {
-        return $this->render('GraphQLBundle:Feature:explorer.html.twig', [
+        $response =  $this->render('GraphQLBundle:Feature:explorer.html.twig', [
             'graphQLUrl' => $this->generateUrl('youshido_graphql_graphql_default'),
             'tokenHeader' => 'access-token'
         ]);
+
+        $date = \DateTime::createFromFormat('U', strtotime('tomorrow'), new \DateTimeZone('UTC'));
+        $response->setExpires($date);
+        $response->setPublic();
+
+        return $response;
     }
 
 }
