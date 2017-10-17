@@ -35,6 +35,10 @@ class GraphQlCompilerPass implements CompilerPassInterface
             $container->getDefinition('graphql.processor')->addMethodCall('setLogger', [new Reference($loggerAlias)]);
         }
 
+        if ($maxComplexity = $container->getParameter('graphql.max_complexity')) {
+            $container->getDefinition('graphql.processor')->addMethodCall('setMaxComplexity', [$maxComplexity]);
+        }
+
         $this->processSecurityGuard($container);
     }
 

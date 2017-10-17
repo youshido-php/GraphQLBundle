@@ -19,11 +19,13 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode    = $treeBuilder->root('graph_ql');
+        $rootNode    = $treeBuilder->root('graphql');
 
         $rootNode
             ->children()
-                ->scalarNode('schema_class')->cannotBeEmpty()->defaultValue(null)->end()
+                ->scalarNode('schema_class')->defaultValue(null)->end()
+                ->scalarNode('schema_service')->defaultValue(null)->end()
+                ->integerNode('max_complexity')->defaultValue(null)->end()
                 ->scalarNode('logger')->defaultValue(null)->end()
                 ->arrayNode('security')
                     ->addDefaultsIfNotSet()

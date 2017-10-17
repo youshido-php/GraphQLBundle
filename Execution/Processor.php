@@ -1,18 +1,13 @@
 <?php
-/**
- * Date: 30.11.15
- *
- * @author Portey Vasil <portey@gmail.com>
- */
 
 namespace Youshido\GraphQLBundle\Execution;
-
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Processor as BaseProcessor;
 use Youshido\GraphQL\Execution\ResolveInfo;
+use Youshido\GraphQL\Field\AbstractField;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Parser\Ast\Field as AstField;
@@ -20,8 +15,10 @@ use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface as AstFieldInterface;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\Query as AstQuery;
 use Youshido\GraphQL\Type\TypeService;
-use Youshido\GraphQL\Validator\Exception\ResolveException;
+use Youshido\GraphQL\Exception\ResolveException;
+use Youshido\GraphQLBundle\Event\ResolveEvent;
 use Youshido\GraphQLBundle\Security\Manager\SecurityManagerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Processor extends BaseProcessor
 {
@@ -32,12 +29,19 @@ class Processor extends BaseProcessor
     /** @var  SecurityManagerInterface */
     private $securityManager;
 
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+
     /**
-     * @inheritdoc
+     * Constructor.
+     *
+     * @param ExecutionContextInterface $executionContext
+     * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(ExecutionContextInterface $executionContext)
+    public function __construct(ExecutionContextInterface $executionContext, EventDispatcherInterface $eventDispatcher)
     {
         $this->executionContext = $executionContext;
+        $this->eventDispatcher = $eventDispatcher;
 
         parent::__construct($executionContext->getSchema());
     }
@@ -76,39 +80,44 @@ class Processor extends BaseProcessor
         $arguments = $this->parseArgumentsValues($field, $ast);
         $astFields = $ast instanceof AstQuery ? $ast->getFields() : [];
 
+        $event = new ResolveEvent($field, $astFields);
+        $this->eventDispatcher->dispatch('graphql.pre_resolve', $event);
+
         $resolveInfo = $this->createResolveInfo($field, $astFields);
         $this->assertClientHasFieldAccess($resolveInfo);
 
-        if ($field instanceof Field) {
-            if ($resolveFunc = $field->getConfig()->getResolveFunction()) {
-                if ($this->isServiceReference($resolveFunc)) {
-                    $service = substr($resolveFunc[0], 1);
-                    $method  = $resolveFunc[1];
-                    if (!$this->executionContext->getContainer()->has($service)) {
-                        throw new ResolveException(sprintf('Resolve service "%s" not found for field "%s"', $service, $field->getName()));
-                    }
+        if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field))) {
+            /** @var $field ContainerAwareInterface */
+            $field->setContainer($this->executionContext->getContainer()->getSymfonyContainer());
+        }
 
-                    $serviceInstance = $this->executionContext->getContainer()->get($service);
-
-                    if (!method_exists($serviceInstance, $method)) {
-                        throw new ResolveException(sprintf('Resolve method "%s" not found in "%s" service for field "%s"', $method, $service, $field->getName()));
-                    }
-
-                    return $serviceInstance->$method($parentValue, $arguments, $resolveInfo);
+        if (($field instanceof AbstractField) && ($resolveFunc = $field->getConfig()->getResolveFunction())) {
+            if ($this->isServiceReference($resolveFunc)) {
+                $service = substr($resolveFunc[0], 1);
+                $method  = $resolveFunc[1];
+                if (!$this->executionContext->getContainer()->has($service)) {
+                    throw new ResolveException(sprintf('Resolve service "%s" not found for field "%s"', $service, $field->getName()));
                 }
 
-                return $resolveFunc($parentValue, $arguments, $resolveInfo);
-            } else {
-                return TypeService::getPropertyValue($parentValue, $field->getName());
-            }
-        } else { //instance of AbstractContainerAwareField
-            if (in_array('Symfony\Component\DependencyInjection\ContainerAwareInterface', class_implements($field))) {
-                /** @var $field ContainerAwareInterface */
-                $field->setContainer($this->executionContext->getContainer()->getSymfonyContainer());
-            }
+                $serviceInstance = $this->executionContext->getContainer()->get($service);
 
-            return $field->resolve($parentValue, $arguments, $resolveInfo);
+                if (!method_exists($serviceInstance, $method)) {
+                    throw new ResolveException(sprintf('Resolve method "%s" not found in "%s" service for field "%s"', $method, $service, $field->getName()));
+                }
+
+                $result = $serviceInstance->$method($parentValue, $arguments, $resolveInfo);
+            } else {
+                $result = $resolveFunc($parentValue, $arguments, $resolveInfo);
+            }
+        } elseif ($field instanceof Field) {
+            $result = TypeService::getPropertyValue($parentValue, $field->getName());
+        } else {
+            $result = $field->resolve($parentValue, $arguments, $resolveInfo);
         }
+
+        $event = new ResolveEvent($field, $astFields, $result);
+        $this->eventDispatcher->dispatch('graphql.post_resolve', $event);
+        return $event->getResolvedValue();
     }
 
     private function assertClientHasOperationAccess(Query $query)

@@ -35,7 +35,7 @@ Go to your project folder and run:
 composer require youshido/graphql-bundle
 ```
 
-Than enable bundle in your `app/AppKernel.php`
+Then enable bundle in your `app/AppKernel.php`
 ```php
 new Youshido\GraphQLBundle\GraphQLBundle(),
 ```
@@ -45,11 +45,17 @@ Add the routing reference to the `app/config/routing.yml`:
 graphql:
     resource: "@GraphQLBundle/Controller/"
 ```
+or 
+```yaml
+graphql:
+    resource: "@GraphQLBundle/Resources/config/route.xml"
+```
+If you don't have a web server configured you can use a bundled version, simply run `php bin/console server:run`.
 
 Let's check if you've done everything right so far – try to access url `localhost:8000/graphql`.  
 You should get a JSON response with the following error:
 ```js
-{"errors":[{"message":"You have to set GraphQL Schema to process"}]}
+{"errors":[{"message":"Schema class does not exist"}]}
 ```
 
 That's because there was no GraphQL Schema specified for the processor yet. You need to create a GraphQL Schema class and set it inside your `app/config/config.yml` file.
@@ -65,14 +71,14 @@ You will be requested for a confirmation to create a class and then presented wi
 
 ```yaml
 # Update your app/config/config.yml with the parameter:
-graph_ql:
+graphql:
   schema_class: AppBundle\GraphQL\Schema
 ```
 
 After you've added parameters to the config file, try to access the following link in the browser – `http://localhost:8000/graphql?query={hello}`
 
 > Alternatively, you can execute the same request using CURL client in your console  
-> `curl http://localhost:8000/graphql --data "query={ hello }"`
+> `curl http://localhost:8000/graphql --data "query={ hello(name: \"World\") }"`
 
 Successful response from a test Schema will be displayed:
 ```js
@@ -81,7 +87,13 @@ Successful response from a test Schema will be displayed:
 
 That means you have GraphQL Bundle for the Symfony Framework configured and now can architect your GraphQL Schema:
 
-## Symfony features included:
+Next step would be to link assets for GraphiQL Explorer by executing:
+```sh
+php bin/console assets:install --symlink
+```
+Now you can access it at `http://localhost:8000/graphql/explorer`
+
+## Symfony features
 ### Class AbstractContainerAwareField:
 AbstractContainerAwareField class used for auto passing container to field, add ability to use container in resolve function:
 ```php
@@ -122,6 +134,45 @@ $config->addField(new Field([
     'resolve' => ['@resolve_service', 'getCacheDir']
 ]))
 ```
+### Events:
+You can use the Symfony Event Dispatcher to get control over specific events which happen when resolving graphql queries.
+
+```php
+namespace ...\...\..;
+
+use Youshido\GraphQL\Event\ResolveEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class MyGraphQLResolveEventSubscriber implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
+        return [
+            'graphql.pre_resolve'  => 'onPreResolve',
+            'graphql.post_resolve' => 'onPostResolve'
+        ];
+    }
+
+    public function onPreResolve(ResolveEvent $event)
+    {
+		//$event->getFields / $event->getAstFields()..
+    }
+
+    public function onPostResolve(ResolveEvent $event)
+    {
+		//$event->getFields / $event->getAstFields()..
+    }
+}
+```
+#### Configuration
+
+Now configure you subscriber so events will be caught. This can be done in Symfony by either XML, Yaml or PHP.
+
+```xml
+<service id="my_own_bundle.event_subscriber.my_graphql_resolve_event_subscriber" class="...\...\...\MyGraphQLResolveEventSubscriber">
+	<tag name="graphql.event_subscriber" />
+</service>
+```
 
 ### Security:
 Bundle provides two ways to guard your application: using black/white operation list or using security voter.
@@ -129,7 +180,7 @@ Bundle provides two ways to guard your application: using black/white operation 
 #### Black/white list
 Used to guard some root operations. To enable it you need to write following in your config.yml file:
 ```yaml
-graph_ql:
+graphql:
 
   #...
 
@@ -145,10 +196,11 @@ Used to guard any field resolve and support two types of guards: root operation 
 
 Config example:
 ```yaml
-graph_ql:
+graphql:
     security:
-        field_resolve: true          # for any field security
-        root_operation_resolve: true # for root level security
+        guard:
+            field: true # for any field security
+            operation: true # for root level security
 ```
 
 Voter example (add in to your `services.yml` file with tag `security.voter`):

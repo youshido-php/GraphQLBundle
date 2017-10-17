@@ -64,9 +64,9 @@ class GraphQLConfigureCommand extends ContainerAwareCommand
             $output->writeln($classPath . "\n");
 
             $originalConfigData = file_get_contents($configFile);
-            if (strpos($originalConfigData, 'graph_ql') === false) {
+            if (strpos($originalConfigData, 'graphql') === false) {
                 $configData = <<<CONFIG
-graph_ql:
+graphql:
     schema_class: "{$bundleName}\\\\GraphQL\\\\{$className}"
 
 
@@ -148,7 +148,7 @@ class $className extends AbstractSchema
                 'args'    => [
                     'name' => [
                         'type' => new StringType(),
-                        'default' => 'Stranger'
+                        'defaultValue' => 'Stranger'
                     ]
                 ],
                 'resolve' => function (\$context, \$args) {
