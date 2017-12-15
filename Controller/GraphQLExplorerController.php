@@ -7,14 +7,12 @@
 
 namespace Youshido\GraphQLBundle\Controller;
 
-
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class GraphQLExplorerController extends Controller
 {
-
     /**
      * @Route("/graphql/explorer")
      *
@@ -33,5 +31,4 @@ class GraphQLExplorerController extends Controller
 
         return $response;
     }
-
 }
