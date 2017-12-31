@@ -67,15 +67,9 @@ The fastest way to create a Schema class is to use a generator shipped with this
 php bin/console graphql:configure AppBundle
 ```
 Here *AppBundle* is a name of the bundle where the class will be generated in.  
-You will be requested for a confirmation to create a class and then presented with instructions to update your config file.
-
-```yaml
-# Update your app/config/config.yml with the parameter:
-graphql:
-  schema_class: AppBundle\GraphQL\Schema
-```
-
-After you've added parameters to the config file, try to access the following link in the browser – `http://localhost:8000/graphql?query={hello}`
+You will be requested for a confirmation to create a class.
+ 
+After you've added parameters to the config file, try to access the following link in the browser – `http://localhost:8000/graphql?query={hello(name:World)}`
 
 > Alternatively, you can execute the same request using CURL client in your console  
 > `curl http://localhost:8000/graphql --data "query={ hello(name: \"World\") }"`
