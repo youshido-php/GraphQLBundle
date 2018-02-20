@@ -5,52 +5,48 @@ namespace Youshido\GraphQLBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\Config\Resource\FileResource;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class GraphQLConfigureCommand extends ContainerAwareCommand
 {
+    const PROJECT_NAMESPACE = 'App';
+
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this
             ->setName('graphql:configure')
             ->setDescription('Generates GraphQL Schema class')
-            ->addArgument('bundle', InputArgument::OPTIONAL, 'Bundle to generate class to', 'AppBundle')
             ->addOption('composer');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $bundleName     = $input->getArgument('bundle');
         $isComposerCall = $input->getOption('composer');
-        if (substr($bundleName, -6) != 'Bundle') $bundleName .= 'Bundle';
 
-        $container = $this->getContainer();
+        $container  = $this->getContainer();
+        $rootDir    = $container->getParameter('kernel.root_dir');
+        $configFile = $rootDir . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config/packages/graphql.yml';
 
-        $rootDir       = $container->getParameter('kernel.root_dir');
-        $configFile    = $rootDir . '/../app/config/config.yml';
-        try {
-            $bundle    = $container->get('kernel')->getBundle($bundleName);
-        } catch (\InvalidArgumentException $e) {
-            $output->writeln('There is no active bundleName: ' . $bundleName);
-            return;
-        }
-
-        $className          = 'Schema';
-        $bundleNameSpace    = $bundle->getNameSpace() . '\\GraphQL';
-        $graphqlPath        = $bundle->getPath() . '/GraphQL/';
-        $classPath          = $graphqlPath . '/' . $className . '.php';
+        $className       = 'Schema';
+        $schemaNamespace = self::PROJECT_NAMESPACE . '\\GraphQL';
+        $graphqlPath     = rtrim($rootDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'GraphQL';
+        $classPath       = $graphqlPath . DIRECTORY_SEPARATOR . $className . '.php';
 
         $inputHelper = $this->getHelper('question');
         if (file_exists($classPath)) {
             if (!$isComposerCall) {
-                $output->writeln(sprintf('Schema class %s was found.', $bundleNameSpace.'\\'.$className));
+                $output->writeln(sprintf('Schema class %s was found.', $schemaNamespace . '\\' . $className));
             }
         } else {
-            $question = new ConfirmationQuestion(sprintf('Confirm creating class at %s ? [Y/n]', $bundleNameSpace.'\\'.$className), true);
+            $question = new ConfirmationQuestion(sprintf('Confirm creating class at %s ? [Y/n]', $schemaNamespace . '\\' . $className), true);
             if (!$inputHelper->ask($input, $output, $question)) {
                 return;
             }
@@ -58,17 +54,26 @@ class GraphQLConfigureCommand extends ContainerAwareCommand
             if (!is_dir($graphqlPath)) {
                 mkdir($graphqlPath, 0777, true);
             }
-            file_put_contents($classPath, $this->getSchemaClassTemplate($bundleNameSpace, $className));
+            file_put_contents($classPath, $this->getSchemaClassTemplate($schemaNamespace, $className));
 
             $output->writeln('Schema file has been created at');
             $output->writeln($classPath . "\n");
 
+            if (!file_exists($configFile)) {
+                $question = new ConfirmationQuestion(sprintf('Config file not found (look at %s). Create it? [Y/n]', $configFile), true);
+                if (!$inputHelper->ask($input, $output, $question)) {
+                    return;
+                }
+
+                touch($configFile);
+            }
+
             $originalConfigData = file_get_contents($configFile);
             if (strpos($originalConfigData, 'graphql') === false) {
-                $configData = <<<CONFIG
+                $projectNameSpace = self::PROJECT_NAMESPACE;
+                $configData       = <<<CONFIG
 graphql:
-    schema_class: "{$bundleName}\\\\GraphQL\\\\{$className}"
-
+    schema_class: "{$projectNameSpace}\\\\GraphQL\\\\{$className}"
 
 CONFIG;
                 file_put_contents($configFile, $configData . $originalConfigData);
@@ -77,7 +82,7 @@ CONFIG;
         if (!$this->graphQLRouteExists()) {
             $question = new ConfirmationQuestion('Confirm adding GraphQL route? [Y/n]', true);
             $resource = $this->getMainRouteConfig();
-            if ($resource && !$inputHelper->ask($input, $output, $question)) {
+            if ($resource && $inputHelper->ask($input, $output, $question)) {
                 $routeConfigData = <<<CONFIG
 
 graphql:
@@ -93,12 +98,17 @@ CONFIG;
         }
     }
 
+    /**
+     * @return null|string
+     *
+     * @throws \Exception
+     */
     protected function getMainRouteConfig()
     {
         $routerResources = $this->getContainer()->get('router')->getRouteCollection()->getResources();
         foreach ($routerResources as $resource) {
             /** @var FileResource|DirectoryResource $resource */
-            if (substr($resource->getResource(), -11) == 'routing.yml') {
+            if (method_exists($resource, 'getResource') && substr($resource->getResource(), -11) == 'routes.yaml') {
                 return $resource->getResource();
             }
         }
@@ -106,12 +116,16 @@ CONFIG;
         return null;
     }
 
+    /**
+     * @return bool
+     * @throws \Exception
+     */
     protected function graphQLRouteExists()
     {
         $routerResources = $this->getContainer()->get('router')->getRouteCollection()->getResources();
         foreach ($routerResources as $resource) {
             /** @var FileResource|DirectoryResource $resource */
-            if (strpos($resource->getResource(), 'GraphQLController.php') !== false) {
+            if (method_exists($resource, 'getResource') && strpos($resource->getResource(), 'GraphQLController.php') !== false) {
                 return true;
             }
         }
@@ -124,7 +138,7 @@ CONFIG;
 
     }
 
-    protected function getSchemaClassTemplate($bundleNameSpace, $className = 'Schema')
+    protected function getSchemaClassTemplate($nameSpace, $className = 'Schema')
     {
         $tpl = <<<TEXT
 <?php
@@ -132,7 +146,7 @@ CONFIG;
  * This class was automatically generated by GraphQL Schema generator
  */
 
-namespace $bundleNameSpace;
+namespace $nameSpace;
 
 use Youshido\GraphQL\Schema\AbstractSchema;
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
@@ -165,5 +179,4 @@ TEXT;
 
         return $tpl;
     }
-
 }

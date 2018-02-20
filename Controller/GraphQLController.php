@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use Youshido\GraphQL\Validator\Exception\ConfigurationException;
+use Youshido\GraphQL\Exception\ConfigurationException;
 use Youshido\GraphQLBundle\Exception\UnableToInitializeSchemaServiceException;
 use Youshido\GraphQLBundle\Execution\Processor;
 
@@ -20,7 +20,7 @@ class GraphQLController extends Controller
     /**
      * @Route("/graphql")
      *
-     * @throws ConfigurationException
+     * @throws \Exception
      *
      * @return JsonResponse
      */
@@ -69,6 +69,11 @@ class GraphQLController extends Controller
         return $processor->getResponseData();
     }
 
+    /**
+     * @return array
+     *
+     * @throws \Exception
+     */
     private function getPayload()
     {
         $request = $this->get('request_stack')->getCurrentRequest();
@@ -127,6 +132,9 @@ class GraphQLController extends Controller
         return [$queries, $isMultiQueryRequest];
     }
 
+    /**
+     * @throws \Exception
+     */
     private function initializeSchemaService()
     {
         if ($this->container->initialized('graphql.schema')) {
@@ -136,6 +144,11 @@ class GraphQLController extends Controller
         $this->container->set('graphql.schema', $this->makeSchemaService());
     }
 
+    /**
+     * @return object
+     *
+     * @throws \Exception
+     */
     private function makeSchemaService()
     {
         if ($this->container->has($this->getSchemaService())) {
