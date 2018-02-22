@@ -13,10 +13,6 @@
     <services>
         <service id="graphql.schema" synthetic="true" public="true"/>
 
-        <service id="youshido_graphql.command.graphql_configure_command" class="Youshido\GraphQLBundle\Command\GraphQLConfigureCommand">
-            <tag name="console.command"/>
-        </service>
-
         <service id="graphql.processor" class="%graphql.processor.class%" public="true">
             <argument type="service" id="graphql.execution_context" />
             <argument type="service" id="graphql.event_dispatcher" />
