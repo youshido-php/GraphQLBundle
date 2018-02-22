@@ -11,9 +11,13 @@
     </parameters>
 
     <services>
-        <service id="graphql.schema" synthetic="true" />
+        <service id="graphql.schema" synthetic="true" public="true"/>
 
-        <service id="graphql.processor" class="%graphql.processor.class%">
+        <service id="youshido_graphql.command.graphql_configure_command" class="Youshido\GraphQLBundle\Command\GraphQLConfigureCommand">
+            <tag name="console.command"/>
+        </service>
+
+        <service id="graphql.processor" class="%graphql.processor.class%" public="true">
             <argument type="service" id="graphql.execution_context" />
             <argument type="service" id="graphql.event_dispatcher" />
 
@@ -22,7 +26,7 @@
             </call>
         </service>
 
-        <service id="graphql.event_dispatcher" class="Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher">
+        <service id="graphql.event_dispatcher" class="Symfony\Component\EventDispatcher\EventDispatcher">
             <argument type="service" id="service_container" />
         </service>
 
@@ -39,7 +43,6 @@
                 <argument type="service" id="service_container" />
             </call>
         </service>
-
 
         <service id="graphql.security_manager" class="%graphql.security_manager.class%" lazy="true">
             <argument type="service" id="security.authorization_checker"/>

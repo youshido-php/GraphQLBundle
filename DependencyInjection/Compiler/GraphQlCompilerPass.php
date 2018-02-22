@@ -15,11 +15,12 @@ use Youshido\GraphQLBundle\Security\Voter\WhitelistVoter;
  */
 class GraphQlCompilerPass implements CompilerPassInterface
 {
-
     /**
      * You can modify the container here before it is dumped to PHP code.
      *
      * @param ContainerBuilder $container
+     *
+     * @throws \Exception
      */
     public function process(ContainerBuilder $container)
     {
@@ -42,6 +43,11 @@ class GraphQlCompilerPass implements CompilerPassInterface
         $this->processSecurityGuard($container);
     }
 
+    /**
+     * @param ContainerBuilder $container
+     *
+     * @throws \Exception
+     */
     private function processSecurityGuard(ContainerBuilder $container)
     {
         $guardConfig = $container->getParameter('graphql.security.guard_config');
@@ -58,6 +64,13 @@ class GraphQlCompilerPass implements CompilerPassInterface
         }
     }
 
+    /**
+     * @param ContainerBuilder $container
+     * @param                  $voterClass
+     * @param array            $list
+     *
+     * @throws \Exception
+     */
     private function addListVoter(ContainerBuilder $container, $voterClass, array $list)
     {
         if ($list) {
@@ -69,7 +82,7 @@ class GraphQlCompilerPass implements CompilerPassInterface
 
             $container->setParameter('graphql.security.guard_config', [
                 'operation' => true,
-                'field'     => false
+                'field'     => false,
             ]);
         }
     }
