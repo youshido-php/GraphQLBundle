@@ -141,7 +141,7 @@ class Processor extends BaseProcessor
 
     private function isServiceReference($resolveFunc)
     {
-        return is_array($resolveFunc) && count($resolveFunc) == 2 && strpos($resolveFunc[0], '@') === 0;
+        return is_array($resolveFunc) && count($resolveFunc) == 2 && is_string($resolveFunc[0]) && strpos($resolveFunc[0], '@') === 0;
     }
 
     public function setLogger($logger = null)
