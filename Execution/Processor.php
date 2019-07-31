@@ -4,6 +4,7 @@ namespace Youshido\GraphQLBundle\Execution;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\HttpKernel\Kernel;
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Processor as BaseProcessor;
 use Youshido\GraphQL\Execution\ResolveInfo;
@@ -74,6 +75,17 @@ class Processor extends BaseProcessor
         return parent::resolveQuery($query);
     }
 
+    private function dispatchResolveEvent(ResolveEvent $event, $name){
+        $major = Kernel::MAJOR_VERSION;
+        $minor = Kernel::MINOR_VERSION;
+
+        if($major > 4 || ($major === 4 && $minor >= 3)){
+            $this->eventDispatcher->dispatch($event, $name);
+        }else{
+            $this->eventDispatcher->dispatch($name, $event);
+        }
+    }
+
     protected function doResolve(FieldInterface $field, AstFieldInterface $ast, $parentValue = null)
     {
         /** @var AstQuery|AstField $ast */
@@ -81,7 +93,7 @@ class Processor extends BaseProcessor
         $astFields = $ast instanceof AstQuery ? $ast->getFields() : [];
 
         $event = new ResolveEvent($field, $astFields);
-        $this->eventDispatcher->dispatch('graphql.pre_resolve', $event);
+        $this->dispatchResolveEvent($event, 'graphql.pre_resolve');
 
         $resolveInfo = $this->createResolveInfo($field, $astFields);
         $this->assertClientHasFieldAccess($resolveInfo);
@@ -116,7 +128,7 @@ class Processor extends BaseProcessor
         }
 
         $event = new ResolveEvent($field, $astFields, $result);
-        $this->eventDispatcher->dispatch('graphql.post_resolve', $event);
+        $this->dispatchResolveEvent($event, 'graphql.post_resolve');
         return $event->getResolvedValue();
     }
 
