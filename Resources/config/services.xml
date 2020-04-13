@@ -50,6 +50,7 @@
         </service>
 
         <service id="graphql.command.configure" class="Youshido\GraphQLBundle\Command\GraphQLConfigureCommand">
+            <argument type="service" id="service_container" />
             <tag name="console.command" command="graphql:configure"/>
         </service>
     </services>

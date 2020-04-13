@@ -2,16 +2,43 @@
 
 namespace Youshido\GraphQLBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\Config\Resource\FileResource;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class GraphQLConfigureCommand extends ContainerAwareCommand
+/**
+ * Class GraphQLConfigureCommand
+ * @package Youshido\GraphQLBundle\Command
+ * @author mirkl
+ */
+class GraphQLConfigureCommand extends Command
 {
+    protected static $defaultName = 'graphql:configure';
+
+    /**
+     *
+     */
     const PROJECT_NAMESPACE = 'App';
+
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
+     * GraphQLConfigureCommand constructor.
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct();
+
+        $this->container = $container;
+    }
 
     /**
      * {@inheritdoc}
@@ -19,7 +46,6 @@ class GraphQLConfigureCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('graphql:configure')
             ->setDescription('Generates GraphQL Schema class')
             ->addOption('composer');
     }
@@ -31,7 +57,7 @@ class GraphQLConfigureCommand extends ContainerAwareCommand
     {
         $isComposerCall = $input->getOption('composer');
 
-        $container  = $this->getContainer();
+        $container  = $this->container;
         $rootDir    = $container->getParameter('kernel.root_dir');
         $configFile = $rootDir . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config/packages/graphql.yml';
 
@@ -133,11 +159,19 @@ CONFIG;
         return false;
     }
 
+    /**
+     *
+     */
     protected function generateRoutes()
     {
 
     }
 
+    /**
+     * @param $nameSpace
+     * @param string $className
+     * @return string
+     */
     protected function getSchemaClassTemplate($nameSpace, $className = 'Schema')
     {
         $tpl = <<<TEXT
