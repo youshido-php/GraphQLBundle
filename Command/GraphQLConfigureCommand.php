@@ -17,13 +17,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class GraphQLConfigureCommand extends Command
 {
-    protected static $defaultName = 'graphql:configure';
-
     /**
      *
      */
     const PROJECT_NAMESPACE = 'App';
-
+    protected static $defaultName = 'graphql:configure';
     /**
      * @var ContainerInterface
      */
@@ -57,14 +55,14 @@ class GraphQLConfigureCommand extends Command
     {
         $isComposerCall = $input->getOption('composer');
 
-        $container  = $this->container;
-        $rootDir    = $container->getParameter('kernel.root_dir');
+        $container = $this->container;
+        $rootDir = $container->getParameter('kernel.root_dir');
         $configFile = $rootDir . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config/packages/graphql.yml';
 
-        $className       = 'Schema';
+        $className = 'Schema';
         $schemaNamespace = self::PROJECT_NAMESPACE . '\\GraphQL';
-        $graphqlPath     = rtrim($rootDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'GraphQL';
-        $classPath       = $graphqlPath . DIRECTORY_SEPARATOR . $className . '.php';
+        $graphqlPath = rtrim($rootDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'GraphQL';
+        $classPath = $graphqlPath . DIRECTORY_SEPARATOR . $className . '.php';
 
         $inputHelper = $this->getHelper('question');
         if (file_exists($classPath)) {
@@ -74,7 +72,7 @@ class GraphQLConfigureCommand extends Command
         } else {
             $question = new ConfirmationQuestion(sprintf('Confirm creating class at %s ? [Y/n]', $schemaNamespace . '\\' . $className), true);
             if (!$inputHelper->ask($input, $output, $question)) {
-                return;
+                return 0;
             }
 
             if (!is_dir($graphqlPath)) {
@@ -88,7 +86,7 @@ class GraphQLConfigureCommand extends Command
             if (!file_exists($configFile)) {
                 $question = new ConfirmationQuestion(sprintf('Config file not found (look at %s). Create it? [Y/n]', $configFile), true);
                 if (!$inputHelper->ask($input, $output, $question)) {
-                    return;
+                    return 0;
                 }
 
                 touch($configFile);
@@ -97,7 +95,7 @@ class GraphQLConfigureCommand extends Command
             $originalConfigData = file_get_contents($configFile);
             if (strpos($originalConfigData, 'graphql') === false) {
                 $projectNameSpace = self::PROJECT_NAMESPACE;
-                $configData       = <<<CONFIG
+                $configData = <<<CONFIG
 graphql:
     schema_class: "{$projectNameSpace}\\\\GraphQL\\\\{$className}"
 
@@ -122,49 +120,8 @@ CONFIG;
                 $output->writeln('GraphQL default route was found.');
             }
         }
-    }
 
-    /**
-     * @return null|string
-     *
-     * @throws \Exception
-     */
-    protected function getMainRouteConfig()
-    {
-        $routerResources = $this->getContainer()->get('router')->getRouteCollection()->getResources();
-        foreach ($routerResources as $resource) {
-            /** @var FileResource|DirectoryResource $resource */
-            if (method_exists($resource, 'getResource') && substr($resource->getResource(), -11) == 'routes.yaml') {
-                return $resource->getResource();
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @return bool
-     * @throws \Exception
-     */
-    protected function graphQLRouteExists()
-    {
-        $routerResources = $this->getContainer()->get('router')->getRouteCollection()->getResources();
-        foreach ($routerResources as $resource) {
-            /** @var FileResource|DirectoryResource $resource */
-            if (method_exists($resource, 'getResource') && strpos($resource->getResource(), 'GraphQLController.php') !== false) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     *
-     */
-    protected function generateRoutes()
-    {
-
+        return 0;
     }
 
     /**
@@ -212,5 +169,48 @@ class $className extends AbstractSchema
 TEXT;
 
         return $tpl;
+    }
+
+    /**
+     * @return bool
+     * @throws \Exception
+     */
+    protected function graphQLRouteExists()
+    {
+        $routerResources = $this->getContainer()->get('router')->getRouteCollection()->getResources();
+        foreach ($routerResources as $resource) {
+            /** @var FileResource|DirectoryResource $resource */
+            if (method_exists($resource, 'getResource') && strpos($resource->getResource(), 'GraphQLController.php') !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return null|string
+     *
+     * @throws \Exception
+     */
+    protected function getMainRouteConfig()
+    {
+        $routerResources = $this->getContainer()->get('router')->getRouteCollection()->getResources();
+        foreach ($routerResources as $resource) {
+            /** @var FileResource|DirectoryResource $resource */
+            if (method_exists($resource, 'getResource') && substr($resource->getResource(), -11) == 'routes.yaml') {
+                return $resource->getResource();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     */
+    protected function generateRoutes()
+    {
+
     }
 }
