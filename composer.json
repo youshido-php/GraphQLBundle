@@ -1,6 +1,8 @@
 {
   "name": "bastsys/graphql-bundle",
-  "replaces": "youshido/graphql-bundle",
+  "replace": {
+    "youshido/graphql-bundle": "1.4.1"
+  },
   "description": "Symfony GraphQl Bundle",
   "license": "MIT",
   "authors": [
