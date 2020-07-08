@@ -1,9 +1,9 @@
 <?php
 
-namespace Youshido\GraphQLBundle;
+namespace BastSys\GraphQLBundle;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Youshido\GraphQLBundle\DependencyInjection\Compiler\GraphQlCompilerPass;

@@ -1,10 +1,8 @@
 {
   "name": "bastsys/graphql-bundle",
-  "replace": {
-    "youshido/graphql-bundle": "1.4.1"
-  },
+  "type": "symfony-bundle",
   "description": "Symfony GraphQl Bundle",
-  "license": "MIT",
+  "license": "Proprietary",
   "authors": [
     {
       "name": "Portey Vasil",
@@ -13,20 +11,33 @@
     {
       "name": "Alexandr Viniychuk",
       "email": "a@viniychuk.com"
+    },
+    {
+      "name": "Miroslav Klobáska",
+      "email": "mir.klobaska@seznam.cz"
     }
   ],
   "autoload": {
     "psr-4": {
+      "BastSys\\GraphQLBundle\\": "",
       "Youshido\\GraphQLBundle\\": ""
     }
   },
   "require": {
-    "php": ">=5.6",
-    "youshido/graphql": "~1.4"
+    "php": "^7.4",
+    "youshido/graphql": "~1.4",
+    "symfony/security-bundle": "^5.1",
+    "symfony/config": "^5.1",
+    "symfony/dependency-injection": "^5.1",
+    "symfony/event-dispatcher": "^5.1",
+    "ext-json": "*",
+    "bastsys/utils-bundle": "^1.1.0",
+    "bastsys/locale-bundle": "^1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "*",
     "composer/composer": "~1.2",
     "symfony/framework-bundle": "^5.0.0"
-  }
+  },
+  "minimum-stability": "stable"
 }

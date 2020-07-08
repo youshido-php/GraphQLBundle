@@ -7,7 +7,6 @@
 
 namespace Youshido\GraphQLBundle\Security\Manager;
 
-
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Youshido\GraphQL\Execution\ResolveInfo;

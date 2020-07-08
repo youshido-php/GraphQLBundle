@@ -49,9 +49,11 @@
             <tag name="security.voter" priority="255" />
         </service>
 
-        <service id="graphql.command.configure" class="Youshido\GraphQLBundle\Command\GraphQLConfigureCommand">
-            <argument type="service" id="service_container" />
-            <tag name="console.command" command="graphql:configure"/>
+        <service id="graphql.factory.processor" class="BastSys\GraphQLBundle\GraphQL\ProcessorFactory" public="false">
+            <argument id="graphql.symfony_container_bridge" type="service"/>
+            <argument id="event_dispatcher" type="service"/>
+            <argument id="graphql.security_manager" type="service"/>
         </service>
+        <service id="BastSys\GraphQLBundle\GraphQL\ProcessorFactory" alias="graphql.factory.processor"/>
     </services>
 </container>
