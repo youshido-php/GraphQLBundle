@@ -8,6 +8,7 @@ use BastSys\GraphQLBundle\GraphQL\ProcessorFactory;
 use Exception;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -67,10 +68,10 @@ abstract class AGraphQLController extends AbstractController
     }
 
     /**
-     * @param ContainerInterface $serviceContainer
+     * @param Container $serviceContainer
      * @required
      */
-    public function setServiceContainer(ContainerInterface $serviceContainer): void
+    public function setServiceContainer(Container $serviceContainer): void
     {
         $this->serviceContainer = $serviceContainer;
     }
@@ -93,6 +94,7 @@ abstract class AGraphQLController extends AbstractController
         $queryResponses = array_map(function ($queryData) {
             return $this->executeQuery($queryData['query'], $queryData['variables']);
         }, $queries);
+
         $response = new JsonResponse($isMultiQueryRequest ? $queryResponses : $queryResponses[0], 200, $this->getResponseHeaders());
 
         if ($this->serviceContainer->getParameter('graphql.response.json_pretty')) {
@@ -135,13 +137,17 @@ abstract class AGraphQLController extends AbstractController
         $variables = is_string($variables) ? json_decode($variables, true) ?: [] : [];
 
         $content = $request->getContent();
+
         if (!empty($content)) {
+            // GraphQL format
             if ($request->headers->has('Content-Type') && 'application/graphql' == $request->headers->get('Content-Type')) {
+                dump('graphql process');
                 $queries[] = [
                     'query' => $content,
                     'variables' => [],
                 ];
             } else {
+                // JSON format
                 $params = json_decode($content, true);
 
                 if ($params) {

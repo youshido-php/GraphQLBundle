@@ -55,5 +55,7 @@
             <argument id="graphql.security_manager" type="service"/>
         </service>
         <service id="BastSys\GraphQLBundle\GraphQL\ProcessorFactory" alias="graphql.factory.processor"/>
+
+        <service id="Symfony\Component\DependencyInjection\Container" alias="service_container" />
     </services>
 </container>
