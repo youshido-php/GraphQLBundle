@@ -8,6 +8,7 @@ use BastSys\GraphQLBundle\GraphQL\ProcessorFactory;
 use Exception;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -33,6 +34,10 @@ abstract class AGraphQLController extends AbstractController
      * @var RequestStack
      */
     private RequestStack $requestStack;
+    /**
+     * @var ContainerInterface
+     */
+    private ContainerInterface $serviceContainer;
 
     /**
      * AGraphQLController constructor.
@@ -62,6 +67,15 @@ abstract class AGraphQLController extends AbstractController
     }
 
     /**
+     * @param ContainerInterface $serviceContainer
+     * @required
+     */
+    public function setServiceContainer(ContainerInterface $serviceContainer): void
+    {
+        $this->serviceContainer = $serviceContainer;
+    }
+
+    /**
      * @Route("/graphql", name="graphql", methods={"GET", "POST"})
      * @param Request $request
      *
@@ -81,7 +95,7 @@ abstract class AGraphQLController extends AbstractController
         }, $queries);
         $response = new JsonResponse($isMultiQueryRequest ? $queryResponses : $queryResponses[0], 200, $this->getResponseHeaders());
 
-        if ($this->container->getParameter('graphql.response.json_pretty')) {
+        if ($this->serviceContainer->getParameter('graphql.response.json_pretty')) {
             $response->setEncodingOptions($response->getEncodingOptions() | JSON_PRETTY_PRINT);
         }
 
@@ -101,7 +115,7 @@ abstract class AGraphQLController extends AbstractController
      */
     private function getResponseHeaders()
     {
-        $headers = $this->container->getParameter('graphql.response.headers');
+        $headers = $this->serviceContainer->getParameter('graphql.response.headers');
         return $headers;
     }
 
