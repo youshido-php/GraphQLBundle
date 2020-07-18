@@ -1,6 +1,6 @@
 <?php
 
-namespace BastSys\GraphQLBundle\Exception\Process\GraphQL;
+namespace BastSys\GraphQLBundle\Exception\Process;
 
 use Exception;
 use Throwable;

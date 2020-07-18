@@ -1,6 +1,6 @@
 <?php
 
-namespace BastSys\GraphQLBundle\Exception\Process\GraphQL;
+namespace BastSys\GraphQLBundle\Exception\Process;
 
 /**
  * Class GraphQLRequiredParameterException

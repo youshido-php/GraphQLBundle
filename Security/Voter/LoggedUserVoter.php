@@ -1,6 +1,6 @@
 <?php
 
-namespace BastSys\GraphQLBundle\Security\Voter\GraphQL;
+namespace BastSys\GraphQLBundle\Security\Voter;
 
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;

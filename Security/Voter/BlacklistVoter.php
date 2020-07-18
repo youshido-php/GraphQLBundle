@@ -7,10 +7,13 @@
 
 namespace Youshido\GraphQLBundle\Security\Voter;
 
-
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Youshido\GraphQL\Parser\Ast\Query;
 
+/**
+ * Class BlacklistVoter
+ * @package Youshido\GraphQLBundle\Security\Voter
+ */
 class BlacklistVoter extends AbstractListVoter
 {
 
