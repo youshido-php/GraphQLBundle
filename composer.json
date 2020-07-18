@@ -2,7 +2,7 @@
   "name": "bastsys/graphql-bundle",
   "type": "symfony-bundle",
   "description": "Symfony GraphQl Bundle",
-  "license": "Proprietary",
+  "license": "proprietary",
   "authors": [
     {
       "name": "Portey Vasil",
