@@ -141,7 +141,6 @@ abstract class AGraphQLController extends AbstractController
         if (!empty($content)) {
             // GraphQL format
             if ($request->headers->has('Content-Type') && 'application/graphql' == $request->headers->get('Content-Type')) {
-                dump('graphql process');
                 $queries[] = [
                     'query' => $content,
                     'variables' => [],
