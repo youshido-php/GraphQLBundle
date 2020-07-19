@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\ObjectType;
 
@@ -6,6 +7,11 @@ use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
 use Youshido\GraphQL\Exception\ConfigurationException;
 use Youshido\GraphQL\Type\ListType\ListType;
 
+/**
+ * Class ATranslatableEntityType
+ * @package BastSys\GraphQLBundle\GraphQL\ObjectType
+ * @author mirkl
+ */
 abstract class ATranslatableEntityType extends AEntityType
 {
     /**

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\Field\MultiResult;
 
@@ -80,6 +81,8 @@ abstract class AListUpdateField extends ABaseField implements IOneRepositoryFiel
      * @return array|IIdentifiableEntity[]|object
      * @throws ORMException
      * @throws OptimisticLockException
+     * @throws EntityNotFoundByIdException
+     * @throws Exception
      */
     public final function handle(GraphQLRequest $request)
     {

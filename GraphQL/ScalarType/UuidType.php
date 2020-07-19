@@ -1,11 +1,20 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\ScalarType;
 
 use Youshido\GraphQL\Type\Scalar\StringType;
 
+/**
+ * Class UuidType
+ * @package BastSys\GraphQLBundle\GraphQL\ScalarType
+ * @author mirkl
+ */
 class UuidType extends StringType
 {
+    /**
+     * @return false|string
+     */
     public function getName()
     {
         return 'Uuid';

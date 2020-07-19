@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Date: 9/12/16
  *
@@ -24,11 +25,20 @@ abstract class AbstractListVoter extends Voter
     /** @var bool */
     private $enabled = false;
 
+    /**
+     * @param string $attribute
+     * @param mixed $subject
+     * @return bool
+     */
     protected function supports($attribute, $subject)
     {
         return $this->enabled && $attribute == SecurityManagerInterface::RESOLVE_ROOT_OPERATION_ATTRIBUTE;
     }
 
+    /**
+     * @param TokenInterface $token
+     * @return bool
+     */
     protected function isLoggedInUser(TokenInterface $token)
     {
         return is_object($token->getUser());
@@ -50,11 +60,18 @@ abstract class AbstractListVoter extends Voter
         return $this->list;
     }
 
+    /**
+     * @param $query
+     * @return bool
+     */
     protected function inList($query)
     {
         return in_array($query, $this->list);
     }
 
+    /**
+     * @param $enabled
+     */
     public function setEnabled($enabled)
     {
         $this->enabled = $enabled;

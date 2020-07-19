@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL;
 
 use BastSys\GraphQLBundle\GraphQL\Field\IFreeOperation;
-use BastSys\GraphQLBundle\Security\Voter\GraphQL\AFreeOperationVoter;
+use BastSys\GraphQLBundle\Security\Voter\AFreeOperationVoter;
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Schema\AbstractSchema;

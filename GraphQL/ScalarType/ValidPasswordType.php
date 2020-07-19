@@ -1,9 +1,15 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\ScalarType;
 
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 
+/**
+ * Class ValidPasswordType
+ * @package BastSys\GraphQLBundle\GraphQL\ScalarType
+ * @author mirkl
+ */
 class ValidPasswordType extends AbstractScalarType
 {
     /**

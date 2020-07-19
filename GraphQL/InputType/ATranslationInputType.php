@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\InputType;
 
@@ -7,6 +8,11 @@ use Youshido\GraphQL\Exception\ConfigurationException;
 use Youshido\GraphQL\Type\NonNullType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
+/**
+ * Class ATranslationInputType
+ * @package BastSys\GraphQLBundle\GraphQL\InputType
+ * @author mirkl
+ */
 abstract class ATranslationInputType extends AInputObjectType
 {
     /**
@@ -26,6 +32,9 @@ abstract class ATranslationInputType extends AInputObjectType
      */
     abstract public function addTranslationFields($config): void;
 
+    /**
+     * @return string
+     */
     public function getDescription()
     {
         return 'A field that creates or updates one particular translation';

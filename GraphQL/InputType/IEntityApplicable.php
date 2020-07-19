@@ -1,9 +1,15 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\InputType;
 
 use BastSys\GraphQLBundle\GraphQL\GraphQLRequest;
 
+/**
+ * Interface IEntityApplicable
+ * @package BastSys\GraphQLBundle\GraphQL\InputType
+ * @author mirkl
+ */
 interface IEntityApplicable
 {
     /**

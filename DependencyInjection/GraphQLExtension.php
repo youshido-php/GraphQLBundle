@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Youshido\GraphQLBundle\DependencyInjection;
 
@@ -18,6 +19,7 @@ class GraphQLExtension extends Extension
 
     /**
      * {@inheritdoc}
+     * @throws \Exception
      */
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -50,6 +52,9 @@ class GraphQLExtension extends Extension
         $loader->load('services.xml');
     }
 
+    /**
+     * @return array
+     */
     private function getDefaultHeaders()
     {
         return [
@@ -58,6 +63,9 @@ class GraphQLExtension extends Extension
         ];
     }
 
+    /**
+     * @return string
+     */
     public function getAlias()
     {
         return "graphql";

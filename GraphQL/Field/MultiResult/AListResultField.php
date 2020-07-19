@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\Field\MultiResult;
 
@@ -9,7 +10,7 @@ use BastSys\GraphQLBundle\GraphQL\InputType\OrderByInputType;
 use BastSys\GraphQLBundle\GraphQL\InputType\PaginationInputType;
 use BastSys\GraphQLBundle\GraphQL\ObjectType\PageInfoType;
 use BastSys\UtilsBundle\Exception\NotImplementedException;
-use BastSys\UtilsBundle\Model\ListStructure\Input\AFilter;
+use BastSys\UtilsBundle\Model\Lists\Input\AFilter;
 use BastSys\UtilsBundle\Repository\AEntityRepository;
 use Youshido\GraphQL\Config\Field\FieldConfig;
 use Youshido\GraphQL\Exception\ConfigurationException;
@@ -22,8 +23,16 @@ use Youshido\GraphQL\Type\Object\ObjectType;
 use Youshido\GraphQL\Type\Scalar\IntType;
 use Youshido\GraphQL\Type\TypeInterface;
 
+/**
+ * Class AListResultField
+ * @package BastSys\GraphQLBundle\GraphQL\Field\MultiResult
+ * @author mirkl
+ */
 abstract class AListResultField extends ABaseField
 {
+    /**
+     * @param FieldConfig $config
+     */
     public final function build(FieldConfig $config)
     {
         $filterType = $this->getFilterInputType();

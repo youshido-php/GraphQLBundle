@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\ScalarType\Localisation;
 
@@ -27,6 +28,10 @@ class Alpha2Type extends StringType
             (is_null($value) || preg_match(self::alpha2RE, $value));
     }
 
+    /**
+     * @param null $value
+     * @return string|null
+     */
     public function getValidationError($value = null)
     {
         return "Wrong value '$value'";

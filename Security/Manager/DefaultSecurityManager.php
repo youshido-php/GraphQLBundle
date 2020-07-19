@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Date: 29.08.16
  *
@@ -12,6 +13,11 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Youshido\GraphQL\Execution\ResolveInfo;
 use Youshido\GraphQL\Parser\Ast\Query;
 
+/**
+ * Class DefaultSecurityManager
+ * @package Youshido\GraphQLBundle\Security\Manager
+ * @author mirkl
+ */
 class DefaultSecurityManager implements SecurityManagerInterface
 {
 
@@ -24,6 +30,11 @@ class DefaultSecurityManager implements SecurityManagerInterface
     /** @var  AuthorizationCheckerInterface */
     private $authorizationChecker;
 
+    /**
+     * DefaultSecurityManager constructor.
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param array $guardConfig
+     */
     public function __construct(AuthorizationCheckerInterface $authorizationChecker, array $guardConfig = [])
     {
         $this->authorizationChecker         = $authorizationChecker;

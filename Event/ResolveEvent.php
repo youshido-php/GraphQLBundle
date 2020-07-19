@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Youshido\GraphQLBundle\Event;
 
@@ -6,6 +7,11 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 use Youshido\GraphQL\Field\FieldInterface;
 use Youshido\GraphQL\Parser\Ast\Field;
 
+/**
+ * Class ResolveEvent
+ * @package Youshido\GraphQLBundle\Event
+ * @author mirkl
+ */
 class ResolveEvent extends GenericEvent
 {
     /**

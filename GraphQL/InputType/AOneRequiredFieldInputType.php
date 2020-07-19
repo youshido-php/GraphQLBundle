@@ -1,8 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\InputType;
 
-use BastSys\GraphQLBundle\Exception\Process\GraphQL\GraphQLSchemaException;
+use BastSys\GraphQLBundle\Exception\Process\GraphQLSchemaException;
 use Youshido\GraphQL\Config\Object\InputObjectTypeConfig;
 use Youshido\GraphQL\Type\NonNullType;
 

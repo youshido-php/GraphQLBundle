@@ -17,6 +17,11 @@ abstract class AFieldCompilerPass implements CompilerPassInterface
     protected string $subFieldTag;
     private string $rootFieldServiceId;
 
+    /**
+     * AFieldCompilerPass constructor.
+     * @param string $subFieldTag
+     * @param string $rootFieldServiceId
+     */
     public function __construct(string $subFieldTag, string $rootFieldServiceId)
     {
         $this->subFieldTag = $subFieldTag;

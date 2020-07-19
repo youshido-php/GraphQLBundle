@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL;
 
@@ -23,6 +24,12 @@ class ProcessorFactory
     /** @var EventDispatcherInterface */
     private $eventDispatcher;
 
+    /**
+     * ProcessorFactory constructor.
+     * @param ContainerInterface $container
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param SecurityManagerInterface $securityManager
+     */
     public function __construct(ContainerInterface $container, EventDispatcherInterface $eventDispatcher, SecurityManagerInterface $securityManager)
     {
         $this->container = $container;
@@ -33,6 +40,7 @@ class ProcessorFactory
     /**
      * Creates processor
      *
+     * @param AbstractSchema $schema
      * @return Processor
      */
     public function createProcessor(AbstractSchema $schema): Processor

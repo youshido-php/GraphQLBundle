@@ -1,20 +1,21 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL;
 
 use ArrayAccess;
-use BastSys\GraphQLBundle\Exception\Process\GraphQL\GraphQLRequiredParameterException;
-use BastSys\GraphQLBundle\Exception\Process\GraphQL\GraphQLRequiredTranslationParameterException;
+use BastSys\GraphQLBundle\Exception\Process\GraphQLRequiredParameterException;
+use BastSys\GraphQLBundle\Exception\Process\GraphQLRequiredTranslationParameterException;
 use BastSys\GraphQLBundle\GraphQL\InputType\IEntityApplicable;
 use BastSys\LocaleBundle\Entity\Translation\ITranslatable;
 use BastSys\UtilsBundle\Exception\Entity\EntityNotFoundByIdException;
 use BastSys\UtilsBundle\Exception\Entity\EntityNotFoundException;
 use BastSys\UtilsBundle\Exception\NotImplementedException;
 use BastSys\UtilsBundle\Model\DimensionalArray;
-use BastSys\UtilsBundle\Model\ListStructure\Input\FieldDirectionPair;
-use BastSys\UtilsBundle\Model\ListStructure\Input\OrderBy;
-use BastSys\UtilsBundle\Model\ListStructure\Input\OrderByDirection;
-use BastSys\UtilsBundle\Model\ListStructure\Input\Pagination;
+use BastSys\UtilsBundle\Model\Lists\Input\FieldDirectionPair;
+use BastSys\UtilsBundle\Model\Lists\Input\OrderBy;
+use BastSys\UtilsBundle\Model\Lists\Input\OrderByDirection;
+use BastSys\UtilsBundle\Model\Lists\Input\Pagination;
 use BastSys\UtilsBundle\Model\Strings;
 use BastSys\UtilsBundle\Repository\AEntityRepository;
 use Doctrine\ORM\EntityManager;

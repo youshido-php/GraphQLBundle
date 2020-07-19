@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\Field;
 
@@ -53,6 +54,10 @@ abstract class ABaseField extends AbstractContainerAwareField
 
     /**
      * A method that is called from Youshido GraphQL bundle
+     * @param $value
+     * @param array $args
+     * @param ResolveInfo $info
+     * @return array|object
      */
     public function resolve($value, array $args, ResolveInfo $info)
     {

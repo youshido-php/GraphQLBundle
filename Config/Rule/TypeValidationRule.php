@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * Date: 23.05.16
@@ -11,9 +12,19 @@ namespace Youshido\GraphQLBundle\Config\Rule;
 use Youshido\GraphQL\Type\TypeService;
 use Youshido\GraphQL\Validator\ConfigValidator\Rules\TypeValidationRule as BaseTypeValidationRule;
 
+/**
+ * Class TypeValidationRule
+ * @package Youshido\GraphQLBundle\Config\Rule
+ * @author mirkl
+ */
 class TypeValidationRule extends BaseTypeValidationRule
 {
 
+    /**
+     * @param $data
+     * @param $ruleInfo
+     * @return bool
+     */
     public function validate($data, $ruleInfo)
     {
         if (!is_string($ruleInfo)) {

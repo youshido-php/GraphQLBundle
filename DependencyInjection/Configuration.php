@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Youshido\GraphQLBundle\DependencyInjection;
 
@@ -57,7 +58,7 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->booleanNode('json_pretty')->defaultTrue()->end()
                         ->arrayNode('headers')
-                            ->prototype('array')
+                            ->prototype('array')->end()
                                 ->children()
                                     ->scalarNode('name')->end()
                                     ->scalarNode('value')->defaultValue(null)->end()

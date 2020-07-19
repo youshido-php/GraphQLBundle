@@ -1,9 +1,15 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\ScalarType\mimeType;
 
 use Youshido\GraphQL\Type\Scalar\AbstractScalarType;
 
+/**
+ * Class MimeType
+ * @package BastSys\GraphQLBundle\GraphQL\ScalarType\mimeType
+ * @author mirkl
+ */
 class MimeType extends AbstractScalarType
 {
     const IMAGE_PNG = 'image/png';
@@ -20,6 +26,9 @@ class MimeType extends AbstractScalarType
         return 'Represents browser MIME type';
     }
 
+    /**
+     * @return false|String
+     */
     public function getName()
     {
         return 'MimeType';

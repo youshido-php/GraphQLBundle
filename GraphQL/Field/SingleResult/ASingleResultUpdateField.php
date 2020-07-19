@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\Field\SingleResult;
 
@@ -86,7 +87,7 @@ abstract class ASingleResultUpdateField extends ABaseField implements IOneReposi
         if ($em->isOpen()) {
             try {
                 $em->flush();
-            } catch (ForeignKeyConstraintViolationException $ex) {
+            } /** @noinspection PhpRedundantCatchClauseInspection */ catch (ForeignKeyConstraintViolationException $ex) {
                 throw new Exception('This entity cannot be deleted, because it is used by other entities', 400, $ex);
             }
         }

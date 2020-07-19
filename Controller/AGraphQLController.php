@@ -1,8 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\Controller;
 
-use BastSys\GraphQLBundle\Exception\Process\GraphQL\GraphQLException;
+use BastSys\GraphQLBundle\Exception\Process\GraphQLException;
 use BastSys\GraphQLBundle\GraphQL\ASchema;
 use BastSys\GraphQLBundle\GraphQL\ProcessorFactory;
 use Exception;

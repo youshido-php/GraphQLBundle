@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\InputType;
 
 use BastSys\GraphQLBundle\GraphQL\GraphQLRequest;
-use BastSys\UtilsBundle\Model\ListStructure\Input\AFilter;
+use BastSys\UtilsBundle\Model\Lists\Input\AFilter;
 
 /**
  * Interface IFilterCreator

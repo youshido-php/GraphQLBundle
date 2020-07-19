@@ -1,7 +1,13 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL;
 
+/**
+ * Interface IGraphQLRequestConstructable
+ * @package BastSys\GraphQLBundle\GraphQL
+ * @author mirkl
+ */
 interface IGraphQLRequestConstructable
 {
     /**

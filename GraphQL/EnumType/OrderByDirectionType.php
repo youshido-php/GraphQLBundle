@@ -1,11 +1,20 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\EnumType;
 
 use Youshido\GraphQL\Type\Enum\AbstractEnumType;
 
+/**
+ * Class OrderByDirectionType
+ * @package BastSys\GraphQLBundle\GraphQL\EnumType
+ * @author mirkl
+ */
 class OrderByDirectionType extends AbstractEnumType
 {
+    /**
+     * @return array
+     */
     public function getValues()
     {
         return [
@@ -22,6 +31,9 @@ class OrderByDirectionType extends AbstractEnumType
         ];
     }
 
+    /**
+     * @return string
+     */
     public function getDescription()
     {
         return "Direction how the items in database should be ordered before search is performed";

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\ObjectType;
 
@@ -7,6 +8,11 @@ use Youshido\GraphQL\Exception\ConfigurationException;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
 use Youshido\GraphQL\Type\Scalar\StringType;
 
+/**
+ * Class ATranslationType
+ * @package BastSys\GraphQLBundle\GraphQL\ObjectType
+ * @author mirkl
+ */
 abstract class ATranslationType extends AbstractObjectType
 {
     /**
@@ -29,6 +35,9 @@ abstract class ATranslationType extends AbstractObjectType
      */
     abstract public function addTranslationFields($config): void;
 
+    /**
+     * @return string
+     */
     public function getDescription()
     {
         return 'Translation object for one particular locale';

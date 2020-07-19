@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace Youshido\GraphQLBundle\Execution;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Youshido\GraphQL\Exception\ResolveException;
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Processor as BaseProcessor;
 use Youshido\GraphQL\Execution\ResolveInfo;
@@ -16,11 +18,14 @@ use Youshido\GraphQL\Parser\Ast\Interfaces\FieldInterface as AstFieldInterface;
 use Youshido\GraphQL\Parser\Ast\Query;
 use Youshido\GraphQL\Parser\Ast\Query as AstQuery;
 use Youshido\GraphQL\Type\TypeService;
-use Youshido\GraphQL\Exception\ResolveException;
 use Youshido\GraphQLBundle\Event\ResolveEvent;
 use Youshido\GraphQLBundle\Security\Manager\SecurityManagerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * Class Processor
+ * @package Youshido\GraphQLBundle\Execution
+ * @author mirkl
+ */
 class Processor extends BaseProcessor
 {
 
@@ -59,6 +64,12 @@ class Processor extends BaseProcessor
         return $this;
     }
 
+    /**
+     * @param $payload
+     * @param array $variables
+     * @param array $reducers
+     * @return void|BaseProcessor
+     */
     public function processPayload($payload, $variables = [], $reducers = [])
     {
         if ($this->logger) {
@@ -68,6 +79,10 @@ class Processor extends BaseProcessor
         parent::processPayload($payload, $variables);
     }
 
+    /**
+     * @param AstQuery $query
+     * @return array
+     */
     protected function resolveQuery(Query $query)
     {
         $this->assertClientHasOperationAccess($query);
@@ -75,17 +90,22 @@ class Processor extends BaseProcessor
         return parent::resolveQuery($query);
     }
 
+    /**
+     * @param ResolveEvent $event
+     * @param $name
+     */
     private function dispatchResolveEvent(ResolveEvent $event, $name){
-        $major = Kernel::MAJOR_VERSION;
-        $minor = Kernel::MINOR_VERSION;
-
-        if($major > 4 || ($major === 4 && $minor >= 3)){
-            $this->eventDispatcher->dispatch($event, $name);
-        }else{
-            $this->eventDispatcher->dispatch($name, $event);
-        }
+        $this->eventDispatcher->dispatch($event, $name);
     }
 
+    /**
+     * @param FieldInterface $field
+     * @param AstFieldInterface $ast
+     * @param null $parentValue
+     * @return mixed|null
+     * @throws ResolveException
+     * @throws \Exception
+     */
     protected function doResolve(FieldInterface $field, AstFieldInterface $ast, $parentValue = null)
     {
         /** @var AstQuery|AstField $ast */
@@ -132,6 +152,9 @@ class Processor extends BaseProcessor
         return $event->getResolvedValue();
     }
 
+    /**
+     * @param AstQuery $query
+     */
     private function assertClientHasOperationAccess(Query $query)
     {
         if ($this->securityManager->isSecurityEnabledFor(SecurityManagerInterface::RESOLVE_ROOT_OPERATION_ATTRIBUTE)
@@ -141,6 +164,9 @@ class Processor extends BaseProcessor
         }
     }
 
+    /**
+     * @param ResolveInfo $resolveInfo
+     */
     private function assertClientHasFieldAccess(ResolveInfo $resolveInfo)
     {
         if ($this->securityManager->isSecurityEnabledFor(SecurityManagerInterface::RESOLVE_FIELD_ATTRIBUTE)
@@ -150,12 +176,18 @@ class Processor extends BaseProcessor
         }
     }
 
-
+    /**
+     * @param $resolveFunc
+     * @return bool
+     */
     private function isServiceReference($resolveFunc)
     {
         return is_array($resolveFunc) && count($resolveFunc) == 2 && strpos($resolveFunc[0], '@') === 0;
     }
 
+    /**
+     * @param null $logger
+     */
     public function setLogger($logger = null)
     {
         $this->logger = $logger;
