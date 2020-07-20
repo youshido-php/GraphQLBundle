@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\Controller;
 
-use DateTime;
 use DateTimeZone;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,6 +26,7 @@ abstract class AGraphQLExplorerController extends AbstractController
      * @Route("/graphql/explorer", name="graphql_explorer", methods={"GET"})
      *
      * @return Response
+     * @throws \Exception
      */
     public function handle()
     {
@@ -36,7 +36,7 @@ abstract class AGraphQLExplorerController extends AbstractController
 
         $response = new Response($view, 200);
 
-        $date = DateTime::createFromFormat('U', strtotime('tomorrow'), new DateTimeZone('UTC'));
+        $date = new \DateTime('+1 day', new DateTimeZone('UTC'));
         $response->setExpires($date);
         $response->setPublic();
 
