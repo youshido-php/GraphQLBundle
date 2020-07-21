@@ -133,7 +133,7 @@
             'Accept':       'application/json',
             'Content-Type': 'application/json',
         };
-        if (window.tokenInput) {
+        if (window.tokenInput.value) {
             headers['Authorization'] = `Bearer ${tokenInput.value}`;
         }
 
