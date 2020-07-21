@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 
 /**
@@ -29,29 +28,12 @@ abstract class AGraphQLAuthenticator extends AbstractGuardAuthenticator
 
     /**
      * AGraphQLAuthenticator constructor.
-     * @param string[] $responseHeaders
+     * @param string[] $responseHeaders headers contained in every graphql response
      */
-    public function __construct(array $responseHeaders)
+    public function __construct(array $responseHeaders = [])
     {
         $this->responseHeaders = $responseHeaders;
     }
-
-    /**
-     * @param string $credentials - token
-     * @param UserProviderInterface $userProvider
-     *
-     * @return UserInterface|null
-     */
-    public final function getUser($credentials, UserProviderInterface $userProvider)
-    {
-        return $this->prepareUser($credentials);
-    }
-
-    /**
-     * @param $credentials
-     * @return UserInterface|null
-     */
-    protected abstract function prepareUser($credentials): ?UserInterface;
 
     /**
      * @param Request $request
@@ -69,11 +51,12 @@ abstract class AGraphQLAuthenticator extends AbstractGuardAuthenticator
             return null; // Request does not contain auth token - means that user wants to use only free operations
         }
 
+        // Authorization is required
         return new JsonResponse([
             'graphQLErrors' => [
                 [
                     'code' => 401,
-                    'message' => 'Authentication expired'
+                    'message' => 'Authentication required'
                 ]
             ]
         ], 401, $this->responseHeaders);
@@ -116,10 +99,49 @@ abstract class AGraphQLAuthenticator extends AbstractGuardAuthenticator
     }
 
     /**
+     * @param Request $request
+     * @return bool
+     */
+    public function supports(Request $request)
+    {
+        return $request->headers->has('Authorization');
+    }
+
+    /**
      * @return bool
      */
     public function supportsRememberMe()
     {
         return false;
+    }
+
+    /**
+     * @param Request $request
+     * @return ['Authorization' => string|null, 'bearerToken' => string|null]
+     */
+    public function getCredentials(Request $request)
+    {
+        $authorization = $request->headers->get('Authorization');
+
+        $bearerToken = null;
+        if(preg_match('/^Bearer (\w+)$/', $authorization ?? '', $bearerMatch = [])) {
+            $bearerToken = $bearerMatch[0];
+        }
+
+        return [
+            'Authorization' => $authorization,
+            'bearerToken' => $bearerToken
+        ];
+    }
+
+    /**
+     * @param mixed $credentials
+     * @param UserInterface $user
+     * @return bool
+     */
+    public function checkCredentials($credentials, UserInterface $user)
+    {
+        // user is found by an API token
+        return true;
     }
 }
