@@ -457,6 +457,7 @@ class GraphQLRequest implements ArrayAccess, AuthorizationCheckerInterface
      * @param mixed $attribute
      * @param mixed $subject
      * @param string $message
+     * @throws AccessDeniedException
      */
     public function denyAccessUnlessGranted($attribute, $subject, string $message = 'Access denied.') {
         if(!$this->isGranted($attribute, $subject)) {
