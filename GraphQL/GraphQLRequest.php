@@ -22,6 +22,8 @@ use Doctrine\ORM\EntityManager;
 use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Youshido\GraphQL\Execution\ResolveInfo;
 
 /**
@@ -29,12 +31,10 @@ use Youshido\GraphQL\Execution\ResolveInfo;
  * @package BastSys\GraphQLBundle\GraphQL
  * @author mirkl
  */
-class GraphQLRequest implements ArrayAccess
+class GraphQLRequest implements ArrayAccess, AuthorizationCheckerInterface
 {
     /** @var ContainerInterface */
     private ContainerInterface $container;
-    /** @var EntityManager|null entity manager if loaded; if not loaded, is loaded when requested */
-    private ?EntityManager $entityManager;
     /** @var */
     private $value;
     /** @var DimensionalArray */
@@ -107,11 +107,7 @@ class GraphQLRequest implements ArrayAccess
      */
     public function getEntityManager(): EntityManager
     {
-        if (!$this->entityManager) {
-            $this->entityManager = $this->container->get('doctrine.orm.entity_manager');
-        }
-
-        return $this->entityManager;
+        return $this->container->get('doctrine.orm.entity_manager');
     }
 
     /**
@@ -242,7 +238,6 @@ class GraphQLRequest implements ArrayAccess
             $subArgs,
             $this->info
         );
-        $subRequest->entityManager = $this->entityManager;
 
         return $subRequest;
     }
@@ -443,5 +438,29 @@ class GraphQLRequest implements ArrayAccess
         $process(
             $this->getParameter($key)
         );
+    }
+
+    /**
+     * @param mixed $attribute
+     * @param mixed $subject
+     * @return bool
+     */
+    public function isGranted($attribute, $subject = null)
+    {
+        /** @var AuthorizationCheckerInterface $checker */
+        $checker = $this->container->get('security.authorization_checker');
+
+        return $checker->isGranted($attribute, $subject);
+    }
+
+    /**
+     * @param mixed $attribute
+     * @param mixed $subject
+     * @param string $message
+     */
+    public function denyAccessUnlessGranted($attribute, $subject, string $message = 'Access denied.') {
+        if(!$this->isGranted($attribute, $subject)) {
+            throw new AccessDeniedException($message);
+        }
     }
 }
