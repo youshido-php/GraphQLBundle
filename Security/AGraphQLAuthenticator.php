@@ -117,7 +117,7 @@ abstract class AGraphQLAuthenticator extends AbstractGuardAuthenticator
 
     /**
      * @param Request $request
-     * @return ['Authorization' => string|null, 'bearerToken' => string|null]
+     * @return array ['Authorization' => string|null, 'bearerToken' => string|null]
      */
     public function getCredentials(Request $request)
     {
@@ -125,8 +125,8 @@ abstract class AGraphQLAuthenticator extends AbstractGuardAuthenticator
 
         $bearerToken = null;
         $bearerMatch = [];
-        if(preg_match('/^Bearer (\w+)$/', $authorization ?? '', $bearerMatch)) {
-            $bearerToken = $bearerMatch[0];
+        if(preg_match('/^Bearer ([a-z0-9\-]{36})$/', $authorization ?? '', $bearerMatch)) {
+            $bearerToken = $bearerMatch[1];
         }
 
         return [
