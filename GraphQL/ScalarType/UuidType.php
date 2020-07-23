@@ -12,6 +12,9 @@ use Youshido\GraphQL\Type\Scalar\StringType;
  */
 class UuidType extends StringType
 {
+    /** @var string */
+    const REGEX = '/^([a-z0-9\-]{36})$/';
+
     /**
      * @return false|string
      */
@@ -36,6 +39,6 @@ class UuidType extends StringType
     public function isValidValue($value)
     {
         return $value === null ||
-            (is_string($value) && strlen($value) === 36);
+            preg_match(self::REGEX, $value);
     }
 }
