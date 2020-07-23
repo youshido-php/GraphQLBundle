@@ -124,7 +124,8 @@ abstract class AGraphQLAuthenticator extends AbstractGuardAuthenticator
         $authorization = $request->headers->get('Authorization');
 
         $bearerToken = null;
-        if(preg_match('/^Bearer (\w+)$/', $authorization ?? '', $bearerMatch = [])) {
+        $bearerMatch = [];
+        if(preg_match('/^Bearer (\w+)$/', $authorization ?? '', $bearerMatch)) {
             $bearerToken = $bearerMatch[0];
         }
 
