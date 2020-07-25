@@ -7,21 +7,21 @@ use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
 use Youshido\GraphQL\Type\Scalar\IntType;
 
 /**
- * Trait TOrderableType
+ * Trait TIndexableType
  * @package BastSys\GraphQLBundle\GraphQL\ObjectType
  * @author mirkl
  */
-trait TOrderableType
+trait TIndexableType
 {
     /**
      * @param ObjectTypeConfig $config
      */
-    protected function buildOrderable(ObjectTypeConfig $config)
+    protected function buildIndexable(ObjectTypeConfig $config)
     {
         $config->addFields([
-            'order' => [
+            'index' => [
                 'type' => new IntType(),
-                'description' => 'Orderable item order'
+                'description' => 'Index item order'
             ]
         ]);
     }
