@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\ObjectType;
 
+use BastSys\LocaleBundle\Entity\Translation\ITranslatable;
 use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
 use Youshido\GraphQL\Exception\ConfigurationException;
 use Youshido\GraphQL\Type\ListType\ListType;
@@ -28,12 +29,17 @@ abstract class ATranslatableEntityType extends AEntityType
 
         $config->addField('translations', new ListType($translationType));
 
-        // adding translation fields that are normally translated
+        // adding translation fields that are translated to current locale
         foreach ($translationType->getFields() as $field) {
-            if ($field->getName() !== 'locale') {
-                $config->addField($field->getName(), [
+            $fieldName = $field->getName();
+
+            if ($fieldName !== 'locale') {
+                $config->addField($fieldName, [
                     'type' => $field->getType(),
-                    'description' => 'Translated ' . $field->getName() . ' to current locale',
+                    'description' => "Translated $fieldName to current locale",
+                    'resolve' => function (ITranslatable $translatable) use ($fieldName) {
+                        return $translatable->getTranslatedField($fieldName);
+                    }
                 ]);
             }
         }
