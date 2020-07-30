@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL\ObjectType;
 
+use BastSys\LocaleBundle\Entity\Translation\ITranslation;
 use Youshido\GraphQL\Config\Object\ObjectTypeConfig;
 use Youshido\GraphQL\Exception\ConfigurationException;
 use Youshido\GraphQL\Type\Object\AbstractObjectType;
@@ -22,8 +23,11 @@ abstract class ATranslationType extends AbstractObjectType
     public final function build($config)
     {
         $config->addField('locale', [
+            'type' => new StringType(),
             'description' => 'Locale of this translation object',
-            'type' => new StringType()
+            'resolve' => function (ITranslation $translation) {
+                return $translation->getLanguage()->getCode();
+            }
         ]);
         $this->addTranslationFields($config);
     }
