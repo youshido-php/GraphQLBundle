@@ -361,9 +361,16 @@ class GraphQLRequest implements ArrayAccess, AuthorizationCheckerInterface
      *                                 GraphQLRequiredTranslationParameterException is thrown
      *
      * @throws GraphQLRequiredTranslationParameterException
+     * @throws \Doctrine\ORM\ORMException
      */
     public function processEntityTranslatedField(string $fieldName, ITranslatable $entity, bool $required = false): void
     {
+        $em = $this->getEntityManager();
+        if(!$em->contains($entity)) {
+            // cannot create new locale translations if entity is not persisted
+            $em->persist($entity);
+        }
+
         $translationInputs = $this->getParameter('translations', []);
         $oneChanged = false;
         $translationFieldSetter = Strings::getSetterName($fieldName);
