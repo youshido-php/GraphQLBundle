@@ -9,8 +9,16 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Youshido\GraphQLBundle\DependencyInjection\Compiler\GraphQlCompilerPass;
 use Youshido\GraphQLBundle\DependencyInjection\GraphQLExtension;
 
+/**
+ * Class GraphQLBundle
+ * @package BastSys\GraphQLBundle
+ * @author mirkl
+ */
 class GraphQLBundle extends Bundle
 {
+    /**
+     * @param ContainerBuilder $container
+     */
     public function build(ContainerBuilder $container)
     {
         parent::build($container);
@@ -26,7 +34,9 @@ class GraphQLBundle extends Bundle
         );
     }
 
-
+    /**
+     * @return \Symfony\Component\DependencyInjection\Extension\ExtensionInterface|GraphQLExtension|null
+     */
     public function getContainerExtension()
     {
         if (null === $this->extension) {
