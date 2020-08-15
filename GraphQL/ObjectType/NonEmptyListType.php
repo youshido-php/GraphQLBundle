@@ -25,9 +25,9 @@ class NonEmptyListType extends AbstractListType
      */
     public function __construct($itemType)
     {
-        parent::__construct();
-
         $this->config = new ListTypeConfig(['itemType' => $itemType], $this, true);
+
+        parent::__construct();
     }
 
     /**
