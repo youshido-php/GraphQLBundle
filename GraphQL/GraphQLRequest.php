@@ -17,7 +17,6 @@ use BastSys\UtilsBundle\Model\Lists\Input\OrderBy;
 use BastSys\UtilsBundle\Model\Lists\Input\OrderByDirection;
 use BastSys\UtilsBundle\Model\Lists\Input\Pagination;
 use BastSys\UtilsBundle\Model\Strings;
-use BastSys\UtilsBundle\Repository\AEntityRepository;
 use Doctrine\ORM\EntityManager;
 use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -320,8 +319,11 @@ class GraphQLRequest implements ArrayAccess, AuthorizationCheckerInterface
      * @param string $connectedEntityClass
      * @param $entity
      * @param bool $required
-     * @throws GraphQLRequiredParameterException
      * @throws EntityNotFoundByIdException
+     * @throws GraphQLRequiredParameterException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function processEntityIdConnectionField(string $idFieldName, string $connectedEntityClass, $entity, bool $required = false)
     {
@@ -331,11 +333,10 @@ class GraphQLRequest implements ArrayAccess, AuthorizationCheckerInterface
 
         if ($this->hasNonNullParameter($idFieldName)) {
             $id = $this->getParameter($idFieldName);
-            /** @var AEntityRepository $repository */
-            $repository = $this->getContainer()->get(
-                Strings::getEntityRepositoryServiceName($connectedEntityClass)
-            );
-            $connectionEntity = $repository->findById($id, true);
+            $connectionEntity = $this->getEntityManager()->find($connectedEntityClass, $id);
+            if(!$connectionEntity) {
+                throw new EntityNotFoundByIdException($connectedEntityClass, $id);
+            }
 
             $setMethodName = Strings::getSetterName($idFieldName);
             $entity->$setMethodName($connectionEntity);
