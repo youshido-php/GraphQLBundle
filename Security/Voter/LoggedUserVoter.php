@@ -8,6 +8,8 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
+ * @deprecated do not use this class, a security vulnerability found
+ *
  * Class LoggedUserVoter
  *
  * Verifies only if there is a logged UserInterface in token
