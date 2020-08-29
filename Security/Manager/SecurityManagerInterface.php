@@ -14,8 +14,8 @@ use Youshido\GraphQL\Parser\Ast\Query;
 interface SecurityManagerInterface
 {
 
-    const RESOLVE_ROOT_OPERATION_ATTRIBUTE = 'RESOLVE_ROOT_OPERATION';
-    const RESOLVE_FIELD_ATTRIBUTE          = 'RESOLVE_FIELD';
+    const RESOLVE_ROOT_OPERATION_ATTRIBUTE = 'bastsys.graphql_bundle.resolve.root_operation';
+    const RESOLVE_FIELD_ATTRIBUTE          = 'bastsys.graphql_bundle.resolve.field_attribute';
 
     /**
      * @param $attribute string
