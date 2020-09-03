@@ -45,10 +45,6 @@
             <argument>%graphql.security.guard_config%</argument>
         </service>
 
-        <service id="graphql.security.voter" class="Youshido\GraphQLBundle\Security\Voter\BlacklistVoter" public="false">
-            <tag name="security.voter" priority="255" />
-        </service>
-
         <service id="BastSys\GraphQLBundle\Security\Voter\FreeFieldVoter" public="false">
             <tag name="security.voter" />
         </service>
