@@ -49,6 +49,10 @@
             <tag name="security.voter" priority="255" />
         </service>
 
+        <service id="BastSys\GraphQLBundle\Security\Voter\SecuredFieldVoter" public="false">
+            <tag name="security.voter" />
+        </service>
+
         <service id="graphql.factory.processor" class="BastSys\GraphQLBundle\GraphQL\ProcessorFactory" public="false">
             <argument id="graphql.symfony_container_bridge" type="service"/>
             <argument id="event_dispatcher" type="service"/>

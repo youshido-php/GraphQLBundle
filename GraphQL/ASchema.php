@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace BastSys\GraphQLBundle\GraphQL;
 
+use BastSys\GraphQLBundle\Field\ISecuredField;
 use BastSys\GraphQLBundle\GraphQL\Field\IFreeOperation;
 use BastSys\GraphQLBundle\Security\Voter\AFreeOperationVoter;
+use BastSys\GraphQLBundle\Security\Voter\SecuredFieldVoter;
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Field\Field;
 use Youshido\GraphQL\Schema\AbstractSchema;
@@ -31,18 +33,23 @@ abstract class ASchema extends AbstractSchema
      */
     private AFreeOperationVoter $freeOperationVoter;
 
+    /** @var SecuredFieldVoter */
+    private SecuredFieldVoter $securedFieldVoter;
+
     /**
      * ASchema constructor.
      * @param AbstractObjectType $queryType
      * @param AbstractObjectType $mutationType
      * @param AFreeOperationVoter $freeOperationVoter
+     * @param SecuredFieldVoter $securedFieldVoter
      */
-    public function __construct(AbstractObjectType $queryType, AbstractObjectType $mutationType, AFreeOperationVoter $freeOperationVoter)
+    public function __construct(AbstractObjectType $queryType, AbstractObjectType $mutationType, AFreeOperationVoter $freeOperationVoter, SecuredFieldVoter $securedFieldVoter)
     {
         // before __construct build
         $this->queryType = $queryType;
         $this->mutationType = $mutationType;
         $this->freeOperationVoter = $freeOperationVoter;
+        $this->securedFieldVoter = $securedFieldVoter;
 
         parent::__construct();
     }
@@ -55,10 +62,10 @@ abstract class ASchema extends AbstractSchema
         $config->setQuery($this->queryType);
         $config->setMutation($this->mutationType);
 
-        $this->checkForFreeOperations(
+        $this->registerFreeFields(
             $config->getQuery()->getFields()
         );
-        $this->checkForFreeOperations(
+        $this->registerFreeFields(
             $config->getMutation()->getFields()
         );
     }
@@ -68,13 +75,24 @@ abstract class ASchema extends AbstractSchema
      *
      * @param Field[] $fields
      */
-    private function checkForFreeOperations(array $fields)
+    private function registerFreeFields(array $fields)
     {
         foreach ($fields as $field) {
             if ($field instanceof IFreeOperation) {
                 $this->freeOperationVoter->addFreeOperation(
                     $field->getName()
                 );
+            }
+        }
+    }
+
+    /**
+     * @param array $fields
+     */
+    private function registerSecuredFields(array $fields) {
+        foreach ($fields as $field) {
+            if($field instanceof ISecuredField) {
+                $this->securedFieldVoter->addSecuredField($field);
             }
         }
     }
