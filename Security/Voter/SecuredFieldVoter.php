@@ -8,6 +8,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
+use Youshido\GraphQLBundle\Security\Manager\SecurityManagerInterface;
 
 /**
  * Class SecuredFieldVoter
@@ -35,8 +36,8 @@ class SecuredFieldVoter extends Voter
      */
     protected function supports(string $attribute, $subject)
     {
-        if($subject instanceof Query || $subject instanceof Mutation) {
-            return isset($this->securedFields[$attribute]);
+        if($attribute === SecurityManagerInterface::RESOLVE_ROOT_OPERATION_ATTRIBUTE && ($subject instanceof Query || $subject instanceof Mutation)) {
+            return isset($this->securedFields[$subject->getName()]);
         }
 
         return false;
@@ -44,13 +45,13 @@ class SecuredFieldVoter extends Voter
 
     /**
      * @param string $attribute
-     * @param mixed $subject
+     * @param Query|Mutation $subject
      * @param TokenInterface $token
      * @return bool
      */
     protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token)
     {
-        $field = $this->securedFields[$attribute];
+        $field = $this->securedFields[$subject->getName()];
 
         return $field->isGranted($token);
     }

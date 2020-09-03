@@ -62,12 +62,14 @@ abstract class ASchema extends AbstractSchema
         $config->setQuery($this->queryType);
         $config->setMutation($this->mutationType);
 
-        $this->registerFreeFields(
-            $config->getQuery()->getFields()
-        );
-        $this->registerFreeFields(
-            $config->getMutation()->getFields()
-        );
+        $queries = $config->getQuery()->getFields();
+        $mutations = $config->getMutation()->getFields();
+
+        $this->registerFreeFields($queries);
+        $this->registerFreeFields($mutations);
+
+        $this->registerSecuredFields($queries);
+        $this->registerSecuredFields($mutations);
     }
 
     /**
