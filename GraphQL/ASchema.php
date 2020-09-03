@@ -5,7 +5,7 @@ namespace BastSys\GraphQLBundle\GraphQL;
 
 use BastSys\GraphQLBundle\Field\ISecuredField;
 use BastSys\GraphQLBundle\GraphQL\Field\IFreeOperation;
-use BastSys\GraphQLBundle\Security\Voter\AFreeOperationVoter;
+use BastSys\GraphQLBundle\Security\Voter\FreeFieldVoter;
 use BastSys\GraphQLBundle\Security\Voter\SecuredFieldVoter;
 use Youshido\GraphQL\Config\Schema\SchemaConfig;
 use Youshido\GraphQL\Field\Field;
@@ -29,9 +29,9 @@ abstract class ASchema extends AbstractSchema
     private AbstractObjectType $mutationType;
 
     /**
-     * @var AFreeOperationVoter
+     * @var FreeFieldVoter
      */
-    private AFreeOperationVoter $freeOperationVoter;
+    private FreeFieldVoter $freeOperationVoter;
 
     /** @var SecuredFieldVoter */
     private SecuredFieldVoter $securedFieldVoter;
@@ -40,10 +40,10 @@ abstract class ASchema extends AbstractSchema
      * ASchema constructor.
      * @param AbstractObjectType $queryType
      * @param AbstractObjectType $mutationType
-     * @param AFreeOperationVoter $freeOperationVoter
+     * @param FreeFieldVoter $freeOperationVoter
      * @param SecuredFieldVoter $securedFieldVoter
      */
-    public function __construct(AbstractObjectType $queryType, AbstractObjectType $mutationType, AFreeOperationVoter $freeOperationVoter, SecuredFieldVoter $securedFieldVoter)
+    public function __construct(AbstractObjectType $queryType, AbstractObjectType $mutationType, FreeFieldVoter $freeOperationVoter, SecuredFieldVoter $securedFieldVoter)
     {
         // before __construct build
         $this->queryType = $queryType;
@@ -79,9 +79,7 @@ abstract class ASchema extends AbstractSchema
     {
         foreach ($fields as $field) {
             if ($field instanceof IFreeOperation) {
-                $this->freeOperationVoter->addFreeOperation(
-                    $field->getName()
-                );
+                $this->freeOperationVoter->addFreeOperation($field);
             }
         }
     }

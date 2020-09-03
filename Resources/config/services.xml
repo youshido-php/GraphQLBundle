@@ -49,6 +49,10 @@
             <tag name="security.voter" priority="255" />
         </service>
 
+        <service id="BastSys\GraphQLBundle\Security\Voter\FreeFieldVoter" public="false">
+            <tag name="security.voter" />
+        </service>
+
         <service id="BastSys\GraphQLBundle\Security\Voter\SecuredFieldVoter" public="false">
             <tag name="security.voter" />
         </service>

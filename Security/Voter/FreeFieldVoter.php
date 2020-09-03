@@ -5,27 +5,29 @@ namespace BastSys\GraphQLBundle\Security\Voter;
 
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Youshido\GraphQL\Field\FieldInterface;
+use Youshido\GraphQL\Parser\Ast\Mutation;
 use Youshido\GraphQL\Parser\Ast\Query;
 
 /**
- * Class AFreeOperationVoter
+ * Class FreeFieldVoter
  * @package BastSys\GraphQLBundle\Security\Voter\GraphQL
  * @author mirkl
  */
-abstract class AFreeOperationVoter extends Voter
+class FreeFieldVoter extends Voter
 {
     /** @var string[] */
-    protected array $operations = ['__schema'];
+    protected array $freeFieldNames = ['__schema'];
 
     /**
      * Adds a free operation to the storage
      *
-     * @param string $operation
+     * @param FieldInterface $field
      * @internal insert through container
      */
-    public function addFreeOperation(string $operation): void
+    public function addFreeOperation(FieldInterface $field): void
     {
-        $this->operations[] = $operation;
+        $this->freeFieldNames[] = $field->getName();
     }
 
     /**
@@ -37,7 +39,7 @@ abstract class AFreeOperationVoter extends Voter
      */
     public function isFreeOperation(string $operation): bool
     {
-        return in_array($operation, $this->operations);
+        return in_array($operation, $this->freeFieldNames);
     }
 
     /**
@@ -47,10 +49,11 @@ abstract class AFreeOperationVoter extends Voter
      */
     protected function supports($attribute, $subject)
     {
-        if (!$subject instanceof Query) {
-            return false;
+        if($subject instanceof Query || $subject instanceof Mutation) {
+            return in_array($subject->getName(), $this->freeFieldNames);
         }
-        return in_array($subject->getName(), $this->operations);
+
+        return false;
     }
 
     /**
