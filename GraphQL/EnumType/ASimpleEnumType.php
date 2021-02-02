@@ -18,7 +18,7 @@ abstract class ASimpleEnumType extends AbstractEnumType
     /**
      * @var string[]|int[]
      */
-    private $values;
+    private array $values;
 
     /**
      * ASimpleEnumType constructor.
@@ -40,7 +40,7 @@ abstract class ASimpleEnumType extends AbstractEnumType
         $result = [];
         foreach ($this->values as $value) {
             $result[] = [
-                'name' => $value,
+                'name' => strtoupper($value),
                 'value' => $value
             ];
         }
