@@ -2,14 +2,14 @@
 
 namespace Youshido\GraphQLBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
-class GraphQLConfigureCommand extends ContainerAwareCommand
+class GraphQLConfigureCommand extends Command
 {
     const PROJECT_NAMESPACE = 'App';
 
