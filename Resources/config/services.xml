@@ -51,6 +51,7 @@
 
         <service id="graphql.command.configure" class="Youshido\GraphQLBundle\Command\GraphQLConfigureCommand">
             <tag name="console.command" command="graphql:configure"/>
+            <argument type="service" id="router" />
         </service>
     </services>
 </container>
